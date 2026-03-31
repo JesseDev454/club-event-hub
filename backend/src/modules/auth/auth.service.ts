@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import jwt, { type JwtPayload, type SignOptions } from "jsonwebtoken";
+import jwt, { type SignOptions } from "jsonwebtoken";
 
 import { env } from "../../config/env";
 import { AppDataSource } from "../../config/data-source";
@@ -7,8 +7,8 @@ import { ApiError } from "../../utils/ApiError";
 import { User, UserRole } from "../../entities/User";
 import type { LoginInput, RegisterInput } from "./auth.validation";
 
-type AuthTokenPayload = JwtPayload & {
-  sub: string;
+type AuthTokenPayload = {
+  id: string;
   role: UserRole;
   clubId: string | null;
 };
@@ -52,7 +52,7 @@ function serializeUser(user: User): SafeUser {
 
 function signAuthToken(user: User): string {
   const payload: AuthTokenPayload = {
-    sub: user.id,
+    id: user.id,
     role: user.role,
     clubId: user.clubId,
   };
@@ -134,7 +134,13 @@ function verifyAuthToken(token: string): AuthTokenPayload {
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET);
 
-    if (typeof decoded === "string" || !decoded.sub) {
+    if (
+      typeof decoded === "string" ||
+      !("id" in decoded) ||
+      typeof decoded.id !== "string" ||
+      !("role" in decoded) ||
+      !Object.values(UserRole).includes(decoded.role as UserRole)
+    ) {
       throw new ApiError(401, "Invalid authentication token.");
     }
 

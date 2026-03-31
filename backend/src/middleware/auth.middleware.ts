@@ -23,7 +23,7 @@ export async function requireAuth(req: Request, _res: Response, next: NextFuncti
     const userRepository = AppDataSource.getRepository(User);
 
     const user = await userRepository.findOne({
-      where: { id: decoded.sub },
+      where: { id: decoded.id },
     });
 
     if (!user) {

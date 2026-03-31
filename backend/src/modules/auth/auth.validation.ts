@@ -15,7 +15,7 @@ const registerBodySchema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters long.")
     .max(72, "Password cannot exceed 72 characters."),
-});
+}).strict();
 
 const loginBodySchema = z.object({
   email: z
@@ -27,7 +27,7 @@ const loginBodySchema = z.object({
     .string()
     .min(1, "Password is required.")
     .max(72, "Password cannot exceed 72 characters."),
-});
+}).strict();
 
 export const registerSchema = z.object({
   body: registerBodySchema,
