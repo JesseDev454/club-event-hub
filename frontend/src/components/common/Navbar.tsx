@@ -2,7 +2,6 @@ import { Link, NavLink } from "react-router-dom";
 
 import { cn } from "../../lib/utils";
 import { useAuth } from "../../state/AuthContext";
-import { Button } from "../ui/Button";
 import { PageContainer } from "./PageContainer";
 
 const publicLinks = [
@@ -12,7 +11,7 @@ const publicLinks = [
 ];
 
 export function Navbar() {
-  const { clearAuthState, isAuthenticated, user } = useAuth();
+  const { isAuthenticated, loading, logout, user } = useAuth();
 
   const linkButtonClassName =
     "inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
@@ -54,14 +53,23 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-2">
-          {isAuthenticated ? (
+          {loading ? (
+            <span className="text-sm text-ink-700">Loading...</span>
+          ) : isAuthenticated ? (
             <>
               <span className="hidden text-sm text-ink-700 sm:inline">
                 {user?.name ?? "Signed in"}
               </span>
-              <Button onClick={clearAuthState} variant="secondary">
-                Sign out
-              </Button>
+              <button
+                className={cn(
+                  linkButtonClassName,
+                  "bg-white text-ink-900 ring-1 ring-ink-100 hover:bg-ink-50",
+                )}
+                onClick={logout}
+                type="button"
+              >
+                Logout
+              </button>
             </>
           ) : (
             <>
@@ -74,7 +82,10 @@ export function Navbar() {
               >
                 Login
               </Link>
-              <Link className={cn(linkButtonClassName, "bg-brand-600 text-white hover:bg-brand-700")} to="/register">
+              <Link
+                className={cn(linkButtonClassName, "bg-brand-600 text-white hover:bg-brand-700")}
+                to="/register"
+              >
                 Register
               </Link>
             </>

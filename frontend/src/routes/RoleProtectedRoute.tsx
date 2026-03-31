@@ -1,16 +1,23 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-import { useAuth, type UserRole } from "../state/AuthContext";
+import { LoadingState } from "../components/ui/LoadingState";
+import { useAuth } from "../state/AuthContext";
+import type { UserRole } from "../types/auth";
 
 type RoleProtectedRouteProps = {
   allowedRoles: UserRole[];
 };
 
 export function RoleProtectedRoute({ allowedRoles }: RoleProtectedRouteProps) {
-  const { user } = useAuth();
+  const { loading, user } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return <LoadingState label="Checking your permissions..." />;
+  }
 
   if (!user || !allowedRoles.includes(user.role)) {
-    return <Navigate replace to="/" />;
+    return <Navigate replace state={{ from: location }} to="/" />;
   }
 
   return <Outlet />;
