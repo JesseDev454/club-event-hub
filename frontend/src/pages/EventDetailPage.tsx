@@ -4,17 +4,23 @@ import { useParams } from "react-router-dom";
 
 import { getApiErrorMessage } from "../api/client";
 import { eventsApi } from "../api/eventsApi";
+import { rsvpsApi } from "../api/rsvpsApi";
+import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { formatDate, formatTimeRange } from "../lib/utils";
+import { useAuth } from "../state/AuthContext";
 import type { EventDetail } from "../types/domain";
 
 export function EventDetailPage() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [event, setEvent] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<"rsvp" | "cancel" | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -48,6 +54,63 @@ export function EventDetailPage() {
       isMounted = false;
     };
   }, [id]);
+
+  const isStudent = user?.role === "student";
+  const isAdmin = user?.role === "club_admin";
+  const isGuest = !user;
+  const hasRsvped = event?.hasRsvped === true;
+
+  const handleRsvp = async () => {
+    if (!id || !event) {
+      return;
+    }
+
+    setActionLoading("rsvp");
+    setActionError(null);
+
+    try {
+      const result = await rsvpsApi.createRsvp(id);
+      setEvent((current) =>
+        current
+          ? {
+              ...current,
+              rsvpCount: result.rsvpCount,
+              hasRsvped: result.hasRsvped,
+            }
+          : current,
+      );
+    } catch (rsvpError) {
+      setActionError(getApiErrorMessage(rsvpError, "Unable to RSVP right now."));
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleCancelRsvp = async () => {
+    if (!id || !event) {
+      return;
+    }
+
+    setActionLoading("cancel");
+    setActionError(null);
+
+    try {
+      const result = await rsvpsApi.cancelRsvp(id);
+      setEvent((current) =>
+        current
+          ? {
+              ...current,
+              rsvpCount: result.rsvpCount,
+              hasRsvped: result.hasRsvped,
+            }
+          : current,
+      );
+    } catch (rsvpError) {
+      setActionError(getApiErrorMessage(rsvpError, "Unable to cancel your RSVP right now."));
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   return (
     <section className="space-y-6">
@@ -95,11 +158,56 @@ export function EventDetailPage() {
           </div>
 
           <div className="rounded-2xl border border-dashed border-ink-100 bg-white px-6 py-6 shadow-card">
-            <h2 className="text-lg font-semibold text-ink-900">RSVP coming next</h2>
-            <p className="mt-2 text-sm text-ink-700">
-              RSVP actions will be added in Sprint 3. This page is intentionally leaving room for
-              that next step.
-            </p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-ink-900">RSVP</h2>
+                <p className="mt-2 text-sm text-ink-700">
+                  RSVP count: <span className="font-semibold text-ink-900">{event.rsvpCount}</span>
+                </p>
+                {isGuest ? (
+                  <p className="mt-2 text-sm text-ink-700">
+                    <Link className="font-semibold text-brand-700 hover:text-brand-600" to="/login">
+                      Log in
+                    </Link>{" "}
+                    to RSVP to this event.
+                  </p>
+                ) : null}
+                {isAdmin ? (
+                  <p className="mt-2 text-sm text-ink-700">
+                    Club admins can view RSVP counts here, but RSVP actions are student-only.
+                  </p>
+                ) : null}
+                {isStudent ? (
+                  <p className="mt-2 text-sm text-ink-700">
+                    {hasRsvped
+                      ? "You are currently marked as attending."
+                      : "RSVP to let the club know you plan to attend."}
+                  </p>
+                ) : null}
+              </div>
+
+              {isStudent ? (
+                <div className="flex flex-col items-start gap-3">
+                  {hasRsvped ? (
+                    <Button
+                      disabled={actionLoading !== null}
+                      onClick={handleCancelRsvp}
+                      variant="secondary"
+                    >
+                      {actionLoading === "cancel" ? "Cancelling..." : "Cancel RSVP"}
+                    </Button>
+                  ) : (
+                    <Button disabled={actionLoading !== null} onClick={handleRsvp}>
+                      {actionLoading === "rsvp" ? "Saving..." : "RSVP to event"}
+                    </Button>
+                  )}
+                </div>
+              ) : null}
+            </div>
+
+            <div className="mt-4">
+              <ErrorMessage message={actionError} />
+            </div>
           </div>
         </>
       ) : null}

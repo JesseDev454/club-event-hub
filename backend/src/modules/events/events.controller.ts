@@ -24,7 +24,7 @@ const listEvents = asyncHandler(async (_req: Request, res: Response) => {
 });
 
 const getEventDetail = asyncHandler(async (req: Request, res: Response) => {
-  const event = await eventsService.getEventDetail(String(req.params.id));
+  const event = await eventsService.getEventDetail(String(req.params.id), req.user);
 
   sendSuccess(res, {
     message: "Event fetched successfully.",

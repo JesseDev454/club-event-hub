@@ -4,11 +4,13 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 
 import { Club } from "./Club";
+import { RSVP } from "./RSVP";
 import { User } from "./User";
 
 @Entity({ name: "events" })
@@ -29,6 +31,9 @@ export class Event {
   @ManyToOne(() => User, { eager: false })
   @JoinColumn({ name: "created_by" })
   creator!: User;
+
+  @OneToMany(() => RSVP, (rsvp) => rsvp.event)
+  rsvps?: RSVP[];
 
   @Column({ type: "varchar", length: 160 })
   title!: string;

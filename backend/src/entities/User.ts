@@ -11,6 +11,7 @@ import {
 
 import { Club } from "./Club";
 import { Event } from "./Event";
+import { RSVP } from "./RSVP";
 
 export enum UserRole {
   STUDENT = "student",
@@ -47,6 +48,9 @@ export class User {
 
   @OneToMany(() => Event, (event) => event.creator)
   createdEvents?: Event[];
+
+  @OneToMany(() => RSVP, (rsvp) => rsvp.user)
+  rsvps?: RSVP[];
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;

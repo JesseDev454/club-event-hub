@@ -3,6 +3,8 @@ import { MoreThanOrEqual } from "typeorm";
 import { AppDataSource } from "../../config/data-source";
 import { Club } from "../../entities/Club";
 import { Event } from "../../entities/Event";
+import { RSVP } from "../../entities/RSVP";
+import { UserRole } from "../../entities/User";
 import { ApiError } from "../../utils/ApiError";
 import type { CreateEventInput, UpdateEventInput } from "./events.validation";
 
@@ -35,6 +37,11 @@ type EventResponse = {
   club: EventClubSummary;
 };
 
+type EventDetailResponse = EventResponse & {
+  rsvpCount: number;
+  hasRsvped: boolean | null;
+};
+
 function getTodayDateString(): string {
   const now = new Date();
   const year = now.getFullYear();
@@ -52,7 +59,13 @@ function getClubRepository() {
   return AppDataSource.getRepository(Club);
 }
 
-function serializeEvent(event: Event): EventResponse {
+function getRsvpRepository() {
+  return AppDataSource.getRepository(RSVP);
+}
+
+function serializeEvent(
+  event: Event,
+): EventResponse {
   return {
     id: event.id,
     clubId: event.clubId,
@@ -112,6 +125,12 @@ function ensureEventOwnership(event: Event, currentUser: AuthenticatedUser): voi
   }
 }
 
+function ensureEventTimeRange(startTime: string, endTime: string | null): void {
+  if (endTime && endTime <= startTime) {
+    throw new ApiError(400, "End time must be later than start time.");
+  }
+}
+
 async function listUpcomingEvents(): Promise<EventResponse[]> {
   const events = await getEventRepository().find({
     where: {
@@ -129,14 +148,43 @@ async function listUpcomingEvents(): Promise<EventResponse[]> {
   return events.map(serializeEvent);
 }
 
-async function getEventDetail(id: string): Promise<EventResponse> {
+async function getEventDetail(
+  id: string,
+  currentUser?: AuthenticatedUser,
+): Promise<EventDetailResponse> {
   const event = await findEventOrThrow(id);
-  return serializeEvent(event);
+  const rsvpRepository = getRsvpRepository();
+
+  const rsvpCount = await rsvpRepository.count({
+    where: { eventId: event.id },
+  });
+
+  let hasRsvped: boolean | null = null;
+
+  if (currentUser?.role === UserRole.STUDENT) {
+    const existingRsvp = await rsvpRepository.findOne({
+      where: {
+        eventId: event.id,
+        userId: currentUser.id,
+      },
+    });
+
+    hasRsvped = Boolean(existingRsvp);
+  }
+
+  return {
+    ...serializeEvent(event),
+    rsvpCount,
+    hasRsvped,
+  };
 }
 
 async function createEvent(payload: CreateEventInput, currentUser: AuthenticatedUser): Promise<EventResponse> {
   const club = await ensureAdminClub(currentUser.clubId);
   const eventRepository = getEventRepository();
+  const endTime = payload.endTime ?? null;
+
+  ensureEventTimeRange(payload.startTime, endTime);
 
   const event = eventRepository.create({
     clubId: club.id,
@@ -145,7 +193,7 @@ async function createEvent(payload: CreateEventInput, currentUser: Authenticated
     description: payload.description.trim(),
     eventDate: payload.eventDate,
     startTime: payload.startTime,
-    endTime: payload.endTime ?? null,
+    endTime,
     venue: payload.venue.trim(),
     category: payload.category.trim(),
   });
@@ -165,6 +213,11 @@ async function updateEvent(
   const existingEvent = await findEventOrThrow(id);
 
   ensureEventOwnership(existingEvent, currentUser);
+
+  const nextStartTime = payload.startTime ?? existingEvent.startTime;
+  const nextEndTime = payload.endTime !== undefined ? payload.endTime ?? null : existingEvent.endTime;
+
+  ensureEventTimeRange(nextStartTime, nextEndTime);
 
   if (payload.title !== undefined) {
     existingEvent.title = payload.title.trim();

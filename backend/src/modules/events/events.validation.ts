@@ -66,7 +66,13 @@ const updateEventBodySchema = createEventBodySchema
     message: "At least one field is required to update an event.",
   })
   .refine(
-    (data) => isValidTimeRange(data.startTime ?? "00:00", data.endTime ?? undefined),
+    (data) => {
+      if (data.startTime === undefined || data.endTime === undefined || data.endTime === null) {
+        return true;
+      }
+
+      return isValidTimeRange(data.startTime, data.endTime);
+    },
     {
       message: "End time must be later than start time.",
       path: ["endTime"],

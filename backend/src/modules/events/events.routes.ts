@@ -1,9 +1,10 @@
 import { Router } from "express";
 
-import { requireAuth } from "../../middleware/auth.middleware";
+import { attachOptionalUser, requireAuth } from "../../middleware/auth.middleware";
 import { requireRole } from "../../middleware/role.middleware";
 import { validate } from "../../middleware/validate.middleware";
 import { UserRole } from "../../entities/User";
+import { rsvpsRouter } from "../rsvps/rsvps.routes";
 import { eventsController } from "./events.controller";
 import { createEventSchema, eventIdSchema, updateEventSchema } from "./events.validation";
 
@@ -11,7 +12,8 @@ const eventsRouter = Router();
 const adminEventsRouter = Router();
 
 eventsRouter.get("/", eventsController.listEvents);
-eventsRouter.get("/:id", validate(eventIdSchema), eventsController.getEventDetail);
+eventsRouter.use("/:id/rsvp", rsvpsRouter);
+eventsRouter.get("/:id", validate(eventIdSchema), attachOptionalUser, eventsController.getEventDetail);
 eventsRouter.post(
   "/",
   requireAuth,

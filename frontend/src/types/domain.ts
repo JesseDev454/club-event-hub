@@ -48,7 +48,16 @@ export type EventSummary = {
   club: EventClubSummary;
 };
 
-export type EventDetail = EventSummary;
+export type EventDetail = EventSummary & {
+  rsvpCount: number;
+  hasRsvped: boolean | null;
+};
+
+export type RsvpActionResponse = {
+  eventId: string;
+  rsvpCount: number;
+  hasRsvped: boolean;
+};
 
 export type EventFormInput = {
   title: string;

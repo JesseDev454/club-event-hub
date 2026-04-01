@@ -24,6 +24,7 @@ export function AdminEditEventPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadFailed, setLoadFailed] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -39,6 +40,7 @@ export function AdminEditEventPage() {
         const event = await eventsApi.getEventById(id);
 
         if (isMounted) {
+          setLoadFailed(false);
           setFormData({
             title: event.title,
             description: event.description,
@@ -51,6 +53,7 @@ export function AdminEditEventPage() {
         }
       } catch (loadError) {
         if (isMounted) {
+          setLoadFailed(true);
           setError(getApiErrorMessage(loadError, "Unable to load this event right now."));
         }
       } finally {
@@ -99,8 +102,6 @@ export function AdminEditEventPage() {
     <section className="space-y-6">
       {loading ? <LoadingState label="Loading event for editing..." /> : null}
 
-      {!loading && error && !id ? <ErrorMessage message={error} /> : null}
-
       {!loading && !id ? (
         <EmptyState
           description="The event id is missing from this route."
@@ -108,7 +109,17 @@ export function AdminEditEventPage() {
         />
       ) : null}
 
-      {!loading && id ? (
+      {!loading && id && loadFailed ? (
+        <>
+          <ErrorMessage message={error} />
+          <EmptyState
+            description="This event could not be loaded for editing. It may not exist anymore, or you may not have access to manage it."
+            title="Cannot edit event"
+          />
+        </>
+      ) : null}
+
+      {!loading && id && !loadFailed ? (
         <>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-ink-900">Edit event</h1>
