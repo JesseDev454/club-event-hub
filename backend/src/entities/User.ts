@@ -2,9 +2,15 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
+
+import { Club } from "./Club";
+import { Event } from "./Event";
 
 export enum UserRole {
   STUDENT = "student",
@@ -34,6 +40,13 @@ export class User {
 
   @Column({ name: "club_id", type: "uuid", nullable: true })
   clubId!: string | null;
+
+  @ManyToOne(() => Club, { eager: false, nullable: true })
+  @JoinColumn({ name: "club_id" })
+  club?: Club | null;
+
+  @OneToMany(() => Event, (event) => event.creator)
+  createdEvents?: Event[];
 
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;
