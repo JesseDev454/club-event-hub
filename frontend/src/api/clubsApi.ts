@@ -1,10 +1,20 @@
+import type { ClubDetail, ClubSummary } from "../types/domain";
 import { apiClient } from "./client";
 
+type ApiSuccessResponse<T> = {
+  success: true;
+  message: string;
+  data: T;
+};
+
 export const clubsApi = {
-  getClubs() {
-    return apiClient.get("/clubs");
+  async getClubs(): Promise<ClubSummary[]> {
+    const response = await apiClient.get<ApiSuccessResponse<ClubSummary[]>>("/clubs");
+    return response.data.data;
   },
-  getClubById(id: string) {
-    return apiClient.get(`/clubs/${id}`);
+
+  async getClubById(id: string): Promise<ClubDetail> {
+    const response = await apiClient.get<ApiSuccessResponse<ClubDetail>>(`/clubs/${id}`);
+    return response.data.data;
   },
 };
