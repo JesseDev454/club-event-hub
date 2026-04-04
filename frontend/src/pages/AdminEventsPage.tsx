@@ -26,7 +26,12 @@ export function AdminEventsPage() {
         }
       } catch (loadError) {
         if (isMounted) {
-          setError(getApiErrorMessage(loadError, "Unable to load your events right now."));
+          setError(
+            getApiErrorMessage(
+              loadError,
+              "We couldn't load your club events right now. Please refresh and try again.",
+            ),
+          );
         }
       } finally {
         if (isMounted) {
@@ -43,7 +48,9 @@ export function AdminEventsPage() {
   }, []);
 
   const handleDelete = async (eventId: string) => {
-    const confirmed = window.confirm("Delete this event?");
+    const eventToDelete = events.find((event) => event.id === eventId);
+    const eventTitle = eventToDelete?.title ?? "this event";
+    const confirmed = window.confirm(`Delete "${eventTitle}"? This cannot be undone.`);
 
     if (!confirmed) {
       return;
@@ -56,7 +63,12 @@ export function AdminEventsPage() {
       await eventsApi.deleteEvent(eventId);
       setEvents((current) => current.filter((event) => event.id !== eventId));
     } catch (deleteError) {
-      setError(getApiErrorMessage(deleteError, "Unable to delete this event right now."));
+      setError(
+        getApiErrorMessage(
+          deleteError,
+          "We couldn't delete that event right now. Please try again.",
+        ),
+      );
     } finally {
       setDeletingId(null);
     }
@@ -93,7 +105,7 @@ export function AdminEventsPage() {
               Create your first event
             </Link>
           }
-          description="Your club does not have any events published yet."
+          description="Your club has no live event listings yet. Create one to make it visible to students."
           title="No events yet"
         />
       ) : null}
@@ -110,15 +122,25 @@ export function AdminEventsPage() {
           <div className="divide-y divide-ink-100">
             {events.map((event) => (
               <div
-                className="grid gap-4 px-6 py-5 md:grid-cols-[2fr_1fr_1.3fr_1fr] md:items-center"
+                className="grid gap-4 px-4 py-5 sm:px-6 md:grid-cols-[2fr_1fr_1.3fr_1fr] md:items-center"
                 key={event.id}
               >
                 <div>
                   <p className="font-semibold text-ink-900">{event.title}</p>
                   <p className="mt-1 text-sm text-ink-700">{event.category}</p>
                 </div>
-                <p className="text-sm text-ink-700">{formatDate(event.eventDate)}</p>
-                <p className="text-sm text-ink-700">{event.venue}</p>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-700 md:hidden">
+                    Date
+                  </p>
+                  <p className="text-sm text-ink-700">{formatDate(event.eventDate)}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-ink-700 md:hidden">
+                    Venue
+                  </p>
+                  <p className="text-sm text-ink-700">{event.venue}</p>
+                </div>
                 <div className="flex flex-wrap gap-3 text-sm">
                   <Link
                     className="font-semibold text-brand-700 transition hover:text-brand-600"

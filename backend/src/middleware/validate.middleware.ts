@@ -17,12 +17,10 @@ export function validate(schema: ZodTypeAny) {
     const parsedData = result.data as {
       body?: Request["body"];
       params?: Request["params"];
-      query?: Request["query"];
     };
 
     req.body = parsedData.body ?? req.body;
     req.params = parsedData.params ?? req.params;
-    req.query = parsedData.query ?? req.query;
 
     next();
   };

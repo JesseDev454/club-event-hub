@@ -50,7 +50,12 @@ export function LoginPage() {
       const authenticatedUser = await login(formData);
       navigate(getPostLoginRedirect(authenticatedUser.role), { replace: true });
     } catch (submissionError) {
-      setError(getApiErrorMessage(submissionError, "Unable to sign you in."));
+      setError(
+        getApiErrorMessage(
+          submissionError,
+          "We couldn't sign you in. Check your email and password, then try again.",
+        ),
+      );
     } finally {
       setSubmitting(false);
     }
@@ -69,7 +74,7 @@ export function LoginPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-ink-900">Welcome back</h1>
         <p className="mt-2 text-sm text-ink-700">
-          Sign in to RSVP or manage events for your club.
+          Sign in to RSVP to events or manage your club's event listings.
         </p>
       </div>
 

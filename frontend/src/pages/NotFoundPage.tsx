@@ -7,14 +7,14 @@ export function NotFoundPage() {
         <p className="text-sm font-semibold uppercase tracking-[0.2em] text-brand-600">404</p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900">Page not found</h1>
         <p className="mt-3 text-sm text-ink-700">
-          This route is not part of the MVP yet, or the path does not exist.
+          The page you tried to open is unavailable or the link may be incorrect.
         </p>
         <div className="mt-6">
           <Link
             className="inline-flex items-center justify-center rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700"
             to="/"
           >
-            Go home
+            Back to home
           </Link>
         </div>
       </div>

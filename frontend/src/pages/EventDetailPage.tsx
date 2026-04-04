@@ -15,12 +15,13 @@ import type { EventDetail } from "../types/domain";
 
 export function EventDetailPage() {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [event, setEvent] = useState<EventDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<"rsvp" | "cancel" | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [needsAuthSync, setNeedsAuthSync] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -36,6 +37,7 @@ export function EventDetailPage() {
         const data = await eventsApi.getEventById(id);
         if (isMounted) {
           setEvent(data);
+          setNeedsAuthSync(authLoading);
         }
       } catch (loadError) {
         if (isMounted) {
@@ -53,7 +55,40 @@ export function EventDetailPage() {
     return () => {
       isMounted = false;
     };
-  }, [id]);
+  }, [id, authLoading]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const syncEventAfterAuth = async () => {
+      if (!needsAuthSync || authLoading || !id) {
+        return;
+      }
+
+      if (!user) {
+        setNeedsAuthSync(false);
+        return;
+      }
+
+      try {
+        const data = await eventsApi.getEventById(id);
+
+        if (isMounted) {
+          setEvent(data);
+        }
+      } finally {
+        if (isMounted) {
+          setNeedsAuthSync(false);
+        }
+      }
+    };
+
+    void syncEventAfterAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [authLoading, id, needsAuthSync, user]);
 
   const isStudent = user?.role === "student";
   const isAdmin = user?.role === "club_admin";
@@ -115,25 +150,35 @@ export function EventDetailPage() {
   return (
     <section className="space-y-6">
       {loading ? <LoadingState label="Loading event details..." /> : null}
-      <ErrorMessage message={error} />
+
+      {!loading && error ? (
+        <EmptyState
+          description="This event may have been removed, or the link may no longer be valid."
+          title="Event unavailable"
+        />
+      ) : null}
+
+      {!loading && error ? <ErrorMessage className="max-w-2xl" message={error} /> : null}
 
       {!loading && !error && !event ? (
         <EmptyState
-          description="The event could not be found."
+          description="This event may have been removed, or the link may no longer be valid."
           title="Event unavailable"
         />
       ) : null}
 
       {!loading && !error && event ? (
         <>
-          <div className="rounded-3xl border border-white/70 bg-white px-6 py-8 shadow-card sm:px-8">
+          <div className="rounded-3xl border border-white/70 bg-white px-5 py-6 shadow-card sm:px-8 sm:py-8">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
               {event.category}
             </p>
-            <h1 className="mt-3 text-4xl font-bold tracking-tight text-ink-900">{event.title}</h1>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
+              {event.title}
+            </h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-ink-700">{event.description}</p>
 
-            <div className="mt-6 grid gap-3 text-sm text-ink-700 sm:grid-cols-2">
+            <div className="mt-6 grid gap-4 text-sm text-ink-700 sm:grid-cols-2">
               <p>
                 <span className="font-medium text-ink-900">Date:</span>{" "}
                 {formatDate(event.eventDate)}
@@ -157,12 +202,13 @@ export function EventDetailPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-dashed border-ink-100 bg-white px-6 py-6 shadow-card">
+          <div className="rounded-2xl border border-dashed border-ink-100 bg-white px-5 py-6 shadow-card sm:px-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-ink-900">RSVP</h2>
                 <p className="mt-2 text-sm text-ink-700">
-                  RSVP count: <span className="font-semibold text-ink-900">{event.rsvpCount}</span>
+                  Current RSVPs:{" "}
+                  <span className="font-semibold text-ink-900">{event.rsvpCount}</span>
                 </p>
                 {isGuest ? (
                   <p className="mt-2 text-sm text-ink-700">
@@ -180,16 +226,17 @@ export function EventDetailPage() {
                 {isStudent ? (
                   <p className="mt-2 text-sm text-ink-700">
                     {hasRsvped
-                      ? "You are currently marked as attending."
-                      : "RSVP to let the club know you plan to attend."}
+                      ? "You are marked as attending. If your plans change, you can cancel below."
+                      : "RSVP to let the hosting club know you plan to attend."}
                   </p>
                 ) : null}
               </div>
 
               {isStudent ? (
-                <div className="flex flex-col items-start gap-3">
+                <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:items-start">
                   {hasRsvped ? (
                     <Button
+                      className="w-full sm:w-auto"
                       disabled={actionLoading !== null}
                       onClick={handleCancelRsvp}
                       variant="secondary"
@@ -197,7 +244,7 @@ export function EventDetailPage() {
                       {actionLoading === "cancel" ? "Cancelling..." : "Cancel RSVP"}
                     </Button>
                   ) : (
-                    <Button disabled={actionLoading !== null} onClick={handleRsvp}>
+                    <Button className="w-full sm:w-auto" disabled={actionLoading !== null} onClick={handleRsvp}>
                       {actionLoading === "rsvp" ? "Saving..." : "RSVP to event"}
                     </Button>
                   )}

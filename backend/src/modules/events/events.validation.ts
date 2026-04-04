@@ -16,7 +16,7 @@ function isValidTimeRange(startTime: string, endTime?: string): boolean {
   return endTime > startTime;
 }
 
-const createEventBodySchema = z
+const eventBodyBaseSchema = z
   .object({
     title: z
       .string()
@@ -51,8 +51,9 @@ const createEventBodySchema = z
       .min(2, "Category must be at least 2 characters long.")
       .max(100, "Category cannot exceed 100 characters."),
   })
-  .strict()
-  .refine(
+  .strict();
+
+const createEventBodySchema = eventBodyBaseSchema.refine(
     (data) => isValidTimeRange(data.startTime, data.endTime ?? undefined),
     {
       message: "End time must be later than start time.",
@@ -60,7 +61,7 @@ const createEventBodySchema = z
     },
   );
 
-const updateEventBodySchema = createEventBodySchema
+const updateEventBodySchema = eventBodyBaseSchema
   .partial()
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field is required to update an event.",

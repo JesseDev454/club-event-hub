@@ -28,7 +28,12 @@ export function RegisterPage() {
       await register(formData);
       navigate("/", { replace: true });
     } catch (submissionError) {
-      setError(getApiErrorMessage(submissionError, "Unable to create your account."));
+      setError(
+        getApiErrorMessage(
+          submissionError,
+          "We couldn't create your account yet. Review your details and try again.",
+        ),
+      );
     } finally {
       setSubmitting(false);
     }
@@ -47,7 +52,7 @@ export function RegisterPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-ink-900">Create account</h1>
         <p className="mt-2 text-sm text-ink-700">
-          Sign up as a student to browse campus clubs and events.
+          Create a student account to browse campus clubs, discover events, and RSVP.
         </p>
       </div>
 
