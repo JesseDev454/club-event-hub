@@ -30,3 +30,18 @@ export function formatTimeRange(startTime: string, endTime?: string | null): str
 
   return `${start} - ${normalizeTime(endTime)}`;
 }
+
+export function formatLongDate(dateString: string): string {
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "long",
+  }).format(new Date(`${dateString}T00:00:00`));
+}
+
+export function getInitials(value: string): string {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}

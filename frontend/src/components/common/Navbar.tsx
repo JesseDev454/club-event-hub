@@ -1,92 +1,110 @@
 import { Link, NavLink } from "react-router-dom";
 
-import { cn } from "../../lib/utils";
+import { getInitials } from "../../lib/utils";
 import { useAuth } from "../../state/AuthContext";
+import { Button } from "../ui/Button";
+import { MaterialIcon } from "./MaterialIcon";
 import { PageContainer } from "./PageContainer";
 
 const publicLinks = [
-  { to: "/", label: "Home" },
-  { to: "/clubs", label: "Clubs" },
   { to: "/events", label: "Events" },
+  { to: "/clubs", label: "Clubs" },
 ];
 
 export function Navbar() {
   const { isAuthenticated, loading, logout, user } = useAuth();
-
-  const linkButtonClassName =
-    "inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+  const userInitials = getInitials(user?.name ?? "NC");
 
   return (
-    <header className="sticky top-0 z-20 border-b border-white/60 bg-white/90 backdrop-blur">
-      <PageContainer className="flex flex-wrap items-center justify-between gap-3 py-3 sm:min-h-16 sm:py-0">
-        <Link className="text-base font-bold tracking-tight text-ink-900 sm:text-lg" to="/">
-          Club & Event Hub
-        </Link>
+    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
+      <PageContainer className="flex flex-wrap items-center justify-between gap-4 py-4">
+        <div className="flex items-center gap-8">
+          <Link className="font-headline text-2xl font-bold tracking-tight text-primary" to="/">
+            NileConnect
+          </Link>
 
-        <nav className="order-3 flex w-full flex-wrap items-center gap-2 text-sm text-ink-700 sm:order-2 sm:w-auto">
-          {publicLinks.map((link) => (
-            <NavLink
-              key={link.to}
-              className={({ isActive }) =>
-                isActive
-                  ? "rounded-xl bg-brand-50 px-3 py-2 font-medium text-brand-700"
-                  : "rounded-xl px-3 py-2 hover:bg-ink-100"
-              }
-              to={link.to}
-            >
-              {link.label}
-            </NavLink>
-          ))}
+          <nav className="hidden items-center gap-6 md:flex">
+            {publicLinks.map((link) => (
+              <NavLink
+                key={link.to}
+                className={({ isActive }) =>
+                  isActive
+                    ? "border-b-2 border-emerald-600 pb-1 text-sm font-semibold text-primary"
+                    : "text-sm font-medium text-slate-500 transition hover:text-primary"
+                }
+                to={link.to}
+              >
+                {link.label}
+              </NavLink>
+            ))}
 
-          {user?.role === "club_admin" ? (
-            <NavLink
-              className={({ isActive }) =>
-                isActive
-                  ? "rounded-xl bg-brand-50 px-3 py-2 font-medium text-brand-700"
-                  : "rounded-xl px-3 py-2 hover:bg-ink-100"
-              }
-              to="/admin/events"
-            >
-              Admin
-            </NavLink>
+            {user?.role === "club_admin" ? (
+              <NavLink
+                className={({ isActive }) =>
+                  isActive
+                    ? "border-b-2 border-emerald-600 pb-1 text-sm font-semibold text-primary"
+                    : "text-sm font-medium text-slate-500 transition hover:text-primary"
+                }
+                to="/admin/events"
+              >
+                Admin
+              </NavLink>
+            ) : null}
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {!loading ? (
+            <div className="hidden items-center gap-2 rounded-full bg-surface-container-low px-4 py-2 lg:flex">
+              <MaterialIcon className="text-sm text-outline" name="search" />
+              <span className="text-sm text-outline">Search clubs or events...</span>
+            </div>
           ) : null}
-        </nav>
 
-        <div className="flex items-center gap-2">
           {loading ? (
-            <span className="text-sm text-ink-700">Loading...</span>
+            <span className="text-sm text-on-surface-variant">Loading...</span>
           ) : isAuthenticated ? (
             <>
-              <span className="hidden text-sm text-ink-700 lg:inline">
-                {user?.name ?? "Signed in"}
-              </span>
+              {user?.role === "club_admin" ? (
+                <Link to="/admin/events/new">
+                  <Button className="hidden rounded-full bg-primary px-5 text-white hover:bg-primary-container md:inline-flex">
+                    <MaterialIcon className="mr-2 text-base" name="add_circle" />
+                    Create Event
+                  </Button>
+                </Link>
+              ) : null}
+
               <button
-                className={cn(
-                  linkButtonClassName,
-                  "bg-white text-ink-900 ring-1 ring-ink-100 hover:bg-ink-50",
-                )}
+                className="hidden rounded-full border border-outline-variant px-4 py-2 text-sm font-semibold text-primary transition hover:bg-surface-container-low md:inline-flex"
                 onClick={logout}
                 type="button"
               >
                 Logout
               </button>
+
+              <div className="flex items-center gap-3 border-l border-outline-variant/40 pl-3">
+                <button
+                  className="rounded-full p-2 text-on-surface-variant transition hover:bg-surface-container-low"
+                  type="button"
+                >
+                  <MaterialIcon name="notifications" />
+                </button>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
+                  {userInitials}
+                </div>
+              </div>
             </>
           ) : (
             <>
-              <Link
-                className={cn(
-                  linkButtonClassName,
-                  "hidden bg-white text-ink-900 ring-1 ring-ink-100 hover:bg-ink-50 sm:inline-flex",
-                )}
-                to="/login"
-              >
-                Sign in
+              <Link className="hidden md:inline-flex" to="/login">
+                <Button className="rounded-full border border-outline-variant bg-white px-5 text-primary hover:bg-surface-container-low">
+                  Sign in
+                </Button>
               </Link>
-              <Link
-                className={cn(linkButtonClassName, "bg-brand-600 text-white hover:bg-brand-700")}
-                to="/register"
-              >
-                Create account
+              <Link to="/register">
+                <Button className="rounded-full bg-primary px-5 text-white hover:bg-primary-container">
+                  Create account
+                </Button>
               </Link>
             </>
           )}

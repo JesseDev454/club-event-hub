@@ -54,12 +54,7 @@ export function AdminEditEventPage() {
       } catch (loadError) {
         if (isMounted) {
           setLoadFailed(true);
-          setError(
-            getApiErrorMessage(
-              loadError,
-              "We couldn't load this event for editing right now.",
-            ),
-          );
+          setError(getApiErrorMessage(loadError, "We couldn't load this event for editing right now."));
         }
       } finally {
         if (isMounted) {
@@ -108,53 +103,53 @@ export function AdminEditEventPage() {
     }
   };
 
-  return (
-    <section className="space-y-8">
-      {loading ? <LoadingState label="Loading event for editing..." /> : null}
+  if (loading) {
+    return <LoadingState label="Loading event for editing..." />;
+  }
 
-      {!loading && !id ? (
+  if (!id) {
+    return (
+      <EmptyState
+        description="The event id is missing from this route."
+        title="Cannot edit event"
+      />
+    );
+  }
+
+  if (loadFailed) {
+    return (
+      <div className="space-y-6">
+        <ErrorMessage message={error} />
         <EmptyState
-          description="The event id is missing from this route."
+          description="This event could not be loaded for editing. It may no longer exist, or your account may not have access to manage it."
           title="Cannot edit event"
         />
-      ) : null}
+      </div>
+    );
+  }
 
-      {!loading && id && loadFailed ? (
-        <>
-          <ErrorMessage message={error} />
-          <EmptyState
-            description="This event could not be loaded for editing. It may no longer exist, or your account may not have access to manage it."
-            title="Cannot edit event"
-          />
-        </>
-      ) : null}
+  return (
+    <section className="space-y-8">
+      <section className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl">
+          <h1 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">
+            Edit Event Details
+          </h1>
+          <p className="mt-4 text-base leading-7 text-on-surface-variant">
+            Update the event information students see on the public event page while preserving the
+            same route, payload shape, and backend contract.
+          </p>
+        </div>
+      </section>
 
-      {!loading && id && !loadFailed ? (
-        <>
-          <section className="rounded-[1.75rem] border border-white/70 bg-white p-6 shadow-card sm:p-8">
-            <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
-                Club admin
-              </p>
-              <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-                Edit event details
-              </h1>
-              <p className="mt-3 text-sm leading-6 text-ink-700 sm:text-base">
-                Update the event information students see on the public event page.
-              </p>
-            </div>
-          </section>
-
-          <EventForm
-            error={error}
-            formData={formData}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            submitLabel="Save changes"
-            submitting={submitting}
-          />
-        </>
-      ) : null}
+      <EventForm
+        error={error}
+        formData={formData}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
+        submitLabel="Save Changes"
+        submitting={submitting}
+      />
     </section>
   );
 }

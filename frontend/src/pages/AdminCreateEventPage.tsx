@@ -49,16 +49,14 @@ export function AdminCreateEventPage() {
 
   return (
     <section className="space-y-8">
-      <section className="rounded-[1.75rem] border border-white/70 bg-white p-6 shadow-card sm:p-8">
+      <section className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
-            Club admin
-          </p>
-          <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-            Create a new event
+          <h1 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">
+            Create a New Campus Event
           </h1>
-          <p className="mt-3 text-sm leading-6 text-ink-700 sm:text-base">
-            Add the details students need to discover, understand, and attend your club event.
+          <p className="mt-4 text-base leading-7 text-on-surface-variant">
+            Design an engaging experience for the Nile University community. Fill in the details
+            below to publish your club&apos;s next milestone without changing the existing backend flow.
           </p>
         </div>
       </section>
@@ -68,7 +66,7 @@ export function AdminCreateEventPage() {
         formData={formData}
         onChange={handleChange}
         onSubmit={handleSubmit}
-        submitLabel="Create event"
+        submitLabel="Publish Event"
         submitting={submitting}
       />
     </section>

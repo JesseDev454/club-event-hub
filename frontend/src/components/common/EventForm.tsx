@@ -2,9 +2,8 @@ import { type FormEvent } from "react";
 
 import { formatTimeRange } from "../../lib/utils";
 import type { EventFormInput } from "../../types/domain";
-import { Button } from "../ui/Button";
 import { ErrorMessage } from "../ui/ErrorMessage";
-import { Input } from "../ui/Input";
+import { MaterialIcon } from "./MaterialIcon";
 
 type EventFormProps = {
   formData: EventFormInput;
@@ -14,6 +13,16 @@ type EventFormProps = {
   onChange: (field: keyof EventFormInput, value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void | Promise<void>;
 };
+
+const categoryOptions = ["Technology", "Career", "Social", "Sports", "Arts", "Academic"];
+
+function FieldLabel({ children }: { children: string }) {
+  return (
+    <label className="block text-xs font-bold uppercase tracking-[0.18em] text-outline">
+      {children}
+    </label>
+  );
+}
 
 export function EventForm({
   formData,
@@ -26,168 +35,196 @@ export function EventForm({
   const hasSchedulePreview = Boolean(formData.eventDate || formData.startTime || formData.venue);
 
   return (
-    <form
-      className="space-y-6 rounded-[1.75rem] border border-white/70 bg-white p-6 shadow-card sm:p-8"
-      onSubmit={onSubmit}
-    >
-      <section className="space-y-5">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
-            Event basics
-          </p>
-          <p className="mt-2 text-sm leading-6 text-ink-700">
-            Add the core details students need first, then set the date, time, and location below.
-          </p>
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-ink-900" htmlFor="title">
-            Title
-          </label>
-          <Input
-            id="title"
-            onChange={(event) => onChange("title", event.target.value)}
-            placeholder="Campus Builders Meetup"
-            required
-            value={formData.title}
-          />
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-ink-900" htmlFor="category">
-              Category
-            </label>
-            <Input
-              id="category"
-              onChange={(event) => onChange("category", event.target.value)}
-              placeholder="Technology"
-              required
-              value={formData.category}
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-ink-900" htmlFor="venue">
-              Venue
-            </label>
-            <Input
-              id="venue"
-              onChange={(event) => onChange("venue", event.target.value)}
-              placeholder="Innovation Lab"
-              required
-              value={formData.venue}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-ink-900" htmlFor="description">
-            Description
-          </label>
-          <textarea
-            className="min-h-36 w-full rounded-xl border border-ink-100 bg-white px-3 py-2.5 text-sm leading-6 text-ink-900 shadow-sm outline-none transition placeholder:text-ink-700/60 focus:border-brand-500 focus:ring-2 focus:ring-brand-100"
-            id="description"
-            onChange={(event) => onChange("description", event.target.value)}
-            placeholder="Describe the event clearly for students."
-            required
-            value={formData.description}
-          />
-        </div>
-      </section>
-
-      <section className="grid gap-6 rounded-2xl border border-ink-100 bg-ink-50/70 p-5 lg:grid-cols-[1.25fr_0.8fr]">
-        <div className="space-y-5">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
-              Schedule and location
-            </p>
-            <p className="mt-2 text-sm leading-6 text-ink-700">
-              Make the timing easy to understand so students can decide quickly whether to attend.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-ink-900" htmlFor="eventDate">
-                Event date
-              </label>
-              <Input
-                id="eventDate"
-                onChange={(event) => onChange("eventDate", event.target.value)}
-                required
-                type="date"
-                value={formData.eventDate}
-              />
+    <form className="space-y-8" onSubmit={onSubmit}>
+      <div className="grid gap-8 lg:grid-cols-[1.35fr_0.85fr]">
+        <div className="space-y-8">
+          <section className="rounded-[1.75rem] bg-white p-8 shadow-soft">
+            <div className="mb-8 flex items-center gap-3">
+              <MaterialIcon className="text-primary" name="info" />
+              <h2 className="font-headline text-xl font-bold text-on-surface">Core Details</h2>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-ink-900" htmlFor="startTime">
-                Start time
-              </label>
-              <Input
-                id="startTime"
-                onChange={(event) => onChange("startTime", event.target.value)}
-                required
-                type="time"
-                value={formData.startTime}
-              />
-            </div>
-          </div>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <FieldLabel>Event Title</FieldLabel>
+                <input
+                  className="w-full rounded-t-xl border-0 bg-surface-container-low px-4 py-3 text-on-surface outline-none transition focus:border-b-2 focus:border-primary"
+                  onChange={(event) => onChange("title", event.target.value)}
+                  placeholder="e.g. Annual Tech Symposium 2026"
+                  required
+                  value={formData.title}
+                />
+                <p className="text-xs italic text-outline">Make it catchy and descriptive.</p>
+              </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-ink-900" htmlFor="endTime">
-                End time
-              </label>
-              <Input
-                id="endTime"
-                onChange={(event) => onChange("endTime", event.target.value)}
-                type="time"
-                value={formData.endTime}
-              />
-            </div>
-          </div>
-        </div>
+              <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <FieldLabel>Category</FieldLabel>
+                  <select
+                    className="w-full rounded-t-xl border-0 bg-surface-container-low px-4 py-3 text-on-surface outline-none transition focus:border-b-2 focus:border-primary"
+                    onChange={(event) => onChange("category", event.target.value)}
+                    required
+                    value={formData.category}
+                  >
+                    <option value="">Select a category</option>
+                    {categoryOptions.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-        <aside className="rounded-2xl border border-white/80 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-700">
-            Preview
-          </p>
-          {hasSchedulePreview ? (
-            <div className="mt-4 space-y-3 text-sm text-ink-700">
-              <p>
-                <span className="font-medium text-ink-900">Date:</span>{" "}
-                {formData.eventDate || "Choose a date"}
+                <div className="space-y-2">
+                  <FieldLabel>Venue</FieldLabel>
+                  <input
+                    className="w-full rounded-t-xl border-0 bg-surface-container-low px-4 py-3 text-on-surface outline-none transition focus:border-b-2 focus:border-primary"
+                    onChange={(event) => onChange("venue", event.target.value)}
+                    placeholder="e.g. Grand Auditorium"
+                    required
+                    value={formData.venue}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <FieldLabel>Overview / Description</FieldLabel>
+                <textarea
+                  className="min-h-48 w-full resize-none rounded-t-xl border-0 bg-surface-container-low px-4 py-3 text-on-surface outline-none transition focus:border-b-2 focus:border-primary"
+                  onChange={(event) => onChange("description", event.target.value)}
+                  placeholder="Describe the event purpose, what attendees can expect, and why they should join."
+                  required
+                  value={formData.description}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[1.75rem] bg-white p-8 shadow-soft">
+            <div className="mb-8 flex items-center gap-3">
+              <MaterialIcon className="text-primary" name="star" />
+              <h2 className="font-headline text-xl font-bold text-on-surface">Event Snapshot</h2>
+            </div>
+
+            <div className="rounded-[1.5rem] bg-surface-container-low p-6">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-outline">Preview</p>
+              <h3 className="mt-4 font-headline text-2xl font-bold text-primary">
+                {formData.title || "Your event title"}
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-on-surface-variant">
+                {formData.description || "Your event description will appear here as you type."}
               </p>
-              <p>
-                <span className="font-medium text-ink-900">Time:</span>{" "}
-                {formData.startTime
-                  ? formatTimeRange(formData.startTime, formData.endTime || null)
-                  : "Choose a start time"}
-              </p>
-              <p>
-                <span className="font-medium text-ink-900">Venue:</span>{" "}
-                {formData.venue || "Add a venue"}
-              </p>
+              <div className="mt-5 flex flex-wrap gap-3 text-sm text-on-surface-variant">
+                <span className="rounded-full bg-white px-4 py-2">
+                  {formData.category || "Category"}
+                </span>
+                <span className="rounded-full bg-white px-4 py-2">
+                  {hasSchedulePreview
+                    ? `${formData.eventDate || "Date"} • ${
+                        formData.startTime
+                          ? formatTimeRange(formData.startTime, formData.endTime || null)
+                          : "Time"
+                      }`
+                    : "Schedule preview"}
+                </span>
+                <span className="rounded-full bg-white px-4 py-2">
+                  {formData.venue || "Venue"}
+                </span>
+              </div>
             </div>
-          ) : (
-            <p className="mt-4 text-sm leading-6 text-ink-700">
-              Date, time, and location will appear here as you fill out the form.
-            </p>
-          )}
-        </aside>
-      </section>
+          </section>
+        </div>
+
+        <div className="space-y-8">
+          <section className="rounded-[1.75rem] bg-surface-container-low p-8">
+            <div className="mb-6 flex items-center gap-3">
+              <MaterialIcon className="text-primary" name="calendar_today" />
+              <h2 className="font-headline text-lg font-bold text-on-surface">Logistics</h2>
+            </div>
+
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <FieldLabel>Date</FieldLabel>
+                <input
+                  className="w-full rounded-xl border-0 bg-white px-4 py-3 text-on-surface outline-none transition focus:ring-2 focus:ring-primary/15"
+                  onChange={(event) => onChange("eventDate", event.target.value)}
+                  required
+                  type="date"
+                  value={formData.eventDate}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <FieldLabel>Start Time</FieldLabel>
+                  <input
+                    className="w-full rounded-xl border-0 bg-white px-4 py-3 text-on-surface outline-none transition focus:ring-2 focus:ring-primary/15"
+                    onChange={(event) => onChange("startTime", event.target.value)}
+                    required
+                    type="time"
+                    value={formData.startTime}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <FieldLabel>End Time</FieldLabel>
+                  <input
+                    className="w-full rounded-xl border-0 bg-white px-4 py-3 text-on-surface outline-none transition focus:ring-2 focus:ring-primary/15"
+                    onChange={(event) => onChange("endTime", event.target.value)}
+                    type="time"
+                    value={formData.endTime}
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[1.75rem] bg-white p-8 shadow-soft">
+            <div className="mb-6 flex items-center gap-3">
+              <MaterialIcon className="text-primary" name="image" />
+              <h2 className="font-headline text-lg font-bold text-on-surface">Event Poster</h2>
+            </div>
+
+            <div className="relative flex aspect-[4/3] w-full flex-col items-center justify-center overflow-hidden rounded-[1.5rem] border-2 border-dashed border-outline-variant/40 bg-surface-container-low p-6 text-center">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(0,30,64,0.08),transparent_55%)]" />
+              <div className="relative z-10">
+                <MaterialIcon className="mb-3 text-4xl text-outline" name="upload_file" />
+                <p className="text-sm font-medium text-on-surface">Poster upload coming soon</p>
+                <p className="mt-1 text-xs text-outline">
+                  The current MVP preserves your real event publishing flow without adding a new
+                  media endpoint.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <div className="rounded-[1.5rem] border-l-4 border-tertiary bg-tertiary-fixed p-6">
+            <div className="flex items-start gap-3">
+              <MaterialIcon className="text-tertiary" name="lightbulb" />
+              <div>
+                <p className="font-headline text-sm font-bold text-tertiary">Pro Tip</p>
+                <p className="mt-1 text-xs leading-6 text-on-surface-variant">
+                  Clear titles, a concise description, and an exact venue make it easier for
+                  students to trust the listing and RSVP quickly.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <ErrorMessage message={error} />
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-ink-700">
+      <div className="flex flex-col gap-4 rounded-[1.75rem] bg-white p-6 shadow-soft sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-on-surface-variant">
           Double-check the event details before publishing changes.
         </p>
-        <Button className="w-full sm:w-auto" disabled={submitting} type="submit">
+        <button
+          className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-3 font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
+          disabled={submitting}
+          type="submit"
+        >
           {submitting ? "Saving..." : submitLabel}
-        </Button>
+        </button>
       </div>
     </form>
   );
