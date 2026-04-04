@@ -70,15 +70,20 @@ export function LoginPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-ink-900">Welcome back</h1>
-        <p className="mt-2 text-sm text-ink-700">
-          Sign in to RSVP to events or manage your club's event listings.
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
+          Sign in
+        </p>
+        <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
+          Welcome back
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-ink-700 sm:text-base">
+          Sign in to RSVP to events or manage your club event listings.
         </p>
       </div>
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-ink-900" htmlFor="email">
             Email address
@@ -112,13 +117,13 @@ export function LoginPage() {
         <ErrorMessage message={error} />
 
         <Button className="w-full" disabled={submitting} type="submit">
-          {submitting ? "Signing in..." : "Login"}
+          {submitting ? "Signing in..." : "Sign in"}
         </Button>
 
         <p className="text-center text-sm text-ink-700">
           Need an account?{" "}
           <Link className="font-medium text-brand-700 hover:text-brand-600" to="/register">
-            Register
+            Create one
           </Link>
         </p>
       </form>

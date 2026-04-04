@@ -48,15 +48,20 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-ink-900">Create account</h1>
-        <p className="mt-2 text-sm text-ink-700">
-          Create a student account to browse campus clubs, discover events, and RSVP.
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
+          Student registration
+        </p>
+        <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
+          Create your account
+        </h1>
+        <p className="mt-3 text-sm leading-6 text-ink-700 sm:text-base">
+          Join the platform to discover campus clubs, explore events, and RSVP in seconds.
         </p>
       </div>
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-5" onSubmit={handleSubmit}>
         <div className="space-y-1.5">
           <label className="text-sm font-medium text-ink-900" htmlFor="name">
             Full name
@@ -104,13 +109,13 @@ export function RegisterPage() {
         <ErrorMessage message={error} />
 
         <Button className="w-full" disabled={submitting} type="submit">
-          {submitting ? "Creating account..." : "Register"}
+          {submitting ? "Creating account..." : "Create account"}
         </Button>
 
         <p className="text-center text-sm text-ink-700">
           Already have an account?{" "}
           <Link className="font-medium text-brand-700 hover:text-brand-600" to="/login">
-            Login
+            Sign in
           </Link>
         </p>
       </form>

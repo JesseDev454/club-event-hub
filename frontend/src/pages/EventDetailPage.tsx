@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import { getApiErrorMessage } from "../api/client";
 import { eventsApi } from "../api/eventsApi";
@@ -12,6 +11,20 @@ import { LoadingState } from "../components/ui/LoadingState";
 import { formatDate, formatTimeRange } from "../lib/utils";
 import { useAuth } from "../state/AuthContext";
 import type { EventDetail } from "../types/domain";
+
+type EventMetaItemProps = {
+  label: string;
+  value: React.ReactNode;
+};
+
+function EventMetaItem({ label, value }: EventMetaItemProps) {
+  return (
+    <article className="rounded-2xl border border-white/70 bg-white p-5 shadow-card">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-700">{label}</p>
+      <div className="mt-3 text-base font-semibold text-ink-900">{value}</div>
+    </article>
+  );
+}
 
 export function EventDetailPage() {
   const { id } = useParams();
@@ -35,13 +48,16 @@ export function EventDetailPage() {
 
       try {
         const data = await eventsApi.getEventById(id);
+
         if (isMounted) {
           setEvent(data);
           setNeedsAuthSync(authLoading);
         }
       } catch (loadError) {
         if (isMounted) {
-          setError(getApiErrorMessage(loadError, "Unable to load this event right now."));
+          setError(
+            getApiErrorMessage(loadError, "We couldn't load this event right now."),
+          );
         }
       } finally {
         if (isMounted) {
@@ -115,7 +131,9 @@ export function EventDetailPage() {
           : current,
       );
     } catch (rsvpError) {
-      setActionError(getApiErrorMessage(rsvpError, "Unable to RSVP right now."));
+      setActionError(
+        getApiErrorMessage(rsvpError, "We couldn't save your RSVP right now."),
+      );
     } finally {
       setActionLoading(null);
     }
@@ -141,24 +159,30 @@ export function EventDetailPage() {
           : current,
       );
     } catch (rsvpError) {
-      setActionError(getApiErrorMessage(rsvpError, "Unable to cancel your RSVP right now."));
+      setActionError(
+        getApiErrorMessage(rsvpError, "We couldn't cancel your RSVP right now."),
+      );
     } finally {
       setActionLoading(null);
     }
   };
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
       {loading ? <LoadingState label="Loading event details..." /> : null}
 
       {!loading && error ? (
-        <EmptyState
-          description="This event may have been removed, or the link may no longer be valid."
-          title="Event unavailable"
-        />
+        <>
+          <EmptyState
+            description="This event may have been removed, or the link may no longer be valid."
+            title="Event unavailable"
+          />
+          <ErrorMessage
+            className="max-w-2xl"
+            message={error}
+          />
+        </>
       ) : null}
-
-      {!loading && error ? <ErrorMessage className="max-w-2xl" message={error} /> : null}
 
       {!loading && !error && !event ? (
         <EmptyState
@@ -169,93 +193,205 @@ export function EventDetailPage() {
 
       {!loading && !error && event ? (
         <>
-          <div className="rounded-3xl border border-white/70 bg-white px-5 py-6 shadow-card sm:px-8 sm:py-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
-              {event.category}
-            </p>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-              {event.title}
-            </h1>
-            <p className="mt-4 max-w-3xl text-base leading-7 text-ink-700">{event.description}</p>
+          <section className="relative overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-br from-brand-50 via-white to-ink-50 px-6 py-8 shadow-card sm:px-8 sm:py-10 lg:px-10">
+            <div className="absolute inset-y-0 right-0 hidden w-1/2 bg-[radial-gradient(circle_at_top_right,rgba(31,143,85,0.16),transparent_55%)] lg:block" />
 
-            <div className="mt-6 grid gap-4 text-sm text-ink-700 sm:grid-cols-2">
-              <p>
-                <span className="font-medium text-ink-900">Date:</span>{" "}
-                {formatDate(event.eventDate)}
-              </p>
-              <p>
-                <span className="font-medium text-ink-900">Time:</span>{" "}
-                {formatTimeRange(event.startTime, event.endTime)}
-              </p>
-              <p>
-                <span className="font-medium text-ink-900">Venue:</span> {event.venue}
-              </p>
-              <p>
-                <span className="font-medium text-ink-900">Hosting club:</span>{" "}
-                <Link
-                  className="text-brand-700 transition hover:text-brand-600"
-                  to={`/clubs/${event.club.id}`}
-                >
-                  {event.club.name}
-                </Link>
-              </p>
-            </div>
-          </div>
+            <div className="relative flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-3xl">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="inline-flex items-center rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-brand-700">
+                    {event.category}
+                  </span>
+                  <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-ink-700 ring-1 ring-white/80">
+                    Event details
+                  </span>
+                </div>
 
-          <div className="rounded-2xl border border-dashed border-ink-100 bg-white px-5 py-6 shadow-card sm:px-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold text-ink-900">RSVP</h2>
-                <p className="mt-2 text-sm text-ink-700">
-                  Current RSVPs:{" "}
-                  <span className="font-semibold text-ink-900">{event.rsvpCount}</span>
+                <h1 className="mt-5 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl lg:text-5xl">
+                  {event.title}
+                </h1>
+
+                <p className="mt-4 text-base leading-7 text-ink-700 sm:text-lg">
+                  Hosted by{" "}
+                  <Link
+                    className="font-semibold text-brand-700 transition hover:text-brand-600"
+                    to={`/clubs/${event.club.id}`}
+                  >
+                    {event.club.name}
+                  </Link>
                 </p>
-                {isGuest ? (
-                  <p className="mt-2 text-sm text-ink-700">
-                    <Link className="font-semibold text-brand-700 hover:text-brand-600" to="/login">
-                      Log in
-                    </Link>{" "}
-                    to RSVP to this event.
-                  </p>
-                ) : null}
-                {isAdmin ? (
-                  <p className="mt-2 text-sm text-ink-700">
-                    Club admins can view RSVP counts here, but RSVP actions are student-only.
-                  </p>
-                ) : null}
-                {isStudent ? (
-                  <p className="mt-2 text-sm text-ink-700">
-                    {hasRsvped
-                      ? "You are marked as attending. If your plans change, you can cancel below."
-                      : "RSVP to let the hosting club know you plan to attend."}
-                  </p>
-                ) : null}
+
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-ink-700 sm:text-base">
+                  Explore the key event details below, then RSVP if you plan to attend.
+                </p>
               </div>
 
-              {isStudent ? (
-                <div className="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:items-start">
-                  {hasRsvped ? (
-                    <Button
-                      className="w-full sm:w-auto"
-                      disabled={actionLoading !== null}
-                      onClick={handleCancelRsvp}
-                      variant="secondary"
-                    >
-                      {actionLoading === "cancel" ? "Cancelling..." : "Cancel RSVP"}
-                    </Button>
-                  ) : (
-                    <Button className="w-full sm:w-auto" disabled={actionLoading !== null} onClick={handleRsvp}>
-                      {actionLoading === "rsvp" ? "Saving..." : "RSVP to event"}
-                    </Button>
-                  )}
+              <aside className="w-full max-w-sm rounded-[1.75rem] border border-white/80 bg-white/90 p-6 shadow-card backdrop-blur">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+                  Attendance interest
+                </p>
+                <p className="mt-3 text-4xl font-bold tracking-tight text-ink-900">
+                  {event.rsvpCount}
+                </p>
+                <p className="mt-2 text-sm text-ink-700">
+                  {event.rsvpCount === 1 ? "Student RSVP so far" : "Student RSVPs so far"}
+                </p>
+
+                <div className="mt-5 rounded-2xl bg-ink-50 px-4 py-4">
+                  <p className="text-sm font-semibold text-ink-900">Quick summary</p>
+                  <div className="mt-3 space-y-2 text-sm text-ink-700">
+                    <p>{formatDate(event.eventDate)}</p>
+                    <p>{formatTimeRange(event.startTime, event.endTime)}</p>
+                    <p>{event.venue}</p>
+                  </div>
                 </div>
-              ) : null}
+              </aside>
+            </div>
+          </section>
+
+          <section className="grid gap-6 lg:grid-cols-[1.35fr_0.95fr]">
+            <div className="space-y-6">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <EventMetaItem
+                  label="Date"
+                  value={formatDate(event.eventDate)}
+                />
+                <EventMetaItem
+                  label="Time"
+                  value={formatTimeRange(event.startTime, event.endTime)}
+                />
+                <EventMetaItem
+                  label="Venue"
+                  value={event.venue}
+                />
+                <EventMetaItem
+                  label="Hosting club"
+                  value={
+                    <Link
+                      className="text-brand-700 transition hover:text-brand-600"
+                      to={`/clubs/${event.club.id}`}
+                    >
+                      {event.club.name}
+                    </Link>
+                  }
+                />
+              </div>
+
+              <section className="rounded-[1.75rem] border border-white/70 bg-white px-6 py-7 shadow-card sm:px-8">
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
+                  About this event
+                </p>
+                <h2 className="mt-3 text-2xl font-bold tracking-tight text-ink-900">
+                  Event description
+                </h2>
+                <div className="mt-5 max-w-3xl text-sm leading-7 text-ink-700 sm:text-base">
+                  <p>{event.description}</p>
+                </div>
+              </section>
             </div>
 
-            <div className="mt-4">
-              <ErrorMessage message={actionError} />
-            </div>
-          </div>
+            <section className="rounded-[1.75rem] border border-white/70 bg-white px-6 py-7 shadow-card sm:px-7">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
+                RSVP
+              </p>
+              <h2 className="mt-3 text-2xl font-bold tracking-tight text-ink-900">
+                Attendance status
+              </h2>
+              <p className="mt-3 text-sm leading-6 text-ink-700">
+                {isGuest
+                  ? "Log in with a student account to RSVP and let the hosting club know you plan to attend."
+                  : isAdmin
+                    ? "Club admins can review attendance interest here, but RSVP actions remain student-only in the MVP."
+                    : hasRsvped
+                      ? "You're attending this event. If your plans change, you can cancel your RSVP below."
+                      : "Ready to join? RSVP now so the hosting club can see your interest."}
+              </p>
+
+              <div
+                className={`mt-6 rounded-2xl px-5 py-5 ${
+                  isStudent && hasRsvped
+                    ? "border border-brand-100 bg-brand-50"
+                    : "border border-ink-100 bg-ink-50"
+                }`}
+              >
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-ink-700">
+                  Current status
+                </p>
+                <p className="mt-3 text-xl font-semibold text-ink-900">
+                  {isGuest
+                    ? "Viewing as guest"
+                    : isAdmin
+                      ? "Admin overview only"
+                      : hasRsvped
+                        ? "You're attending"
+                        : "Not RSVP'd yet"}
+                </p>
+                <p className="mt-2 text-sm text-ink-700">
+                  RSVP count: <span className="font-semibold text-ink-900">{event.rsvpCount}</span>
+                </p>
+              </div>
+
+              <div className="mt-6 space-y-4">
+                {isGuest ? (
+                  <div className="rounded-2xl border border-dashed border-ink-200 bg-white px-5 py-5">
+                    <p className="text-sm text-ink-700">
+                      Want to attend?{" "}
+                      <Link
+                        className="font-semibold text-brand-700 transition hover:text-brand-600"
+                        to="/login"
+                      >
+                        Log in
+                      </Link>{" "}
+                      to RSVP as a student.
+                    </p>
+                  </div>
+                ) : null}
+
+                {isStudent ? (
+                  <div className="space-y-4">
+                    {hasRsvped ? (
+                      <>
+                        <div className="rounded-2xl border border-brand-100 bg-brand-50 px-5 py-5">
+                          <p className="text-sm font-semibold text-brand-700">You're attending</p>
+                          <p className="mt-2 text-sm leading-6 text-ink-700">
+                            Your RSVP is saved for this event. You can still cancel if your plans
+                            change.
+                          </p>
+                        </div>
+                        <Button
+                          className="w-full"
+                          disabled={actionLoading !== null}
+                          onClick={handleCancelRsvp}
+                          variant="secondary"
+                        >
+                          {actionLoading === "cancel" ? "Cancelling..." : "Cancel RSVP"}
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        className="w-full"
+                        disabled={actionLoading !== null}
+                        onClick={handleRsvp}
+                      >
+                        {actionLoading === "rsvp" ? "Saving your RSVP..." : "RSVP to this event"}
+                      </Button>
+                    )}
+                  </div>
+                ) : null}
+
+                {isAdmin ? (
+                  <div className="rounded-2xl border border-dashed border-ink-200 bg-white px-5 py-5">
+                    <p className="text-sm leading-6 text-ink-700">
+                      Students use RSVP to express attendance interest. Admin accounts do not RSVP
+                      through the MVP.
+                    </p>
+                  </div>
+                ) : null}
+
+                <ErrorMessage message={actionError} />
+              </div>
+            </section>
+          </section>
         </>
       ) : null}
     </section>

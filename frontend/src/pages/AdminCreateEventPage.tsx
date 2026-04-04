@@ -36,20 +36,32 @@ export function AdminCreateEventPage() {
       await eventsApi.createEvent(formData);
       navigate("/admin/events", { replace: true });
     } catch (submissionError) {
-      setError(getApiErrorMessage(submissionError, "Unable to create this event right now."));
+      setError(
+        getApiErrorMessage(
+          submissionError,
+          "We couldn't create this event right now. Please review the details and try again.",
+        ),
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <section className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-ink-900">Create event</h1>
-        <p className="mt-2 text-sm text-ink-700">
-          Publish a new event for your club. Ownership is handled automatically.
-        </p>
-      </div>
+    <section className="space-y-8">
+      <section className="rounded-[1.75rem] border border-white/70 bg-white p-6 shadow-card sm:p-8">
+        <div className="max-w-2xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
+            Club admin
+          </p>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
+            Create a new event
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-ink-700 sm:text-base">
+            Add the details students need to discover, understand, and attend your club event.
+          </p>
+        </div>
+      </section>
 
       <EventForm
         error={error}

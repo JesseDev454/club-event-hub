@@ -14,23 +14,23 @@ export function Navbar() {
   const { isAuthenticated, loading, logout, user } = useAuth();
 
   const linkButtonClassName =
-    "inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
+    "inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2";
 
   return (
-    <header className="sticky top-0 z-10 border-b border-white/60 bg-white/85 backdrop-blur">
-      <PageContainer className="flex min-h-16 items-center justify-between gap-4">
-        <Link className="text-base font-bold tracking-tight text-ink-900" to="/">
+    <header className="sticky top-0 z-20 border-b border-white/60 bg-white/90 backdrop-blur">
+      <PageContainer className="flex flex-wrap items-center justify-between gap-3 py-3 sm:min-h-16 sm:py-0">
+        <Link className="text-base font-bold tracking-tight text-ink-900 sm:text-lg" to="/">
           Club & Event Hub
         </Link>
 
-        <nav className="flex items-center gap-2 text-sm text-ink-700">
+        <nav className="order-3 flex w-full flex-wrap items-center gap-2 text-sm text-ink-700 sm:order-2 sm:w-auto">
           {publicLinks.map((link) => (
             <NavLink
               key={link.to}
               className={({ isActive }) =>
                 isActive
-                  ? "rounded-lg bg-brand-50 px-3 py-2 font-medium text-brand-700"
-                  : "rounded-lg px-3 py-2 hover:bg-ink-100"
+                  ? "rounded-xl bg-brand-50 px-3 py-2 font-medium text-brand-700"
+                  : "rounded-xl px-3 py-2 hover:bg-ink-100"
               }
               to={link.to}
             >
@@ -42,8 +42,8 @@ export function Navbar() {
             <NavLink
               className={({ isActive }) =>
                 isActive
-                  ? "rounded-lg bg-brand-50 px-3 py-2 font-medium text-brand-700"
-                  : "rounded-lg px-3 py-2 hover:bg-ink-100"
+                  ? "rounded-xl bg-brand-50 px-3 py-2 font-medium text-brand-700"
+                  : "rounded-xl px-3 py-2 hover:bg-ink-100"
               }
               to="/admin/events"
             >
@@ -57,7 +57,7 @@ export function Navbar() {
             <span className="text-sm text-ink-700">Loading...</span>
           ) : isAuthenticated ? (
             <>
-              <span className="hidden text-sm text-ink-700 sm:inline">
+              <span className="hidden text-sm text-ink-700 lg:inline">
                 {user?.name ?? "Signed in"}
               </span>
               <button
@@ -80,13 +80,13 @@ export function Navbar() {
                 )}
                 to="/login"
               >
-                Login
+                Sign in
               </Link>
               <Link
                 className={cn(linkButtonClassName, "bg-brand-600 text-white hover:bg-brand-700")}
                 to="/register"
               >
-                Register
+                Create account
               </Link>
             </>
           )}

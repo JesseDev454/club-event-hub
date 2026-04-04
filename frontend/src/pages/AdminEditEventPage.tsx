@@ -54,7 +54,12 @@ export function AdminEditEventPage() {
       } catch (loadError) {
         if (isMounted) {
           setLoadFailed(true);
-          setError(getApiErrorMessage(loadError, "Unable to load this event right now."));
+          setError(
+            getApiErrorMessage(
+              loadError,
+              "We couldn't load this event for editing right now.",
+            ),
+          );
         }
       } finally {
         if (isMounted) {
@@ -92,14 +97,19 @@ export function AdminEditEventPage() {
       await eventsApi.updateEvent(id, formData);
       navigate("/admin/events", { replace: true });
     } catch (submissionError) {
-      setError(getApiErrorMessage(submissionError, "Unable to update this event right now."));
+      setError(
+        getApiErrorMessage(
+          submissionError,
+          "We couldn't save your changes right now. Please review the form and try again.",
+        ),
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-8">
       {loading ? <LoadingState label="Loading event for editing..." /> : null}
 
       {!loading && !id ? (
@@ -113,7 +123,7 @@ export function AdminEditEventPage() {
         <>
           <ErrorMessage message={error} />
           <EmptyState
-            description="This event could not be loaded for editing. It may not exist anymore, or you may not have access to manage it."
+            description="This event could not be loaded for editing. It may no longer exist, or your account may not have access to manage it."
             title="Cannot edit event"
           />
         </>
@@ -121,19 +131,26 @@ export function AdminEditEventPage() {
 
       {!loading && id && !loadFailed ? (
         <>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-ink-900">Edit event</h1>
-            <p className="mt-2 text-sm text-ink-700">
-              Update the details for this event. Ownership fields stay hidden.
-            </p>
-          </div>
+          <section className="rounded-[1.75rem] border border-white/70 bg-white p-6 shadow-card sm:p-8">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-600">
+                Club admin
+              </p>
+              <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
+                Edit event details
+              </h1>
+              <p className="mt-3 text-sm leading-6 text-ink-700 sm:text-base">
+                Update the event information students see on the public event page.
+              </p>
+            </div>
+          </section>
 
           <EventForm
             error={error}
             formData={formData}
             onChange={handleChange}
             onSubmit={handleSubmit}
-            submitLabel="Update event"
+            submitLabel="Save changes"
             submitting={submitting}
           />
         </>
