@@ -178,7 +178,10 @@ async function getEventDetail(
 
   let hasRsvped: boolean | null = null;
 
-  if (currentUser?.role === UserRole.STUDENT) {
+  if (
+    currentUser &&
+    (currentUser.role === UserRole.STUDENT || currentUser.role === UserRole.CLUB_ADMIN)
+  ) {
     const existingRsvp = await rsvpRepository.findOne({
       where: {
         eventId: event.id,

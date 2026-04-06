@@ -4,6 +4,7 @@ import { Navigate, useLocation, useNavigate, useParams } from "react-router-dom"
 import { clubsApi } from "../api/clubsApi";
 import { getApiErrorMessage } from "../api/client";
 import { ClubForm } from "../components/common/ClubForm";
+import { MaterialIcon } from "../components/common/MaterialIcon";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
@@ -149,23 +150,40 @@ export function EditClubProfilePage() {
   }
 
   return (
-    <section className="space-y-8">
-      <section className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
-          <h1 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">
-            Edit Club Profile
+    <section className="space-y-10">
+      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-3xl">
+          <span className="mb-2 block text-sm font-bold uppercase tracking-[0.2em] text-secondary">
+            My Club Workspace
+          </span>
+          <h1 className="font-headline text-5xl font-extrabold tracking-tight text-primary">
+            Shape Your Club Presence
           </h1>
-          <p className="mt-4 text-base leading-7 text-on-surface-variant">
-            Update the public identity of your club while preserving the ownership and admin rules
-            already enforced by the backend.
+          <p className="mt-4 text-lg leading-relaxed text-on-surface-variant">
+            Update the public identity of your club while keeping ownership and admin permissions scoped to your account.
           </p>
         </div>
-      </section>
+
+        <div className="rounded-xl bg-surface-container-low p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-fixed text-primary-container">
+              <MaterialIcon name="edit_note" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-primary">Public profile update</p>
+              <p className="mt-1 text-sm leading-6 text-on-surface-variant">
+                These changes go straight to the public club page students see.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <ClubForm
+        cancelHref={`/clubs/${managedClubId}`}
         error={error}
         formData={formData}
-        helperText="Changes update the public club profile and remain scoped to your owned club."
+        helperText="Saving updates the public club profile while preserving the current ownership rules enforced by the backend."
         onChange={handleChange}
         onSubmit={handleSubmit}
         submitLabel="Save Club Profile"

@@ -7,8 +7,8 @@ import { MaterialIcon } from "../components/common/MaterialIcon";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
-import { formatDate, formatTimeRange, getInitials } from "../lib/utils";
 import { getCategoryVisual } from "../lib/presentation";
+import { formatDate, formatTimeRange, getInitials } from "../lib/utils";
 import type { EventListItem } from "../types/domain";
 
 const ALL_CATEGORIES = "All Events";
@@ -91,81 +91,71 @@ export function EventsPage() {
   const totalRsvps = Object.values(rsvpCounts).reduce((sum, value) => sum + value, 0);
 
   return (
-    <section className="space-y-10">
-      <section className="relative overflow-hidden rounded-[2rem] bg-primary px-8 py-10 text-white shadow-soft md:px-12 md:py-14">
-        <div className="absolute inset-0 opacity-20">
-          <img
-            alt="Explore campus events"
-            className="h-full w-full object-cover"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuB47vYS6K3LOTDUW85J-5Js3CAsOBcGeOWSrsrHpfXLNyNQoeAEAmo5MsVaPs8krPQ6LzdHEXz9wZp5nRJIHFmZOvSNwfurrYE7ewLVzaMPYvEmKhbRiz0oG6Im6x_Wuv9CCdY2cxm5FYRsuibIvFdUe_zOoddCt4GHg7zOik7AC7X7PvyFbsrgQH63bIJ4HfijB8bDEdbpww9UAsvP8xjBvWkGlDFTtOltvDj2aOkOpxpL1uSWW1zsCKq-Tn7UJxujGk1A-3moITAP"
-          />
-        </div>
-        <div className="relative z-10 max-w-2xl">
-          <h1 className="font-headline text-4xl font-extrabold tracking-tight md:text-5xl">
-            Explore Campus Events
+    <section className="space-y-10 lg:space-y-14">
+      <section className="rounded-[2rem] bg-surface px-2 py-6 sm:px-0">
+        <div className="max-w-4xl">
+          <span className="mb-4 block text-sm font-bold uppercase tracking-[0.22em] text-secondary">
+            Campus Life
+          </span>
+          <h1 className="font-headline text-5xl font-extrabold tracking-tight text-primary md:text-7xl">
+            Discover What's Next
           </h1>
-          <p className="mt-4 text-lg leading-8 text-white/80">
-            Join the pulse of Nile University. From academic breakthroughs to social mixers, find
-            your next opportunity to connect and grow.
+          <p className="mt-6 max-w-2xl text-lg leading-8 text-on-surface-variant">
+            Your portal to everything happening across Nile University. From career-defining workshops to social nights and sports energy, find the events worth showing up for.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <span className="rounded-full border border-white/10 bg-secondary-container/20 px-4 py-2 text-sm font-medium text-secondary-fixed">
-              {events.length} event{events.length === 1 ? "" : "s"} published
+            <span className="rounded-full bg-primary-container px-4 py-2 text-sm font-semibold text-white">
+              {events.length} published event{events.length === 1 ? "" : "s"}
             </span>
-            <span className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-medium">
+            <span className="rounded-full bg-surface-container-low px-4 py-2 text-sm font-semibold text-on-surface">
               {totalRsvps} total RSVPs
             </span>
           </div>
         </div>
       </section>
 
+      <section className="sticky top-24 z-20 rounded-[1.75rem] bg-surface-container-lowest/90 p-6 shadow-soft backdrop-blur-xl">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
+            <label className="relative w-full xl:max-w-md">
+              <MaterialIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" name="search" />
+              <input
+                className="w-full rounded-xl bg-surface-container-low py-3 pl-12 pr-4 text-sm text-on-surface outline-none transition focus:ring-2 focus:ring-primary"
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search by title, club, or keyword..."
+                value={searchQuery}
+              />
+            </label>
+
+            <div className="flex flex-wrap gap-2">
+              {categoryOptions.map((category) => (
+                <button
+                  className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
+                    category === selectedCategory
+                      ? "bg-primary-container text-white"
+                      : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+                  }`}
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  type="button"
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {!loading && !error ? (
+            <p className="text-sm text-on-surface-variant">
+              Showing <span className="font-semibold text-primary">{filteredEvents.length}</span> event
+              {filteredEvents.length === 1 ? "" : "s"} matching your current view.
+            </p>
+          ) : null}
+        </div>
+      </section>
+
       {loading ? <LoadingState label="Loading events..." /> : null}
       <ErrorMessage message={error} />
-
-      {!loading && !error && events.length > 0 ? (
-        <section className="sticky top-24 z-20 rounded-[1.75rem] border border-white/70 bg-white/90 p-5 shadow-soft backdrop-blur">
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-              <div className="no-scrollbar flex gap-3 overflow-x-auto">
-                {categoryOptions.map((category) => (
-                  <button
-                    className={`rounded-full px-5 py-2 text-sm font-medium transition ${
-                      category === selectedCategory
-                        ? "bg-primary text-white"
-                        : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-highest"
-                    }`}
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    type="button"
-                  >
-                    {category}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex w-full items-center gap-3 xl:w-auto">
-                <label className="relative block w-full xl:w-80">
-                  <MaterialIcon
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-outline"
-                    name="search"
-                  />
-                  <input
-                    className="w-full rounded-2xl border border-outline-variant/40 bg-surface-container-low py-3 pl-11 pr-4 text-sm outline-none transition focus:border-primary"
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Search events, clubs, or topics..."
-                    value={searchQuery}
-                  />
-                </label>
-              </div>
-            </div>
-
-            <p className="text-sm text-on-surface-variant">
-              Showing <span className="font-semibold text-primary">{filteredEvents.length}</span>{" "}
-              event{filteredEvents.length === 1 ? "" : "s"} matching your current view.
-            </p>
-          </div>
-        </section>
-      ) : null}
 
       {!loading && !error && events.length === 0 ? (
         <EmptyState
@@ -182,58 +172,58 @@ export function EventsPage() {
       ) : null}
 
       {!loading && !error && filteredEvents.length > 0 ? (
-        <section className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
           {filteredEvents.map((event) => {
             const visual = getCategoryVisual(event.category);
 
             return (
               <article
-                className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-white shadow-soft transition duration-300 hover:-translate-y-1"
+                className="group flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-surface-container-lowest shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 key={event.id}
               >
-                <div className="relative h-52 overflow-hidden">
-                  <img alt={event.title} className="h-full w-full object-cover" src={visual.image} />
-                  <div className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] ${visual.pillClassName}`}>
-                    {event.category}
+                <div className="relative h-56 overflow-hidden">
+                  <img alt={event.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={visual.image} />
+                  <div className="absolute left-4 top-4">
+                    <span className={`rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] ${visual.pillClassName}`}>
+                      {event.category}
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex flex-1 flex-col p-6">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2 text-xs font-medium text-outline">
-                      <MaterialIcon className="text-sm" name="schedule" />
-                      <span>
-                        {formatDate(event.eventDate)} • {formatTimeRange(event.startTime, event.endTime)}
-                      </span>
-                    </div>
-                    <span className="text-xs font-semibold text-secondary">
-                      {rsvpCounts[event.id] ?? 0} RSVP
-                    </span>
+                  <div className="mb-3 flex items-center gap-2 text-xs font-bold text-secondary">
+                    <MaterialIcon className="text-sm" name="calendar_today" />
+                    <span>{formatDate(event.eventDate)} | {formatTimeRange(event.startTime, event.endTime)}</span>
                   </div>
 
-                  <h2 className="mt-4 text-xl font-bold text-on-surface transition group-hover:text-primary">
-                    {event.title}
-                  </h2>
-                  <p className="mt-3 line-clamp-3 text-sm leading-7 text-on-surface-variant">
-                    {event.description}
-                  </p>
+                  <h3 className="font-headline text-2xl font-extrabold text-primary">{event.title}</h3>
+                  <p className="mt-3 flex-grow text-sm leading-7 text-on-surface-variant">{event.description}</p>
 
-                  <div className="mt-5 flex items-center gap-2">
-                    <div className={`flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-bold ${visual.accentClassName}`}>
-                      {getInitials(event.club.name)}
+                  <div className="mt-6 border-t border-surface-container pt-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="min-w-0">
+                        <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-outline">
+                          Hosted By
+                        </span>
+                        <span className="truncate text-xs font-bold text-primary">{event.club.name}</span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-xs font-bold text-on-surface">
+                        <div className={`flex h-8 w-8 items-center justify-center rounded-full ${visual.accentClassName}`}>
+                          {getInitials(event.club.name)}
+                        </div>
+                        <span>{rsvpCounts[event.id] ?? 0} Attending</span>
+                      </div>
                     </div>
-                    <span className="text-xs font-semibold text-on-surface-variant">
-                      {event.club.name}
-                    </span>
-                  </div>
 
-                  <div className="mt-4 flex items-center gap-2 text-sm text-on-surface-variant">
-                    <MaterialIcon className="text-base" name="location_on" />
-                    <span>{event.venue}</span>
+                    <div className="mt-4 flex items-center gap-2 text-sm text-on-surface-variant">
+                      <MaterialIcon className="text-base" name="location_on" />
+                      <span>{event.venue}</span>
+                    </div>
                   </div>
 
                   <Link
-                    className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-surface-container-low py-3 font-bold text-primary transition hover:bg-primary hover:text-white"
+                    className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-surface-container-low py-3 font-bold text-primary transition hover:bg-surface-container-high"
                     to={`/events/${event.id}`}
                   >
                     View Details
@@ -242,6 +232,37 @@ export function EventsPage() {
               </article>
             );
           })}
+        </section>
+      ) : null}
+
+      {!loading && !error && events.length > 0 ? (
+        <section className="relative overflow-hidden rounded-[2rem] bg-primary px-6 py-16 text-center shadow-soft sm:px-8">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute right-0 top-0 h-72 w-72 translate-x-1/3 -translate-y-1/3 rounded-full bg-secondary-fixed blur-3xl" />
+            <div className="absolute bottom-0 left-0 h-56 w-56 -translate-x-1/3 translate-y-1/3 rounded-full bg-primary-fixed blur-3xl" />
+          </div>
+          <div className="relative z-10 mx-auto max-w-3xl">
+            <h2 className="font-headline text-4xl font-extrabold text-white md:text-5xl">
+              Never Miss a Beat
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-primary-fixed">
+              Keep exploring upcoming NileConnect events and use the detail pages to decide what deserves your time this week.
+            </p>
+            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+              <Link
+                className="inline-flex items-center justify-center rounded-xl bg-secondary-fixed px-8 py-4 font-bold text-on-secondary-fixed transition hover:bg-secondary-container"
+                to="/register"
+              >
+                Create Your Account
+              </Link>
+              <Link
+                className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-8 py-4 font-bold text-white transition hover:bg-white/20"
+                to="/clubs"
+              >
+                Explore Clubs Too
+              </Link>
+            </div>
+          </div>
         </section>
       ) : null}
     </section>

@@ -9,24 +9,23 @@ import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
-import { formatLongDate, formatTimeRange, getInitials } from "../lib/utils";
 import { getCategoryVisual } from "../lib/presentation";
+import { formatLongDate, formatTimeRange, getInitials } from "../lib/utils";
 import { useAuth } from "../state/AuthContext";
 import type { EventDetail } from "../types/domain";
 
-const highlightIcons = ["tips_and_updates", "rocket_launch", "groups", "school"];
+const detailImage =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuBqubXrX9I5hPSqnhEWcxXER2mageAjK0OdCZF_2WaeQsrFstjnpey9H60uItJlE3dkKCIbIy8Gb_Co_1OVMDq1Mlt0-ObaQ91wdOHBuTc25YYBiUmuap75v9_IjQiMSrqu9tErZiH9iDzTk5bA7Gg5iEuIC86QctVkMUHKROM8wRfEVbzT4ZmWgtIpQduv_OF2zwknBjRJzmizuPKKsi78YAXOh99djkDC7TC-jrTbNy25XjlkeFTEmSB5xBqWl5ZPe6Bl8OQuseU";
 
-type RichListCardProps = {
+type HighlightCardProps = {
   icon: string;
   text: string;
 };
 
-function RichListCard({ icon, text }: RichListCardProps) {
+function HighlightCard({ icon, text }: HighlightCardProps) {
   return (
-    <div className="flex gap-4 rounded-[1.5rem] bg-surface-container-low p-6">
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-secondary-container text-[#00210f]">
-        <MaterialIcon name={icon} />
-      </div>
+    <div className="rounded-xl bg-surface-container-low p-8">
+      <MaterialIcon className="mb-4 text-4xl text-primary" name={icon} />
       <p className="text-sm leading-7 text-on-surface-variant">{text}</p>
     </div>
   );
@@ -113,6 +112,7 @@ export function EventDetailPage() {
   const isStudent = user?.role === "student";
   const isAdmin = user?.role === "club_admin";
   const isGuest = !user;
+  const canRsvp = isStudent || isAdmin;
   const hasRsvped = event?.hasRsvped === true;
 
   const handleRsvp = async () => {
@@ -193,236 +193,267 @@ export function EventDetailPage() {
   }
 
   const visual = getCategoryVisual(event.category);
+  const isManagingHostClub = user?.role === "club_admin" && user.clubId === event.club.id;
+  const highlightIcons = ["local_pizza", "psychology", "card_membership", "event_available"];
 
   return (
-    <section className="space-y-10">
-      <section className="relative overflow-hidden rounded-[2rem] bg-primary shadow-soft">
-        <div className="absolute inset-0 opacity-40">
-          <img alt={event.title} className="h-full w-full object-cover" src={visual.image} />
+    <section className="space-y-12">
+      <section className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <div className="group overflow-hidden rounded-xl bg-surface-container-low lg:col-span-8">
+          <div className="relative aspect-[16/9]">
+            <img
+              alt={event.title}
+              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+              src={visual.image || detailImage}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+            <div className="absolute bottom-8 left-8 right-8">
+              <span className="mb-3 inline-block rounded-full bg-tertiary-fixed px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-on-tertiary-fixed">
+                {event.category}
+              </span>
+              <h1 className="font-headline text-4xl font-extrabold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
+                {event.title}
+              </h1>
+            </div>
+          </div>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-primary via-primary/60 to-transparent" />
-        <div className="relative z-10 flex flex-col gap-8 px-8 py-12 lg:px-14 lg:py-16">
-          <div className="max-w-4xl">
-            <span className="inline-flex rounded-full bg-secondary-container px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-[#00210f]">
-              {event.category}
-            </span>
-            <h1 className="mt-6 font-headline text-4xl font-extrabold tracking-tight text-white md:text-6xl">
-              {event.title}
-            </h1>
-            <div className="mt-6 flex flex-wrap items-center gap-4">
-              <Link
-                className="inline-flex items-center gap-3 rounded-2xl bg-white/10 px-4 py-3 text-white backdrop-blur-md transition hover:bg-white/20"
-                to={`/clubs/${event.club.id}`}
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 text-sm font-bold">
-                  {getInitials(event.club.name)}
-                </div>
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-white/60">Hosted by</p>
-                  <p className="font-semibold">{event.club.name}</p>
-                </div>
-              </Link>
-              <div className="flex items-center gap-2 text-sm font-medium text-white/80">
-                <MaterialIcon className="icon-filled" name="verified" />
-                <span>Campus event listing</span>
+
+        <div className="flex flex-col gap-6 lg:col-span-4">
+          <div className="flex h-full flex-col justify-between rounded-xl bg-surface-container-low p-8">
+            <div>
+              <div className="mb-6 flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-secondary">
+                <MaterialIcon filled name="verified" />
+                Hosted by {event.club.name}
               </div>
+
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="rounded-lg bg-primary-container p-3 text-on-primary-container">
+                    <MaterialIcon name="calendar_today" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-outline">Date & Time</p>
+                    <p className="font-headline text-lg font-bold text-primary">{formatLongDate(event.eventDate)}</p>
+                    <p className="text-sm text-on-surface-variant">{formatTimeRange(event.startTime, event.endTime)}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="rounded-lg bg-primary-container p-3 text-on-primary-container">
+                    <MaterialIcon name="location_on" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-outline">Venue</p>
+                    <p className="font-headline text-lg font-bold text-primary">{event.venue}</p>
+                    <p className="text-sm text-on-surface-variant">NileConnect event listing</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="rounded-lg bg-primary-container p-3 text-on-primary-container">
+                    <MaterialIcon name="group" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase text-outline">Current RSVPs</p>
+                    <p className="font-headline text-lg font-bold text-primary">{event.rsvpCount} Students</p>
+                    <p className="text-sm text-on-surface-variant">Live attendance on this event page</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 space-y-4">
+              {isGuest ? (
+                <Link
+                  className="inline-flex w-full items-center justify-center rounded-lg bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] py-4 font-headline text-lg font-bold text-white transition hover:shadow-soft"
+                  to="/login"
+                >
+                  Log in to RSVP
+                </Link>
+              ) : canRsvp ? (
+                hasRsvped ? (
+                  <Button
+                    className="w-full rounded-lg bg-secondary py-4 font-headline text-lg font-bold text-white hover:bg-on-secondary-container"
+                    disabled={actionLoading !== null}
+                    onClick={handleCancelRsvp}
+                    variant="primary"
+                  >
+                    {actionLoading === "cancel" ? "Cancelling..." : "Cancel RSVP"}
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full rounded-lg bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] py-4 font-headline text-lg font-bold text-white hover:opacity-95"
+                    disabled={actionLoading !== null}
+                    onClick={handleRsvp}
+                    variant="primary"
+                  >
+                    {actionLoading === "rsvp" ? "Saving RSVP..." : "RSVP Now"}
+                  </Button>
+                )
+              ) : null}
+
+              <p className="text-center text-xs text-outline">
+                {hasRsvped
+                  ? "You're on the list. Your RSVP is saved."
+                  : "Free entry for registered NileConnect users while the event is live."}
+              </p>
+              <ErrorMessage message={actionError} />
             </div>
           </div>
         </div>
       </section>
 
-      <div className="grid gap-10 lg:grid-cols-[1.3fr_0.85fr]">
-        <div className="space-y-10">
-          <section>
-            <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
-              Hosted by
-            </h2>
-            <div className="mt-5 rounded-[1.75rem] bg-white p-8 shadow-soft">
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-surface-container-low text-lg font-bold text-primary">
-                    {getInitials(event.club.name)}
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-outline">
-                      Club organizer
-                    </p>
-                    <h2 className="mt-1 font-headline text-2xl font-bold text-primary">
-                      {event.club.name}
-                    </h2>
-                    <p className="mt-1 text-sm text-on-surface-variant">{event.club.category}</p>
-                    {event.club.contactEmail ? (
-                      <p className="mt-2 text-sm text-on-surface-variant">
-                        Contact: {event.club.contactEmail}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-
-                <Link
-                  className="inline-flex items-center justify-center rounded-full border border-outline-variant/40 px-5 py-3 font-semibold text-primary transition hover:bg-surface-container-low"
-                  to={`/clubs/${event.club.id}`}
-                >
-                  View club profile
-                </Link>
-              </div>
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+        <div className="flex flex-col gap-12 lg:col-span-8">
+          <article className="rounded-xl bg-surface-container-lowest p-8 shadow-soft md:p-12">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-secondary">The Deep Dive</p>
+            <h2 className="mb-6 font-headline text-3xl font-extrabold text-primary">About This Event</h2>
+            <div className="space-y-6 text-lg leading-relaxed text-on-surface-variant">
+              <p>{event.description}</p>
+              {event.additionalInfo ? <p>{event.additionalInfo}</p> : null}
             </div>
-          </section>
-
-          <section>
-            <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
-              About this event
-            </h2>
-            <div className="mt-5 rounded-[1.75rem] bg-white p-8 shadow-soft">
-              <p className="text-base leading-8 text-on-surface-variant">{event.description}</p>
-            </div>
-          </section>
+          </article>
 
           {event.highlights.length > 0 ? (
-            <section>
-              <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
-                What to expect
-              </h2>
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-                {event.highlights.map((highlight, index) => (
-                  <RichListCard
-                    icon={highlightIcons[index % highlightIcons.length]}
-                    key={`${highlight}-${index}`}
-                    text={highlight}
-                  />
-                ))}
-              </div>
-            </section>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {event.highlights.map((highlight, index) => (
+                <HighlightCard
+                  icon={highlightIcons[index % highlightIcons.length] ?? "tips_and_updates"}
+                  key={`${highlight}-${index}`}
+                  text={highlight}
+                />
+              ))}
+            </div>
           ) : null}
 
           {event.targetAudience.length > 0 ? (
             <section>
-              <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
-                Who should attend
-              </h2>
-              <div className="mt-5 rounded-[1.75rem] bg-white p-8 shadow-soft">
-                <div className="flex flex-wrap gap-3">
-                  {event.targetAudience.map((audience, index) => (
-                    <span
-                      className="rounded-full bg-surface-container-low px-4 py-2 text-sm font-medium text-on-surface-variant"
-                      key={`${audience}-${index}`}
-                    >
-                      {audience}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </section>
-          ) : null}
-
-          {event.additionalInfo ? (
-            <section>
-              <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
-                Additional info
-              </h2>
-              <div className="mt-5 rounded-[1.75rem] bg-white p-8 shadow-soft">
-                <p className="text-base leading-8 text-on-surface-variant">{event.additionalInfo}</p>
+              <h3 className="mb-6 font-headline text-2xl font-bold text-primary">Who Should Attend?</h3>
+              <div className="flex flex-wrap gap-4">
+                {event.targetAudience.map((audience, index) => (
+                  <span
+                    className="rounded-r-lg border-l-4 border-secondary bg-surface-container-low px-5 py-3 font-medium text-on-surface"
+                    key={`${audience}-${index}`}
+                  >
+                    {audience}
+                  </span>
+                ))}
               </div>
             </section>
           ) : null}
         </div>
 
-        <aside className="lg:sticky lg:top-28">
-          <div className="rounded-[2rem] bg-white p-8 shadow-soft">
-            <div className="space-y-5">
-              <div className="flex items-start gap-4">
-                <div className="rounded-2xl bg-surface-container-low p-3">
-                  <MaterialIcon className="text-primary" name="calendar_today" />
-                </div>
-                <div>
-                  <p className="font-bold text-on-surface">{formatLongDate(event.eventDate)}</p>
-                  <p className="text-sm text-outline">Save the date</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="rounded-2xl bg-surface-container-low p-3">
-                  <MaterialIcon className="text-primary" name="schedule" />
-                </div>
-                <div>
-                  <p className="font-bold text-on-surface">
-                    {formatTimeRange(event.startTime, event.endTime)}
-                  </p>
-                  <p className="text-sm text-outline">Event time</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="rounded-2xl bg-surface-container-low p-3">
-                  <MaterialIcon className="text-primary" name="location_on" />
-                </div>
-                <div>
-                  <p className="font-bold text-on-surface">{event.venue}</p>
-                  <p className="text-sm text-outline">Venue details</p>
-                </div>
-              </div>
-            </div>
+        <aside className="flex flex-col gap-8 lg:col-span-4">
+          <div className="space-y-4 rounded-xl bg-surface-container-low p-6">
+            <h4 className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-outline">Registration Status</h4>
 
-            <div className="mt-8 border-t border-outline-variant/30 pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-3xl font-bold text-on-surface">{event.rsvpCount}</p>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-outline">
-                    Students attending
-                  </p>
-                </div>
-                <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-2xl ${visual.accentClassName}`}
-                >
-                  <MaterialIcon name={visual.icon} />
-                </div>
-              </div>
-
-              <div className="mt-6 space-y-4">
-                {isGuest ? (
-                  <Link
-                    className="inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] py-4 text-lg font-bold text-white transition hover:scale-[0.99]"
-                    to="/login"
-                  >
-                    Log in to RSVP
-                  </Link>
-                ) : null}
-
-                {isStudent ? (
-                  hasRsvped ? (
-                    <Button
-                      className="w-full rounded-full bg-secondary-container py-4 text-lg font-bold text-[#00210f] hover:brightness-95"
-                      disabled={actionLoading !== null}
-                      onClick={handleCancelRsvp}
-                      variant="primary"
-                    >
-                      {actionLoading === "cancel" ? "Cancelling..." : "Cancel RSVP"}
-                    </Button>
-                  ) : (
-                    <Button
-                      className="w-full rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] py-4 text-lg font-bold text-white hover:opacity-95"
-                      disabled={actionLoading !== null}
-                      onClick={handleRsvp}
-                      variant="primary"
-                    >
-                      {actionLoading === "rsvp" ? "Saving RSVP..." : "RSVP Now"}
-                    </Button>
-                  )
-                ) : null}
-
-                {isAdmin ? (
-                  <div className="rounded-2xl bg-surface-container-low p-5 text-sm leading-7 text-on-surface-variant">
-                    Club admin accounts can review attendance interest here, but RSVP actions remain
-                    student-only.
-                  </div>
-                ) : null}
-
-                <p className="text-center text-xs text-outline">
-                  {hasRsvped
-                    ? "Your attendance is confirmed for this event."
-                    : "Registration closes when the event listing is removed or updated."}
+            {isGuest ? (
+              <div className="rounded-lg border-l-2 border-primary-container bg-surface-container-lowest p-4">
+                <p className="mb-1 text-xs text-outline">Viewing as Guest</p>
+                <p className="text-sm font-semibold text-primary">
+                  Log in to your NileConnect account to claim your free spot.
                 </p>
-                <ErrorMessage message={actionError} />
+              </div>
+            ) : null}
+
+            {canRsvp ? (
+              <div className="rounded-lg border-l-2 border-secondary bg-secondary-container/30 p-4">
+                <p className="mb-1 text-xs font-bold text-on-secondary-container">
+                  Nile User Verified
+                </p>
+                <p className="text-sm font-semibold text-on-secondary-container">
+                  Your account is eligible to RSVP for this event.
+                </p>
+              </div>
+            ) : null}
+
+            {isManagingHostClub ? (
+              <div className="rounded-lg border-l-2 border-on-tertiary-fixed bg-tertiary-fixed/30 p-4">
+                <div className="mb-1 flex items-center justify-between gap-3">
+                  <p className="text-xs font-bold text-on-tertiary-fixed">Club Admin View</p>
+                  <span className="rounded-full bg-on-tertiary-fixed px-2 py-0.5 text-[10px] uppercase text-white">
+                    Owner
+                  </span>
+                </div>
+                <p className="mb-2 text-sm font-semibold text-on-tertiary-fixed">
+                  You manage the hosting club for this event.
+                </p>
+                <Link className="text-xs font-bold text-on-tertiary-fixed underline underline-offset-4" to="/admin/events">
+                  Open Admin Console
+                </Link>
+              </div>
+            ) : null}
+          </div>
+
+          {hasRsvped ? (
+            <div className="relative overflow-hidden rounded-xl bg-secondary p-6 text-white shadow-soft">
+              <div className="absolute -right-4 -top-4 opacity-10">
+                <MaterialIcon className="text-[6rem]" name="task_alt" />
+              </div>
+              <h4 className="mb-2 font-headline text-xl font-bold">See you there!</h4>
+              <p className="mb-4 text-sm text-white/80">
+                You're on the list. Come back here any time if you need to cancel your RSVP.
+              </p>
+              <div className="flex gap-2">
+                <Link
+                  className="rounded-lg bg-white/20 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-white/30"
+                  to={`/clubs/${event.club.id}`}
+                >
+                  View Club
+                </Link>
+                <button
+                  className="rounded-lg bg-white/10 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-white/20"
+                  onClick={handleCancelRsvp}
+                  type="button"
+                >
+                  {actionLoading === "cancel" ? "Cancelling..." : "Cancel"}
+                </button>
               </div>
             </div>
+          ) : null}
+
+          <div className="relative h-64 overflow-hidden rounded-xl bg-surface-container-low shadow-soft">
+            <img
+              alt={`Location for ${event.title}`}
+              className="h-full w-full object-cover grayscale"
+              src={detailImage}
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="rounded-full bg-primary p-2 text-white shadow-xl">
+                <MaterialIcon filled name="location_on" />
+              </div>
+            </div>
+            <div className="absolute bottom-4 left-4 right-4 rounded-lg bg-white/90 p-3 backdrop-blur-sm">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-outline">Venue</p>
+                  <p className="text-sm font-bold text-primary">{event.venue}</p>
+                </div>
+                <MaterialIcon className="text-primary" name="open_in_new" />
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-white p-6 shadow-soft">
+            <h3 className="font-headline text-xl font-bold text-primary">Hosted by</h3>
+            <div className="mt-4 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container-low text-sm font-bold text-primary">
+                {getInitials(event.club.name)}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate font-bold text-primary">{event.club.name}</p>
+                <p className="text-sm text-on-surface-variant">{event.club.category}</p>
+              </div>
+            </div>
+            {event.club.contactEmail ? (
+              <p className="mt-4 text-sm text-on-surface-variant">Contact: {event.club.contactEmail}</p>
+            ) : null}
+            <Link
+              className="mt-6 inline-flex w-full items-center justify-center rounded-lg border border-outline-variant/20 px-4 py-3 font-bold text-primary transition hover:bg-surface-container-high"
+              to={`/clubs/${event.club.id}`}
+            >
+              View Club Profile
+            </Link>
           </div>
         </aside>
       </div>

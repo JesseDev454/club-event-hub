@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import { getApiErrorMessage } from "../api/client";
 import { clubsApi } from "../api/clubsApi";
@@ -8,10 +8,63 @@ import { MaterialIcon } from "../components/common/MaterialIcon";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
-import { formatDate, formatTimeRange } from "../lib/utils";
+import { getCategoryVisual } from "../lib/presentation";
+import { formatDate, formatTimeRange, getInitials } from "../lib/utils";
 import type { ClubSummary, ManagedEvent } from "../types/domain";
 
+type DashboardLocationState = {
+  justCreatedClub?: boolean;
+  clubId?: string;
+  clubName?: string;
+};
+
+function DashboardMetric({
+  label,
+  value,
+  icon,
+}: {
+  label: string;
+  value: string;
+  icon: string;
+}) {
+  return (
+    <div className="space-y-2 rounded-xl bg-surface-container-lowest p-6 shadow-sm">
+      <MaterialIcon className="text-primary" name={icon} />
+      <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-outline">{label}</span>
+      <span className="block text-3xl font-extrabold text-primary">{value}</span>
+    </div>
+  );
+}
+
+function AdminNavLink({
+  active = false,
+  icon,
+  label,
+  to,
+}: {
+  active?: boolean;
+  icon: string;
+  label: string;
+  to: string;
+}) {
+  return (
+    <Link
+      className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition-all ${
+        active
+          ? "bg-white text-primary shadow-sm"
+          : "text-slate-500 hover:bg-surface-container-highest"
+      }`}
+      to={to}
+    >
+      <MaterialIcon className="text-[20px]" name={icon} />
+      <span>{label}</span>
+    </Link>
+  );
+}
+
 export function AdminEventsPage() {
+  const location = useLocation();
+  const locationState = (location.state as DashboardLocationState | null) ?? null;
   const [club, setClub] = useState<ClubSummary | null>(null);
   const [events, setEvents] = useState<ManagedEvent[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +109,7 @@ export function AdminEventsPage() {
           setError(
             getApiErrorMessage(
               loadError,
-              "We couldn't load your club events right now. Please refresh and try again.",
+              "We couldn't load your club workspace right now. Please refresh and try again.",
             ),
           );
         }
@@ -120,160 +173,241 @@ export function AdminEventsPage() {
   };
 
   const totalRsvps = Object.values(rsvpCounts).reduce((sum, value) => sum + value, 0);
+  const today = new Date().setHours(0, 0, 0, 0);
   const upcomingEvents = events.filter(
-    (event) => new Date(`${event.eventDate}T00:00:00`).getTime() >= new Date().setHours(0, 0, 0, 0),
+    (event) => new Date(`${event.eventDate}T00:00:00`).getTime() >= today,
   ).length;
   const totalCategories = new Set(events.map((event) => event.category)).size;
+  const showCreationSuccess = Boolean(locationState?.justCreatedClub);
+
+  if (loading) {
+    return <LoadingState label="Loading your club workspace..." />;
+  }
+
+  const clubVisual = getCategoryVisual(club?.category ?? "Technology");
 
   return (
-    <section className="space-y-8">
-      <section className="grid gap-8 xl:grid-cols-[280px_1fr]">
-        <aside className="rounded-[2rem] bg-surface-container-low p-6 shadow-soft">
-          <div className="px-2 pb-8">
-            <div className="font-headline text-2xl font-bold tracking-tight text-primary">
-              NileConnect
+    <section className="grid gap-8 xl:grid-cols-[260px_1fr]">
+      <aside className="hidden h-fit flex-col gap-2 rounded-2xl bg-[#f1f4f9] p-4 xl:sticky xl:top-28 xl:flex">
+        <div className="mb-6 px-2">
+          <div className="mb-2 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-primary-container text-on-primary">
+              {club ? (
+                <span className="text-sm font-bold">{getInitials(club.name)}</span>
+              ) : (
+                <MaterialIcon name="shield_person" />
+              )}
             </div>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.22em] text-secondary">
-              Admin Suite
-            </p>
+            <div>
+              <p className="text-lg font-bold leading-tight text-primary">Admin Portal</p>
+              <p className="text-xs text-slate-500">My Club Management</p>
+            </div>
           </div>
+        </div>
 
-          <nav className="space-y-2">
-            <div className="flex items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-white">
-              <MaterialIcon name="dashboard" />
-              <span className="font-medium">Dashboard</span>
-            </div>
-            <div className="flex items-center gap-3 rounded-2xl px-4 py-3 text-on-surface-variant">
-              <MaterialIcon name="calendar_today" />
-              <span className="font-medium">Events</span>
-            </div>
-          </nav>
+        <nav className="flex-1 space-y-1">
+          <AdminNavLink active icon="dashboard" label="Dashboard" to="/admin/events" />
+          {club ? (
+            <>
+              <AdminNavLink icon="edit_note" label="Edit Club" to={`/clubs/${club.id}/edit`} />
+              <AdminNavLink icon="visibility" label="Public Profile" to={`/clubs/${club.id}`} />
+            </>
+          ) : null}
+        </nav>
 
-          <div className="mt-10 rounded-[1.5rem] bg-primary p-5 text-white">
-            <h3 className="font-headline text-xl font-bold">Recruitment Drive Active</h3>
-            <p className="mt-3 text-sm leading-7 text-white/75">
-              Your club can keep building momentum by publishing timely events and updating details
-              students can trust.
-            </p>
-          </div>
-        </aside>
+        <div className="mt-auto border-t border-outline-variant/20 pt-4">
+          <Link
+            className="mb-4 flex w-full items-center justify-center gap-2 rounded-lg bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] py-3 text-sm font-bold text-white shadow-md transition-transform active:scale-95"
+            to="/admin/events/new"
+          >
+            <MaterialIcon className="text-sm" name="add" />
+            <span>Create Event</span>
+          </Link>
+          <a
+            className="flex items-center gap-3 px-4 py-2 text-xs uppercase tracking-[0.2em] text-slate-500 hover:underline"
+            href="mailto:support@nileconnect.edu"
+          >
+            <MaterialIcon className="text-sm" name="help" />
+            <span>Support</span>
+          </a>
+        </div>
+      </aside>
 
-        <div className="space-y-8">
-          <section className="rounded-[2rem] bg-white p-8 shadow-soft">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <h1 className="font-headline text-3xl font-extrabold tracking-tight text-primary sm:text-4xl">
-                  Club Leader Dashboard
+      <div className="space-y-10">
+        {showCreationSuccess && club ? (
+          <section className="rounded-[2rem] border border-secondary/20 bg-secondary-container p-8 shadow-soft">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#00522d]">
+                  Club Created
+                </p>
+                <h1 className="mt-3 font-headline text-3xl font-extrabold tracking-tight text-[#00210f] sm:text-4xl">
+                  {locationState?.clubName ?? club.name} is now live on NileConnect.
                 </h1>
-                <p className="mt-3 max-w-2xl text-sm leading-7 text-on-surface-variant sm:text-base">
-                  Manage your club event listings, review schedule coverage, and keep campus-facing
-                  information polished.
+                <p className="mt-4 text-sm leading-7 text-[#00522d] sm:text-base">
+                  You are now managing this club as a club admin. The next best step is to polish the
+                  public profile, publish your first event, or check how students will see your club.
                 </p>
               </div>
+
               <div className="flex flex-wrap gap-3">
-                {club ? (
-                  <Link
-                    className="inline-flex items-center justify-center rounded-full border border-outline-variant px-6 py-3 font-semibold text-primary transition hover:bg-surface-container-low"
-                    to={`/clubs/${club.id}/edit`}
-                  >
-                    Edit Club
-                  </Link>
-                ) : null}
                 <Link
-                  className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-3 font-bold text-white transition hover:shadow-soft"
+                  className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-semibold text-primary transition hover:bg-surface-container-highest"
+                  to={`/clubs/${club.id}/edit`}
+                >
+                  Edit Club
+                </Link>
+                <Link
+                  className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-6 py-3 font-semibold text-white transition hover:shadow-soft"
                   to="/admin/events/new"
                 >
-                  Create Event
+                  Create First Event
+                </Link>
+                <Link
+                  className="inline-flex items-center justify-center rounded-full border border-[#00522d]/20 px-6 py-3 font-semibold text-[#00522d] transition hover:bg-white/50"
+                  to={`/clubs/${club.id}`}
+                >
+                  View Public Profile
                 </Link>
               </div>
             </div>
           </section>
+        ) : null}
 
-          {club ? (
-            <section className="rounded-[2rem] bg-white p-8 shadow-soft">
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                <div className="max-w-3xl">
-                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-outline">
-                    Your Club
-                  </p>
-                  <h2 className="mt-3 font-headline text-3xl font-extrabold tracking-tight text-primary">
-                    {club.name}
-                  </h2>
-                  <div className="mt-4 flex flex-wrap gap-3 text-sm text-on-surface-variant">
-                    <span className="rounded-full bg-surface-container-low px-4 py-2 font-medium">
-                      {club.category}
-                    </span>
-                    {club.contactEmail ? (
-                      <span className="rounded-full bg-surface-container-low px-4 py-2 font-medium">
-                        {club.contactEmail}
-                      </span>
-                    ) : null}
-                  </div>
-                  {club.tagline ? (
-                    <p className="mt-5 text-base font-medium text-secondary">{club.tagline}</p>
-                  ) : null}
-                  <p className="mt-4 text-sm leading-7 text-on-surface-variant sm:text-base">
-                    {club.description}
-                  </p>
+        <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <span className="mb-1 block text-xs font-bold uppercase tracking-[0.2em] text-secondary">
+              Club Administrator
+            </span>
+            <h1 className="font-headline text-3xl font-extrabold tracking-tight text-primary">
+              {club?.name ?? "My Club Workspace"}
+            </h1>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-on-surface-variant">
+            <MaterialIcon name="event_available" />
+            <span>{upcomingEvents} upcoming event{upcomingEvents === 1 ? "" : "s"}</span>
+          </div>
+        </header>
+
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-12">
+          <div className="flex flex-col gap-8 rounded-xl bg-surface-container-lowest p-8 shadow-soft md:col-span-8 md:flex-row md:items-start">
+            <div className="w-full md:w-1/3">
+              <div className="aspect-square overflow-hidden rounded-lg bg-surface-container">
+                <img alt={club?.name ?? "Club"} className="h-full w-full object-cover" src={clubVisual.image} />
+              </div>
+            </div>
+
+            <div className="flex-1 space-y-4">
+              <div className="flex items-center gap-2">
+                {club?.category ? (
+                  <span className="rounded-full bg-secondary-container px-3 py-1 text-xs font-bold uppercase tracking-wider text-on-secondary-container">
+                    {club.category}
+                  </span>
+                ) : null}
+              </div>
+
+              {club?.tagline ? (
+                <p className="text-xl font-medium italic leading-relaxed text-on-surface-variant">
+                  "{club.tagline}"
+                </p>
+              ) : null}
+
+              <p className="text-sm leading-relaxed text-on-surface-variant">
+                {club?.description ??
+                  "Manage your club profile, publish events, and keep your public presence current for students."}
+              </p>
+
+              <div className="flex flex-wrap gap-4 pt-4">
+                <div className="rounded-lg bg-surface-container-low px-4 py-2 text-center">
+                  <span className="block text-2xl font-extrabold text-primary">{events.length}</span>
+                  <span className="text-[10px] font-bold uppercase text-outline">Events Run</span>
                 </div>
-
-                <div className="flex flex-wrap gap-3">
-                  <Link
-                    className="inline-flex items-center justify-center rounded-full border border-outline-variant px-5 py-3 text-sm font-semibold text-primary transition hover:bg-surface-container-low"
-                    to={`/clubs/${club.id}`}
-                  >
-                    View Public Profile
-                  </Link>
+                <div className="rounded-lg bg-surface-container-low px-4 py-2 text-center">
+                  <span className="block text-2xl font-extrabold text-primary">{upcomingEvents}</span>
+                  <span className="text-[10px] font-bold uppercase text-outline">Upcoming</span>
+                </div>
+                <div className="rounded-lg bg-surface-container-low px-4 py-2 text-center">
+                  <span className="block text-2xl font-extrabold text-primary">{totalRsvps}</span>
+                  <span className="text-[10px] font-bold uppercase text-outline">RSVPs</span>
                 </div>
               </div>
-            </section>
-          ) : null}
-
-          <section className="grid gap-5 md:grid-cols-3">
-            <div className="rounded-[1.5rem] bg-white p-6 shadow-soft">
-              <MaterialIcon className="mb-3 text-primary" name="database" />
-              <p className="text-3xl font-extrabold text-on-surface">{events.length}</p>
-              <p className="mt-1 text-sm text-on-surface-variant">Total events</p>
             </div>
-            <div className="rounded-[1.5rem] bg-white p-6 shadow-soft">
-              <MaterialIcon className="mb-3 text-secondary" name="event_upcoming" />
-              <p className="text-3xl font-extrabold text-on-surface">{upcomingEvents}</p>
-              <p className="mt-1 text-sm text-on-surface-variant">Upcoming events</p>
+          </div>
+
+          <div className="space-y-4 md:col-span-4">
+            <div className="flex h-full flex-col justify-between rounded-xl bg-surface-container-lowest p-6 shadow-soft">
+              <h3 className="mb-6 text-sm font-bold uppercase tracking-[0.2em] text-outline">
+                Quick Actions
+              </h3>
+              <div className="space-y-3">
+                {club ? (
+                  <>
+                    <Link
+                      className="group flex w-full items-center justify-between rounded-lg bg-surface-container-low p-4 transition-colors hover:bg-surface-container-high"
+                      to={`/clubs/${club.id}/edit`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <MaterialIcon className="text-primary" name="edit_note" />
+                        <span className="font-semibold">Edit Club Details</span>
+                      </div>
+                      <MaterialIcon className="opacity-0 transition-opacity group-hover:opacity-100" name="chevron_right" />
+                    </Link>
+                    <Link
+                      className="group flex w-full items-center justify-between rounded-lg bg-surface-container-low p-4 transition-colors hover:bg-surface-container-high"
+                      to={`/clubs/${club.id}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <MaterialIcon className="text-primary" name="visibility" />
+                        <span className="font-semibold">View Public Profile</span>
+                      </div>
+                      <MaterialIcon className="opacity-0 transition-opacity group-hover:opacity-100" name="chevron_right" />
+                    </Link>
+                  </>
+                ) : null}
+                <Link
+                  className="group flex w-full items-center justify-between rounded-lg bg-surface-container-low p-4 transition-colors hover:bg-surface-container-high"
+                  to="/admin/events/new"
+                >
+                  <div className="flex items-center gap-3">
+                    <MaterialIcon className="text-primary" name="add_circle" />
+                    <span className="font-semibold">Create Event</span>
+                  </div>
+                  <MaterialIcon className="opacity-0 transition-opacity group-hover:opacity-100" name="chevron_right" />
+                </Link>
+              </div>
+
+              <div className="mt-8">
+                <div className="flex items-center gap-3 rounded-lg bg-tertiary-fixed p-4">
+                  <MaterialIcon className="text-on-tertiary-fixed-variant" name="campaign" />
+                  <p className="text-xs font-medium text-on-tertiary-fixed-variant">
+                    Keep your public club profile and upcoming event list current so students can trust what they see.
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="rounded-[1.5rem] bg-white p-6 shadow-soft">
-              <MaterialIcon className="mb-3 text-primary" name="how_to_reg" />
-              <p className="text-3xl font-extrabold text-on-surface">{totalRsvps}</p>
-              <p className="mt-1 text-sm text-on-surface-variant">
-                Total RSVPs across {totalCategories || 0} categorie{totalCategories === 1 ? "y" : "s"}
-              </p>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-4">
+          <DashboardMetric icon="event" label="Total Events" value={`${events.length}`} />
+          <DashboardMetric icon="upcoming" label="Upcoming" value={`${upcomingEvents}`} />
+          <DashboardMetric icon="groups" label="Total RSVPs" value={`${totalRsvps}`} />
+          <DashboardMetric icon="category" label="Categories" value={`${totalCategories}`} />
+        </section>
+
+        <ErrorMessage message={error} />
+
+        <section className="space-y-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <span className="mb-1 block text-xs font-bold uppercase tracking-[0.2em] text-secondary">
+                Programming
+              </span>
+              <h2 className="font-headline text-2xl font-extrabold tracking-tight text-primary">
+                Event Management
+              </h2>
             </div>
-          </section>
-        </div>
-      </section>
-
-      {loading ? <LoadingState label="Loading your club events..." /> : null}
-      <ErrorMessage message={error} />
-
-      {!loading && !error && events.length === 0 ? (
-        <EmptyState
-          action={
-            <Link
-              className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-6 py-3 font-semibold text-white"
-              to="/admin/events/new"
-            >
-              Create your first event
-            </Link>
-          }
-          description="Create your first event and make your club visible on campus."
-          title="No events yet"
-        />
-      ) : null}
-
-      {!loading && !error && events.length > 0 ? (
-        <section className="overflow-hidden rounded-[2rem] bg-white shadow-soft">
-          <div className="flex flex-col gap-4 border-b border-surface-container px-8 py-6 lg:flex-row lg:items-center lg:justify-between">
-            <h2 className="font-headline text-xl font-bold text-primary">Event Management</h2>
-            <label className="relative block w-full lg:w-72">
+            <label className="relative block w-full sm:w-72">
               <MaterialIcon
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-outline"
                 name="search"
@@ -287,81 +421,116 @@ export function AdminEventsPage() {
             </label>
           </div>
 
-          {filteredEvents.length === 0 ? (
-            <div className="px-8 py-10">
-              <EmptyState
-                description="Try a different search term to find the event you want to manage."
-                title="No events match this search"
-              />
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left">
-                <thead className="border-b border-surface-container text-xs uppercase tracking-[0.2em] text-outline">
-                  <tr>
-                    <th className="px-8 py-5">Event Details</th>
-                    <th className="px-8 py-5">Date & Time</th>
-                    <th className="px-8 py-5">RSVPs</th>
-                    <th className="px-8 py-5 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-surface-container">
-                  {filteredEvents.map((event) => (
-                    <tr className="group transition hover:bg-surface-container-low/50" key={event.id}>
-                      <td className="px-8 py-6">
-                        <div className="flex items-center gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/5 text-primary">
-                            <MaterialIcon name="event" />
-                          </div>
-                          <div>
-                            <p className="font-bold text-on-surface">{event.title}</p>
-                            <p className="text-xs text-on-surface-variant">{event.venue}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-8 py-6">
-                        <p className="font-semibold text-on-surface">{formatDate(event.eventDate)}</p>
-                        <p className="text-sm text-outline">
-                          {formatTimeRange(event.startTime, event.endTime)}
+          {!error && events.length === 0 ? (
+            <EmptyState
+              action={
+                <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <Link
+                    className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-6 py-3 font-semibold text-white"
+                    to="/admin/events/new"
+                  >
+                    Create your first event
+                  </Link>
+                  {club ? (
+                    <Link
+                      className="inline-flex items-center justify-center rounded-full border border-outline-variant px-6 py-3 font-semibold text-primary transition hover:bg-surface-container-low"
+                      to={`/clubs/${club.id}/edit`}
+                    >
+                      Review club profile
+                    </Link>
+                  ) : null}
+                </div>
+              }
+              description="Your club is ready. Create your first event to start reaching students and give members something to discover."
+              title="No events published yet"
+            />
+          ) : null}
+
+          {!error && events.length > 0 && filteredEvents.length === 0 ? (
+            <EmptyState
+              description="Try a different search term to find the event you want to manage."
+              title="No events match this search"
+            />
+          ) : null}
+
+          {!error && filteredEvents.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {filteredEvents.map((event) => {
+                const eventVisual = getCategoryVisual(event.category);
+                const isUpcoming = new Date(`${event.eventDate}T00:00:00`).getTime() >= today;
+
+                return (
+                  <article
+                    className="overflow-hidden rounded-xl bg-surface-container-lowest shadow-soft transition-transform duration-300 hover:-translate-y-1"
+                    key={event.id}
+                  >
+                    <div className="relative h-40">
+                      <img alt={event.title} className="h-full w-full object-cover" src={eventVisual.image} />
+                      <div
+                        className={`absolute right-4 top-4 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] ${
+                          isUpcoming
+                            ? "bg-secondary text-white"
+                            : "bg-surface-container-high text-on-surface-variant"
+                        }`}
+                      >
+                        {isUpcoming ? "Upcoming" : "Past"}
+                      </div>
+                    </div>
+
+                    <div className="space-y-4 p-6">
+                      <div className="space-y-1">
+                        <h4 className="font-headline text-lg font-bold leading-tight text-primary">
+                          {event.title}
+                        </h4>
+                        <p className="text-xs font-medium text-outline">
+                          {formatDate(event.eventDate)} • {formatTimeRange(event.startTime, event.endTime)}
                         </p>
-                      </td>
-                      <td className="px-8 py-6">
-                        <span className="text-sm font-bold text-secondary">
-                          {rsvpCounts[event.id] ?? 0} RSVP
-                        </span>
-                      </td>
-                      <td className="px-8 py-6">
-                        <div className="flex justify-end gap-3">
-                          <Link
-                            className="rounded-xl bg-surface-container-low px-4 py-2 text-sm font-semibold text-primary transition hover:bg-surface-container-high"
-                            to={`/events/${event.id}`}
-                          >
-                            View
-                          </Link>
-                          <Link
-                            className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-on-surface ring-1 ring-outline-variant/30 transition hover:bg-surface-container-low"
-                            to={`/admin/events/${event.id}/edit`}
-                          >
-                            Edit
-                          </Link>
-                          <button
-                            className="rounded-xl bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
-                            disabled={deletingId === event.id}
-                            onClick={() => handleDelete(event.id)}
-                            type="button"
-                          >
-                            {deletingId === event.id ? "Deleting..." : "Delete"}
-                          </button>
+                      </div>
+
+                      <div className="flex items-center justify-between border-t border-outline-variant/10 pt-4">
+                        <div className="flex flex-col">
+                          <span className="text-[10px] font-bold uppercase text-outline">RSVPs</span>
+                          <span className="text-lg font-bold text-primary">{rsvpCounts[event.id] ?? 0}</span>
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                        <div className="rounded-lg bg-surface-container-low px-4 py-2">
+                          <span className="text-xs font-bold text-secondary">{event.category}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-sm text-on-surface-variant">
+                        <p className="line-clamp-2">{event.venue}</p>
+                      </div>
+
+                      <div className="flex gap-2 pt-2">
+                        <Link
+                          className="flex-1 rounded-lg border border-outline-variant/20 py-2 text-center text-xs font-bold transition-colors hover:bg-surface-container-low"
+                          to={`/events/${event.id}`}
+                        >
+                          View
+                        </Link>
+                        <Link
+                          className="flex-1 rounded-lg border border-outline-variant/20 py-2 text-center text-xs font-bold transition-colors hover:bg-surface-container-low"
+                          to={`/admin/events/${event.id}/edit`}
+                        >
+                          Edit
+                        </Link>
+                        <button
+                          className="rounded-lg border border-outline-variant/20 p-2 transition-colors hover:bg-surface-container-low disabled:cursor-not-allowed disabled:opacity-60"
+                          disabled={deletingId === event.id}
+                          onClick={() => handleDelete(event.id)}
+                          type="button"
+                        >
+                          <MaterialIcon className="text-[18px]" name={deletingId === event.id ? "hourglass_top" : "delete"} />
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
-          )}
+          ) : null}
         </section>
-      ) : null}
+      </div>
     </section>
   );
 }

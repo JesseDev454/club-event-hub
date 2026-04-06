@@ -47,7 +47,7 @@ export function Navbar() {
                 }
                 to="/admin/events"
               >
-                Admin
+                My Club
               </NavLink>
             ) : null}
           </nav>

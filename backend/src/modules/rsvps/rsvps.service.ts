@@ -38,9 +38,9 @@ async function findEventOrThrow(id: string): Promise<Event> {
   return event;
 }
 
-function ensureStudent(currentUser: AuthenticatedUser): void {
-  if (currentUser.role !== UserRole.STUDENT) {
-    throw new ApiError(403, "Only students can RSVP to events.");
+function ensureRsvpEligibleUser(currentUser: AuthenticatedUser): void {
+  if (![UserRole.STUDENT, UserRole.CLUB_ADMIN].includes(currentUser.role)) {
+    throw new ApiError(403, "You do not have permission to RSVP to events.");
   }
 }
 
@@ -66,7 +66,7 @@ async function buildRsvpResponse(eventId: string, userId: string): Promise<RsvpR
 }
 
 async function createRsvp(eventId: string, currentUser: AuthenticatedUser): Promise<RsvpResponse> {
-  ensureStudent(currentUser);
+  ensureRsvpEligibleUser(currentUser);
   await findEventOrThrow(eventId);
 
   const rsvpRepository = getRsvpRepository();
@@ -103,7 +103,7 @@ async function createRsvp(eventId: string, currentUser: AuthenticatedUser): Prom
 }
 
 async function cancelRsvp(eventId: string, currentUser: AuthenticatedUser): Promise<RsvpResponse> {
-  ensureStudent(currentUser);
+  ensureRsvpEligibleUser(currentUser);
   await findEventOrThrow(eventId);
 
   const rsvpRepository = getRsvpRepository();

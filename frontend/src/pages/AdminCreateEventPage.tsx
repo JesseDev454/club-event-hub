@@ -6,20 +6,22 @@ import { eventsApi } from "../api/eventsApi";
 import { EventForm } from "../components/common/EventForm";
 import type { EventFormValues } from "../types/domain";
 
+const initialFormValues: EventFormValues = {
+  title: "",
+  description: "",
+  eventDate: "",
+  startTime: "",
+  endTime: "",
+  venue: "",
+  category: "",
+  highlightsText: "",
+  targetAudienceText: "",
+  additionalInfo: "",
+};
+
 export function AdminCreateEventPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<EventFormValues>({
-    title: "",
-    description: "",
-    eventDate: "",
-    startTime: "",
-    endTime: "",
-    venue: "",
-    category: "",
-    highlightsText: "",
-    targetAudienceText: "",
-    additionalInfo: "",
-  });
+  const [formData, setFormData] = useState<EventFormValues>(initialFormValues);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,22 +53,25 @@ export function AdminCreateEventPage() {
   };
 
   return (
-    <section className="space-y-8">
-      <section className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
-          <h1 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">
-            Create a New Campus Event
-          </h1>
-          <p className="mt-4 text-base leading-7 text-on-surface-variant">
-            Design an engaging experience for the Nile University community. Fill in the details
-            below to publish your club&apos;s next milestone without changing the existing backend flow.
-          </p>
-        </div>
-      </section>
+    <section className="space-y-10">
+      <header className="max-w-3xl">
+        <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-secondary">
+          Event Architect
+        </span>
+        <h1 className="text-4xl font-extrabold tracking-tighter text-primary lg:text-5xl">
+          Build Your Event Page
+        </h1>
+        <p className="mt-4 text-lg leading-relaxed text-on-surface-variant">
+          Create a high-impact discovery page for your club&apos;s next activity. This keeps the
+          current event publishing flow intact while helping you shape a richer public event detail page.
+        </p>
+      </header>
 
       <EventForm
+        cancelHref="/admin/events"
         error={error}
         formData={formData}
+        helperText="Publishing creates a live public event immediately using the current NileConnect event contract."
         onChange={handleChange}
         onSubmit={handleSubmit}
         submitLabel="Publish Event"

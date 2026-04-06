@@ -12,7 +12,7 @@ const rsvpsRouter = Router({ mergeParams: true });
 rsvpsRouter.post(
   "/",
   requireAuth,
-  requireRole([UserRole.STUDENT]),
+  requireRole([UserRole.STUDENT, UserRole.CLUB_ADMIN]),
   validate(eventRsvpSchema),
   rsvpsController.createRsvp,
 );
@@ -20,7 +20,7 @@ rsvpsRouter.post(
 rsvpsRouter.delete(
   "/",
   requireAuth,
-  requireRole([UserRole.STUDENT]),
+  requireRole([UserRole.STUDENT, UserRole.CLUB_ADMIN]),
   validate(eventRsvpSchema),
   rsvpsController.cancelRsvp,
 );

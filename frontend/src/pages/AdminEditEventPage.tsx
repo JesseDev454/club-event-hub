@@ -9,21 +9,23 @@ import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import type { EventFormValues } from "../types/domain";
 
+const initialFormValues: EventFormValues = {
+  title: "",
+  description: "",
+  eventDate: "",
+  startTime: "",
+  endTime: "",
+  venue: "",
+  category: "",
+  highlightsText: "",
+  targetAudienceText: "",
+  additionalInfo: "",
+};
+
 export function AdminEditEventPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<EventFormValues>({
-    title: "",
-    description: "",
-    eventDate: "",
-    startTime: "",
-    endTime: "",
-    venue: "",
-    category: "",
-    highlightsText: "",
-    targetAudienceText: "",
-    additionalInfo: "",
-  });
+  const [formData, setFormData] = useState<EventFormValues>(initialFormValues);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -114,12 +116,7 @@ export function AdminEditEventPage() {
   }
 
   if (!id) {
-    return (
-      <EmptyState
-        description="The event id is missing from this route."
-        title="Cannot edit event"
-      />
-    );
+    return <EmptyState description="The event id is missing from this route." title="Cannot edit event" />;
   }
 
   if (loadFailed) {
@@ -135,22 +132,24 @@ export function AdminEditEventPage() {
   }
 
   return (
-    <section className="space-y-8">
-      <section className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
-          <h1 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">
-            Edit Event Details
-          </h1>
-          <p className="mt-4 text-base leading-7 text-on-surface-variant">
-            Update the event information students see on the public event page while preserving the
-            same route, payload shape, and backend contract.
-          </p>
-        </div>
-      </section>
+    <section className="space-y-10">
+      <header className="max-w-3xl">
+        <span className="mb-2 block text-xs font-bold uppercase tracking-[0.2em] text-secondary">
+          Event Architect
+        </span>
+        <h1 className="text-4xl font-extrabold tracking-tighter text-primary lg:text-5xl">
+          Refine Your Event Page
+        </h1>
+        <p className="mt-4 text-lg leading-relaxed text-on-surface-variant">
+          Update the public event page students see while preserving the current route, ownership checks, and backend payload mapping.
+        </p>
+      </header>
 
       <EventForm
+        cancelHref="/admin/events"
         error={error}
         formData={formData}
+        helperText="Saving updates the existing event in place and keeps the same public event route active for students."
         onChange={handleChange}
         onSubmit={handleSubmit}
         submitLabel="Save Changes"

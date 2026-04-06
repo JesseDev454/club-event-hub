@@ -8,10 +8,13 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { getCategoryVisual } from "../lib/presentation";
+import { getInitials } from "../lib/utils";
 import { useAuth } from "../state/AuthContext";
 import type { ClubSummary } from "../types/domain";
 
-const ALL_CATEGORIES = "All Categories";
+const ALL_CATEGORIES = "All Clubs";
+const clubsHeroImage =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuDCWtFmDe960KyWDporlilNySOvXN8L6O1SKmmQioKj34VSrR5spYyimzae7Fgtq51E18l_o-5x3GKi79VRjMmBDOCnCAbfqoAbBQiu0g54Al0mbjojffuIWtbjsoAAX-2b--MT486NSKIk5pCGocLl0U7v_V3wmSJO50LzSDejpwnVotMvNaFINERffOgsL84XGvRQaq8ofdDORSEIpkl4_-BIbDaTP7PmAxXS_S2M4b5EfOQOHlRsNrQRge-oVopYXCNQkLsruQk";
 
 export function ClubsPage() {
   const { user } = useAuth();
@@ -84,59 +87,81 @@ export function ClubsPage() {
     return matchesSearch && matchesCategory;
   });
 
+  const leadClub = filteredClubs[0] ?? null;
+  const supportingClubs = filteredClubs.slice(1, 5);
+
   return (
-    <section className="space-y-10">
-      <section className="space-y-6">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-3xl">
-            <h1 className="font-headline text-5xl font-extrabold tracking-tight text-primary md:text-6xl">
-              Join a Nile University Community
-            </h1>
-            <p className="mt-4 text-lg leading-8 text-on-surface-variant">
-              Discover student-led organizations, professional societies, and creative circles
-              that foster intellectual growth and lasting connections.
-            </p>
-          </div>
-          <div className="flex flex-col gap-4 md:items-end">
+    <section className="space-y-12 lg:space-y-16">
+      <section className="relative overflow-hidden rounded-[2.5rem] bg-primary text-white shadow-soft">
+        <div className="absolute inset-0 opacity-40">
+          <img alt="Nile University student communities" className="h-full w-full object-cover" src={clubsHeroImage} />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent" />
+        </div>
+        <div className="relative z-10 max-w-3xl px-8 py-14 md:px-12 md:py-20">
+          <span className="mb-6 inline-block rounded-full bg-secondary-container px-3 py-1 text-xs font-bold uppercase tracking-[0.22em] text-on-secondary-container">
+            Campus Life
+          </span>
+          <h1 className="font-headline text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
+            Find Your Community
+          </h1>
+          <p className="mt-6 text-xl leading-9 text-on-primary-container/90">
+            Discover student organizations that spark your interests, build your skills, and create the friendships that make campus feel like home.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <a
+              className="rounded-xl bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-4 font-bold text-white shadow-soft"
+              href="#explore-clubs"
+            >
+              Start Exploring
+            </a>
             {user?.role === "student" ? (
               <Link
-                className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-6 py-3 font-semibold text-white transition hover:shadow-soft"
+                className="rounded-xl border border-white/20 bg-white/10 px-8 py-4 font-bold text-white transition hover:bg-white/20"
                 to="/clubs/new"
               >
-                Create a Club
+                Start a Club
               </Link>
             ) : null}
-            <div className="no-scrollbar flex gap-3 overflow-x-auto">
-              {categoryOptions.map((category) => (
-                <button
-                  className={`rounded-full px-6 py-2 text-sm font-medium transition ${
-                    category === selectedCategory
-                      ? "bg-secondary-container text-[#00210f]"
-                      : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
-                  }`}
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  type="button"
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-8" id="explore-clubs">
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="font-headline text-4xl font-extrabold text-primary">Explore Categories</h2>
+            <p className="mt-2 text-lg text-on-surface-variant">
+              Filter through active Nile University student clubs and find the communities already building momentum.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {categoryOptions.map((category) => (
+              <button
+                className={`rounded-full px-6 py-2 font-semibold transition ${
+                  category === selectedCategory
+                    ? "bg-secondary-container text-on-secondary-container"
+                    : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+                }`}
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                type="button"
+              >
+                {category}
+              </button>
+            ))}
           </div>
         </div>
 
-        <div className="relative lg:max-w-md">
-          <MaterialIcon
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-outline"
-            name="search"
-          />
+        <label className="relative block max-w-lg">
+          <MaterialIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" name="search" />
           <input
-            className="w-full rounded-[1.25rem] border border-outline-variant/30 bg-surface-container-low py-4 pl-12 pr-4 text-base outline-none transition focus:border-primary"
+            className="w-full rounded-xl bg-surface-container-low py-4 pl-12 pr-4 text-base outline-none transition focus:ring-2 focus:ring-primary"
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="Find your tribe..."
+            placeholder="Search clubs by name, category, or purpose..."
             value={searchQuery}
           />
-        </div>
+        </label>
       </section>
 
       {loading ? <LoadingState label="Loading clubs..." /> : null}
@@ -157,60 +182,180 @@ export function ClubsPage() {
       ) : null}
 
       {!loading && !error && filteredClubs.length > 0 ? (
-        <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-          {filteredClubs.map((club) => {
-            const visual = getCategoryVisual(club.category);
-            const eventCount = upcomingCounts[club.id] ?? 0;
-
-            return (
-              <article
-                className="group overflow-hidden rounded-[1.5rem] bg-white shadow-soft transition duration-300 hover:-translate-y-1"
-                key={club.id}
-              >
-                <div className="relative h-52 overflow-hidden">
-                  <img alt={club.name} className="h-full w-full object-cover" src={visual.image} />
-                  <div className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-primary">
-                    {club.category}
-                  </div>
+        <section className="space-y-8">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
+            {leadClub ? (
+              <article className="group relative overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-soft transition-all duration-300 hover:-translate-y-1 md:col-span-8">
+                <div className="relative h-80 overflow-hidden">
+                  <img
+                    alt={leadClub.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    src={getCategoryVisual(leadClub.category).image}
+                  />
+                  <span className="absolute left-6 top-6 rounded-full bg-tertiary-fixed px-4 py-1.5 text-xs font-bold uppercase text-on-tertiary-fixed">
+                    Active Community
+                  </span>
                 </div>
                 <div className="p-8">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${visual.accentClassName}`}>
-                      <MaterialIcon className="text-2xl" name={visual.icon} />
+                  <div className="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="font-headline text-3xl font-extrabold text-primary">{leadClub.name}</h3>
+                      <span className="mt-2 block text-sm font-semibold uppercase tracking-[0.18em] text-secondary">
+                        {leadClub.category}
+                      </span>
                     </div>
-                    <span className="rounded-full bg-secondary-fixed px-3 py-1 text-xs font-semibold text-[#00210f]">
-                      Upcoming Events: {eventCount}
-                    </span>
+                    <div className="flex -space-x-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-primary-fixed text-sm font-bold text-on-primary-fixed">
+                        {getInitials(leadClub.name)}
+                      </div>
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-surface-container-highest text-xs font-bold text-on-surface">
+                        +{upcomingCounts[leadClub.id] ?? 0}
+                      </div>
+                    </div>
                   </div>
 
-                  <h2 className="mt-6 font-headline text-2xl font-bold text-primary">
-                    {club.name}
-                  </h2>
-                  {club.tagline ? (
-                    <p className="mt-2 text-sm font-medium text-secondary">{club.tagline}</p>
+                  {leadClub.tagline ? (
+                    <p className="mb-4 text-base font-medium text-secondary">{leadClub.tagline}</p>
                   ) : null}
-                  <p className="mt-3 text-sm leading-7 text-on-surface-variant">
-                    {club.description}
-                  </p>
+                  <p className="text-lg leading-8 text-on-surface-variant">{leadClub.description}</p>
 
-                  {club.contactEmail ? (
-                    <p className="mt-5 text-xs font-medium uppercase tracking-[0.18em] text-outline">
-                      Contact: {club.contactEmail}
-                    </p>
-                  ) : null}
+                  <div className="mt-6 flex items-center justify-between border-t border-outline-variant/20 pt-6">
+                    <span className="flex items-center text-sm text-on-surface-variant">
+                      <MaterialIcon className="mr-2 text-primary" name="groups" />
+                      {upcomingCounts[leadClub.id] ?? 0} upcoming event{(upcomingCounts[leadClub.id] ?? 0) === 1 ? "" : "s"}
+                    </span>
+                    <Link
+                      className="inline-flex items-center gap-2 font-bold text-primary transition hover:gap-3"
+                      to={`/clubs/${leadClub.id}`}
+                    >
+                      View Profile
+                      <MaterialIcon name="arrow_forward" />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            ) : null}
 
+            {supportingClubs.slice(0, 1).map((club) => (
+              <article
+                className="group flex flex-col overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-soft transition-all hover:-translate-y-1 md:col-span-4"
+                key={club.id}
+              >
+                <div className="h-48 overflow-hidden">
+                  <img alt={club.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={getCategoryVisual(club.category).image} />
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <span className="mb-2 text-xs font-bold uppercase text-secondary">{club.category}</span>
+                  <h3 className="font-headline text-2xl font-bold text-primary">{club.name}</h3>
+                  <p className="mt-3 flex-grow text-sm leading-7 text-on-surface-variant">{club.description}</p>
                   <Link
-                    className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] py-3 font-medium text-white transition hover:shadow-soft"
+                    className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-surface-container-low py-3 font-bold text-primary transition hover:bg-primary hover:text-white"
                     to={`/clubs/${club.id}`}
                   >
-                    View Club Profile
+                    View Club
                   </Link>
                 </div>
               </article>
-            );
-          })}
-        </div>
+            ))}
+
+            {supportingClubs.slice(1).map((club) => (
+              <article
+                className="group flex flex-col overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-soft transition-all hover:-translate-y-1 md:col-span-4"
+                key={club.id}
+              >
+                <div className="h-48 overflow-hidden">
+                  <img alt={club.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={getCategoryVisual(club.category).image} />
+                </div>
+                <div className="p-6">
+                  <span className="mb-2 block text-xs font-bold uppercase text-secondary">{club.category}</span>
+                  <h3 className="font-headline text-2xl font-bold text-primary">{club.name}</h3>
+                  {club.tagline ? (
+                    <p className="mt-2 text-sm font-medium text-secondary">{club.tagline}</p>
+                  ) : null}
+                  <p className="mt-3 text-sm leading-7 text-on-surface-variant">{club.description}</p>
+                  <div className="mt-6 flex items-center justify-between border-t border-outline-variant/10 pt-4">
+                    <span className="text-xs font-bold text-secondary">
+                      {upcomingCounts[club.id] ?? 0} Upcoming
+                    </span>
+                    <Link
+                      className="inline-flex items-center gap-2 rounded-xl border border-outline-variant/20 px-4 py-2 font-bold text-primary transition hover:bg-surface-container-high"
+                      to={`/clubs/${club.id}`}
+                    >
+                      View Club
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
       ) : null}
+
+      <section className="rounded-[2.5rem] bg-surface-container-low px-8 py-12 shadow-soft">
+        <div className="grid gap-12 md:grid-cols-2 md:items-center">
+          <div>
+            <h2 className="font-headline text-4xl font-extrabold leading-tight text-primary">
+              Can't find your people?
+              <br />
+              <span className="text-secondary">Start a new legacy.</span>
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-on-surface-variant">
+              NileConnect makes it easy to create a club, define its public identity, and start building a real student community around your idea.
+            </p>
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+              {user?.role === "student" ? (
+                <Link
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 font-bold text-white"
+                  to="/clubs/new"
+                >
+                  <MaterialIcon name="add" />
+                  Propose a Club
+                </Link>
+              ) : (
+                <Link
+                  className="inline-flex items-center justify-center rounded-xl bg-primary px-8 py-4 font-bold text-white"
+                  to="/register"
+                >
+                  Create an Account
+                </Link>
+              )}
+              <Link
+                className="inline-flex items-center justify-center rounded-xl border border-outline-variant/30 bg-white px-8 py-4 font-bold text-primary"
+                to="/events"
+              >
+                See Club Events
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-4 pt-8">
+              <img
+                alt="Students building together"
+                className="w-full rounded-2xl shadow-soft"
+                src={leadClub ? getCategoryVisual(leadClub.category).image : clubsHeroImage}
+              />
+              <img
+                alt="Student community moment"
+                className="w-full rounded-2xl shadow-soft"
+                src={supportingClubs[0] ? getCategoryVisual(supportingClubs[0].category).image : clubsHeroImage}
+              />
+            </div>
+            <div className="space-y-4">
+              <img
+                alt="Student collaboration"
+                className="w-full rounded-2xl shadow-soft"
+                src={supportingClubs[1] ? getCategoryVisual(supportingClubs[1].category).image : clubsHeroImage}
+              />
+              <img
+                alt="Student leadership"
+                className="w-full rounded-2xl shadow-soft"
+                src={supportingClubs[2] ? getCategoryVisual(supportingClubs[2].category).image : clubsHeroImage}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
     </section>
   );
 }

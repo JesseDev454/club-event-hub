@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 import { clubsApi } from "../api/clubsApi";
 import { getApiErrorMessage } from "../api/client";
 import { ClubForm } from "../components/common/ClubForm";
+import { MaterialIcon } from "../components/common/MaterialIcon";
 import { useAuth } from "../state/AuthContext";
 import type { ClubFormValues } from "../types/domain";
 
@@ -57,7 +58,14 @@ export function CreateClubPage() {
         user: creationResult.user,
       });
 
-      navigate(`/clubs/${creationResult.club.id}/edit`, { replace: true });
+      navigate("/admin/events", {
+        replace: true,
+        state: {
+          justCreatedClub: true,
+          clubId: creationResult.club.id,
+          clubName: creationResult.club.name,
+        },
+      });
     } catch (submissionError) {
       setError(
         getApiErrorMessage(
@@ -71,29 +79,58 @@ export function CreateClubPage() {
   };
 
   return (
-    <section className="space-y-8">
-      <section className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-2xl">
-          <h1 className="font-headline text-4xl font-extrabold tracking-tight text-on-surface">
-            Create Your Club
+    <section className="space-y-10">
+      <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-3xl">
+          <span className="mb-2 block text-sm font-bold uppercase tracking-[0.2em] text-secondary">
+            Leadership Journey
+          </span>
+          <h1 className="font-headline text-5xl font-extrabold tracking-tight text-primary">
+            Launch Your Community
           </h1>
-          <p className="mt-4 text-base leading-7 text-on-surface-variant">
-            Start a new campus community. Once your club is created, your account is promoted to
-            club admin immediately and you can manage your club profile and events from inside the
-            app.
+          <p className="mt-4 text-lg leading-relaxed text-on-surface-variant">
+            Transform your idea into a real NileConnect presence. Once your club is created, your
+            account is promoted to club admin and you&apos;ll move straight into the My Club workspace.
           </p>
         </div>
-      </section>
+
+        <div className="rounded-xl bg-surface-container-low p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-fixed text-primary-container">
+              <MaterialIcon name="shield_person" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-primary">Student-to-admin handoff</p>
+              <p className="mt-1 text-sm leading-6 text-on-surface-variant">
+                Creating a club upgrades your access so you can manage club profile and events immediately.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <ClubForm
+        cancelHref="/clubs"
         error={error}
         formData={formData}
-        helperText="Creating a club promotes your account to club admin and unlocks club management."
+        helperText="Launching creates the club, promotes your account to club admin, and redirects you into the My Club dashboard."
         onChange={handleChange}
         onSubmit={handleSubmit}
-        submitLabel="Create Club"
+        submitLabel="Launch Club"
         submitting={submitting}
       />
+
+      <div className="flex items-center justify-between rounded-xl bg-surface-container-low p-6">
+        <div className="flex items-center gap-3">
+          <MaterialIcon className="text-secondary" name="info" />
+          <p className="text-sm text-on-surface-variant">
+            Registration always creates student accounts first. Club admin access only happens after a real club is created.
+          </p>
+        </div>
+        <Link className="text-sm font-bold text-primary hover:underline" to="/clubs">
+          Back to clubs
+        </Link>
+      </div>
     </section>
   );
 }
