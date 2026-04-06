@@ -56,6 +56,15 @@ export class Event {
   @Column({ type: "varchar", length: 100 })
   category!: string;
 
+  @Column({ type: "text", array: true, default: () => "'{}'" })
+  highlights!: string[];
+
+  @Column({ name: "target_audience", type: "text", array: true, default: () => "'{}'" })
+  targetAudience!: string[];
+
+  @Column({ name: "additional_info", type: "text", nullable: true })
+  additionalInfo!: string | null;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt!: Date;
 

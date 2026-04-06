@@ -2,6 +2,35 @@ import { z } from "zod";
 
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 const timeRegex = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/;
+const maxAudienceItems = 10;
+const maxHighlightItems = 10;
+
+const richTextItemSchema = z
+  .string()
+  .trim()
+  .min(2, "Each item must be at least 2 characters long.")
+  .max(160, "Each item cannot exceed 160 characters.");
+
+const highlightsSchema = z
+  .array(richTextItemSchema)
+  .min(1, "At least one highlight is required.")
+  .max(maxHighlightItems, `Highlights cannot exceed ${maxHighlightItems} items.`);
+
+const targetAudienceSchema = z
+  .array(richTextItemSchema)
+  .min(1, "At least one target audience entry is required.")
+  .max(maxAudienceItems, `Target audience cannot exceed ${maxAudienceItems} items.`);
+
+const additionalInfoSchema = z.preprocess(
+  (value) => (typeof value === "string" ? value.trim() : value),
+  z.union([
+    z
+      .string()
+      .max(5000, "Additional info cannot exceed 5000 characters."),
+    z.literal(""),
+    z.undefined(),
+  ]),
+).transform((value) => (value === "" ? null : value));
 
 function isValidDateString(value: string): boolean {
   const parsedDate = new Date(`${value}T00:00:00Z`);
@@ -50,6 +79,9 @@ const eventBodyBaseSchema = z
       .trim()
       .min(2, "Category must be at least 2 characters long.")
       .max(100, "Category cannot exceed 100 characters."),
+    highlights: highlightsSchema,
+    targetAudience: targetAudienceSchema,
+    additionalInfo: additionalInfoSchema.optional(),
   })
   .strict();
 

@@ -32,6 +32,9 @@ type EventResponse = {
   endTime: string | null;
   venue: string;
   category: string;
+  highlights: string[];
+  targetAudience: string[];
+  additionalInfo: string | null;
   createdAt: Date;
   updatedAt: Date;
   club: EventClubSummary;
@@ -77,6 +80,9 @@ function serializeEvent(
     endTime: event.endTime,
     venue: event.venue,
     category: event.category,
+    highlights: event.highlights ?? [],
+    targetAudience: event.targetAudience ?? [],
+    additionalInfo: event.additionalInfo ?? null,
     createdAt: event.createdAt,
     updatedAt: event.updatedAt,
     club: {
@@ -196,6 +202,9 @@ async function createEvent(payload: CreateEventInput, currentUser: Authenticated
     endTime,
     venue: payload.venue.trim(),
     category: payload.category.trim(),
+    highlights: payload.highlights,
+    targetAudience: payload.targetAudience,
+    additionalInfo: payload.additionalInfo ?? null,
   });
 
   const savedEvent = await eventRepository.save(event);
@@ -245,6 +254,18 @@ async function updateEvent(
 
   if (payload.category !== undefined) {
     existingEvent.category = payload.category.trim();
+  }
+
+  if (payload.highlights !== undefined) {
+    existingEvent.highlights = payload.highlights;
+  }
+
+  if (payload.targetAudience !== undefined) {
+    existingEvent.targetAudience = payload.targetAudience;
+  }
+
+  if (payload.additionalInfo !== undefined) {
+    existingEvent.additionalInfo = payload.additionalInfo ?? null;
   }
 
   const updatedEvent = await eventRepository.save(existingEvent);

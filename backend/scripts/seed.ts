@@ -805,6 +805,9 @@ async function runSeed(): Promise<void> {
         endTime: eventSeed.endTime,
         venue: eventSeed.venue,
         category: eventSeed.category,
+        highlights: [],
+        targetAudience: [],
+        additionalInfo: null,
       });
 
       await syncSeedRsvps(rsvpRepository, savedEvent.id, demoStudents.slice(0, eventSeed.rsvpCount));
