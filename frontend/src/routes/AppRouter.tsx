@@ -7,6 +7,8 @@ import { AdminEditEventPage } from "../pages/AdminEditEventPage";
 import { AdminEventsPage } from "../pages/AdminEventsPage";
 import { ClubDetailPage } from "../pages/ClubDetailPage";
 import { ClubsPage } from "../pages/ClubsPage";
+import { CreateClubPage } from "../pages/CreateClubPage";
+import { EditClubProfilePage } from "../pages/EditClubProfilePage";
 import { EventDetailPage } from "../pages/EventDetailPage";
 import { EventsPage } from "../pages/EventsPage";
 import { HomePage } from "../pages/HomePage";
@@ -33,8 +35,13 @@ export function AppRouter() {
       </Route>
 
       <Route element={<ProtectedRoute />}>
+        <Route element={<MainLayout />}>
+          <Route path="clubs/new" element={<CreateClubPage />} />
+        </Route>
+
         <Route element={<RoleProtectedRoute allowedRoles={["club_admin"]} />}>
           <Route element={<MainLayout />}>
+            <Route path="clubs/:id/edit" element={<EditClubProfilePage />} />
             <Route path="admin/events" element={<AdminEventsPage />} />
             <Route path="admin/events/new" element={<AdminCreateEventPage />} />
             <Route path="admin/events/:id/edit" element={<AdminEditEventPage />} />

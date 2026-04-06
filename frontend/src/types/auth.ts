@@ -1,3 +1,5 @@
+import type { ClubSummary } from "./domain";
+
 export type UserRole = "student" | "club_admin";
 
 export type AuthUser = {
@@ -11,6 +13,10 @@ export type AuthUser = {
 export type AuthSuccessPayload = {
   token: string;
   user: AuthUser;
+};
+
+export type ClubCreationSuccessPayload = AuthSuccessPayload & {
+  club: ClubSummary;
 };
 
 export type RegisterStudentInput = {

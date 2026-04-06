@@ -8,11 +8,13 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { getCategoryVisual } from "../lib/presentation";
+import { useAuth } from "../state/AuthContext";
 import type { ClubSummary } from "../types/domain";
 
 const ALL_CATEGORIES = "All Categories";
 
 export function ClubsPage() {
+  const { user } = useAuth();
   const [clubs, setClubs] = useState<ClubSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -95,21 +97,31 @@ export function ClubsPage() {
               that foster intellectual growth and lasting connections.
             </p>
           </div>
-          <div className="no-scrollbar flex gap-3 overflow-x-auto">
-            {categoryOptions.map((category) => (
-              <button
-                className={`rounded-full px-6 py-2 text-sm font-medium transition ${
-                  category === selectedCategory
-                    ? "bg-secondary-container text-[#00210f]"
-                    : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
-                }`}
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                type="button"
+          <div className="flex flex-col gap-4 md:items-end">
+            {user?.role === "student" ? (
+              <Link
+                className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-6 py-3 font-semibold text-white transition hover:shadow-soft"
+                to="/clubs/new"
               >
-                {category}
-              </button>
-            ))}
+                Create a Club
+              </Link>
+            ) : null}
+            <div className="no-scrollbar flex gap-3 overflow-x-auto">
+              {categoryOptions.map((category) => (
+                <button
+                  className={`rounded-full px-6 py-2 text-sm font-medium transition ${
+                    category === selectedCategory
+                      ? "bg-secondary-container text-[#00210f]"
+                      : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
+                  }`}
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  type="button"
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -174,6 +186,9 @@ export function ClubsPage() {
                   <h2 className="mt-6 font-headline text-2xl font-bold text-primary">
                     {club.name}
                   </h2>
+                  {club.tagline ? (
+                    <p className="mt-2 text-sm font-medium text-secondary">{club.tagline}</p>
+                  ) : null}
                   <p className="mt-3 text-sm leading-7 text-on-surface-variant">
                     {club.description}
                   </p>

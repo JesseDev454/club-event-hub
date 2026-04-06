@@ -65,13 +65,32 @@ export function Navbar() {
             <span className="text-sm text-on-surface-variant">Loading...</span>
           ) : isAuthenticated ? (
             <>
-              {user?.role === "club_admin" ? (
-                <Link to="/admin/events/new">
+              {user?.role === "student" ? (
+                <Link to="/clubs/new">
                   <Button className="hidden rounded-full bg-primary px-5 text-white hover:bg-primary-container md:inline-flex">
-                    <MaterialIcon className="mr-2 text-base" name="add_circle" />
-                    Create Event
+                    <MaterialIcon className="mr-2 text-base" name="groups" />
+                    Create Club
                   </Button>
                 </Link>
+              ) : null}
+
+              {user?.role === "club_admin" ? (
+                <>
+                  {user.clubId ? (
+                    <Link to={`/clubs/${user.clubId}/edit`}>
+                      <Button className="hidden rounded-full border border-outline-variant bg-white px-5 text-primary hover:bg-surface-container-low md:inline-flex">
+                        Edit Club
+                      </Button>
+                    </Link>
+                  ) : null}
+
+                  <Link to="/admin/events/new">
+                    <Button className="hidden rounded-full bg-primary px-5 text-white hover:bg-primary-container md:inline-flex">
+                      <MaterialIcon className="mr-2 text-base" name="add_circle" />
+                      Create Event
+                    </Button>
+                  </Link>
+                </>
               ) : null}
 
               <button

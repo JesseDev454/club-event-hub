@@ -4,6 +4,7 @@ export type ClubSummary = {
   description: string;
   category: string;
   contactEmail: string | null;
+  tagline: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -23,6 +24,25 @@ export type ClubEventSummary = {
 
 export type ClubDetail = ClubSummary & {
   upcomingEvents: ClubEventSummary[];
+};
+
+export type ClubFormValues = {
+  name: string;
+  description: string;
+  category: string;
+  contactEmail: string;
+  tagline: string;
+};
+
+export type ClubCreateInput = {
+  name: string;
+  description: string;
+  category: string;
+  contactEmail: string | null;
+};
+
+export type ClubUpdateInput = Partial<ClubCreateInput> & {
+  tagline?: string | null;
 };
 
 export type EventClubSummary = {

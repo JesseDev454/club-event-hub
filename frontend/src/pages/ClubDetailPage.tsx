@@ -9,10 +9,12 @@ import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { formatDate } from "../lib/utils";
 import { getCategoryVisual } from "../lib/presentation";
+import { useAuth } from "../state/AuthContext";
 import type { ClubDetail } from "../types/domain";
 
 export function ClubDetailPage() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [club, setClub] = useState<ClubDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,6 +78,7 @@ export function ClubDetailPage() {
   }
 
   const visual = getCategoryVisual(club.category);
+  const isManagingClub = user?.role === "club_admin" && user.clubId === club.id;
 
   return (
     <section className="space-y-12">
@@ -98,6 +101,9 @@ export function ClubDetailPage() {
                 <h1 className="mt-4 font-headline text-4xl font-extrabold tracking-tight text-white md:text-5xl">
                   {club.name}
                 </h1>
+                {club.tagline ? (
+                  <p className="mt-3 text-lg font-medium text-secondary-fixed">{club.tagline}</p>
+                ) : null}
                 <p className="mt-3 max-w-2xl text-base leading-7 text-white/80">
                   Discover the club mission, current activity, and public event presence on
                   NileConnect.
@@ -112,6 +118,14 @@ export function ClubDetailPage() {
               >
                 Explore Events
               </Link>
+              {isManagingClub ? (
+                <Link
+                  className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-bold text-primary transition hover:bg-surface-container-highest"
+                  to={`/clubs/${club.id}/edit`}
+                >
+                  Edit Club Profile
+                </Link>
+              ) : null}
               {club.contactEmail ? (
                 <a
                   className="inline-flex items-center justify-center rounded-full bg-white/20 px-4 py-3 text-white backdrop-blur-md transition hover:bg-white/30"
