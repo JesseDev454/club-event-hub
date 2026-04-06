@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -45,6 +46,9 @@ export class User {
   @ManyToOne(() => Club, { eager: false, nullable: true })
   @JoinColumn({ name: "club_id" })
   club?: Club | null;
+
+  @OneToOne(() => Club, (club) => club.owner, { eager: false })
+  ownedClub?: Club | null;
 
   @OneToMany(() => Event, (event) => event.creator)
   createdEvents?: Event[];

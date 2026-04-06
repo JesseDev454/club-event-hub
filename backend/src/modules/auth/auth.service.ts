@@ -62,6 +62,13 @@ function signAuthToken(user: User): string {
   });
 }
 
+function createAuthResponse(user: User): AuthResponse {
+  return {
+    token: signAuthToken(user),
+    user: serializeUser(user),
+  };
+}
+
 async function registerStudent(input: RegisterInput): Promise<AuthResponse> {
   const userRepository = getUserRepository();
   const email = normalizeEmail(input.email);
@@ -86,10 +93,7 @@ async function registerStudent(input: RegisterInput): Promise<AuthResponse> {
 
   const savedUser = await userRepository.save(user);
 
-  return {
-    token: signAuthToken(savedUser),
-    user: serializeUser(savedUser),
-  };
+  return createAuthResponse(savedUser);
 }
 
 async function loginUser(input: LoginInput): Promise<AuthResponse> {
@@ -110,10 +114,7 @@ async function loginUser(input: LoginInput): Promise<AuthResponse> {
     throw new ApiError(401, "Invalid email or password.");
   }
 
-  return {
-    token: signAuthToken(user),
-    user: serializeUser(user),
-  };
+  return createAuthResponse(user);
 }
 
 async function getCurrentUser(userId: string): Promise<SafeUser> {
@@ -159,4 +160,7 @@ export const authService = {
   loginUser,
   getCurrentUser,
   verifyAuthToken,
+  createAuthResponse,
 };
+
+export type { AuthResponse, SafeUser, AuthTokenPayload };
