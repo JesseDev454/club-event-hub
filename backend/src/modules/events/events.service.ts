@@ -21,7 +21,7 @@ type EventClubSummary = {
   contactEmail: string | null;
 };
 
-type EventResponse = {
+type EventListResponse = {
   id: string;
   clubId: string;
   createdBy: string;
@@ -32,12 +32,15 @@ type EventResponse = {
   endTime: string | null;
   venue: string;
   category: string;
-  highlights: string[];
-  targetAudience: string[];
-  additionalInfo: string | null;
   createdAt: Date;
   updatedAt: Date;
   club: EventClubSummary;
+};
+
+type EventResponse = EventListResponse & {
+  highlights: string[];
+  targetAudience: string[];
+  additionalInfo: string | null;
 };
 
 type EventDetailResponse = EventResponse & {
@@ -66,9 +69,9 @@ function getRsvpRepository() {
   return AppDataSource.getRepository(RSVP);
 }
 
-function serializeEvent(
+function serializeEventListItem(
   event: Event,
-): EventResponse {
+): EventListResponse {
   return {
     id: event.id,
     clubId: event.clubId,
@@ -80,9 +83,6 @@ function serializeEvent(
     endTime: event.endTime,
     venue: event.venue,
     category: event.category,
-    highlights: event.highlights ?? [],
-    targetAudience: event.targetAudience ?? [],
-    additionalInfo: event.additionalInfo ?? null,
     createdAt: event.createdAt,
     updatedAt: event.updatedAt,
     club: {
@@ -91,6 +91,17 @@ function serializeEvent(
       category: event.club.category,
       contactEmail: event.club.contactEmail,
     },
+  };
+}
+
+function serializeEvent(
+  event: Event,
+): EventResponse {
+  return {
+    ...serializeEventListItem(event),
+    highlights: event.highlights ?? [],
+    targetAudience: event.targetAudience ?? [],
+    additionalInfo: event.additionalInfo ?? null,
   };
 }
 
@@ -137,7 +148,7 @@ function ensureEventTimeRange(startTime: string, endTime: string | null): void {
   }
 }
 
-async function listUpcomingEvents(): Promise<EventResponse[]> {
+async function listUpcomingEvents(): Promise<EventListResponse[]> {
   const events = await getEventRepository().find({
     where: {
       eventDate: MoreThanOrEqual(getTodayDateString()),
@@ -151,7 +162,7 @@ async function listUpcomingEvents(): Promise<EventResponse[]> {
     },
   });
 
-  return events.map(serializeEvent);
+  return events.map(serializeEventListItem);
 }
 
 async function getEventDetail(

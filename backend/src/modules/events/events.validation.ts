@@ -28,6 +28,7 @@ const additionalInfoSchema = z.preprocess(
       .string()
       .max(5000, "Additional info cannot exceed 5000 characters."),
     z.literal(""),
+    z.null(),
     z.undefined(),
   ]),
 ).transform((value) => (value === "" ? null : value));
