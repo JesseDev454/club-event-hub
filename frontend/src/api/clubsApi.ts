@@ -23,10 +23,16 @@ export const clubsApi = {
     return this.getClubById(clubId);
   },
 
+  async getAdminClub(): Promise<ClubSummary> {
+    const response = await apiClient.get<ApiSuccessResponse<ClubSummary>>("/admin/club");
+    return response.data.data;
+  },
+
   async createClub(payload: ClubCreateInput): Promise<ClubCreationSuccessPayload> {
     const response = await apiClient.post<ApiSuccessResponse<ClubCreationSuccessPayload>>("/clubs", {
       ...payload,
       contactEmail: payload.contactEmail ?? "",
+      tagline: payload.tagline ?? "",
     });
 
     return response.data.data;

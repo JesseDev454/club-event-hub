@@ -2,15 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { getApiErrorMessage } from "../api/client";
+import { clubsApi } from "../api/clubsApi";
 import { eventsApi } from "../api/eventsApi";
 import { MaterialIcon } from "../components/common/MaterialIcon";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { formatDate, formatTimeRange } from "../lib/utils";
-import type { ManagedEvent } from "../types/domain";
+import type { ClubSummary, ManagedEvent } from "../types/domain";
 
 export function AdminEventsPage() {
+  const [club, setClub] = useState<ClubSummary | null>(null);
   const [events, setEvents] = useState<ManagedEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,15 +23,20 @@ export function AdminEventsPage() {
   useEffect(() => {
     let isMounted = true;
 
-    const loadEvents = async () => {
+    const loadDashboard = async () => {
       try {
-        const data = await eventsApi.getAdminEvents();
+        const [clubData, eventData] = await Promise.all([
+          clubsApi.getAdminClub(),
+          eventsApi.getAdminEvents(),
+        ]);
+
         if (isMounted) {
-          setEvents(data);
+          setClub(clubData);
+          setEvents(eventData);
         }
 
         const detailResults = await Promise.allSettled(
-          data.map(async (event) => {
+          eventData.map(async (event) => {
             const detail = await eventsApi.getEventById(event.id);
             return { id: event.id, rsvpCount: detail.rsvpCount };
           }),
@@ -60,7 +67,7 @@ export function AdminEventsPage() {
       }
     };
 
-    void loadEvents();
+    void loadDashboard();
 
     return () => {
       isMounted = false;
@@ -164,12 +171,14 @@ export function AdminEventsPage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <Link
-                  className="inline-flex items-center justify-center rounded-full border border-outline-variant px-6 py-3 font-semibold text-primary transition hover:bg-surface-container-low"
-                  to="/clubs"
-                >
-                  View public clubs
-                </Link>
+                {club ? (
+                  <Link
+                    className="inline-flex items-center justify-center rounded-full border border-outline-variant px-6 py-3 font-semibold text-primary transition hover:bg-surface-container-low"
+                    to={`/clubs/${club.id}/edit`}
+                  >
+                    Edit Club
+                  </Link>
+                ) : null}
                 <Link
                   className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-3 font-bold text-white transition hover:shadow-soft"
                   to="/admin/events/new"
@@ -179,6 +188,46 @@ export function AdminEventsPage() {
               </div>
             </div>
           </section>
+
+          {club ? (
+            <section className="rounded-[2rem] bg-white p-8 shadow-soft">
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                <div className="max-w-3xl">
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-outline">
+                    Your Club
+                  </p>
+                  <h2 className="mt-3 font-headline text-3xl font-extrabold tracking-tight text-primary">
+                    {club.name}
+                  </h2>
+                  <div className="mt-4 flex flex-wrap gap-3 text-sm text-on-surface-variant">
+                    <span className="rounded-full bg-surface-container-low px-4 py-2 font-medium">
+                      {club.category}
+                    </span>
+                    {club.contactEmail ? (
+                      <span className="rounded-full bg-surface-container-low px-4 py-2 font-medium">
+                        {club.contactEmail}
+                      </span>
+                    ) : null}
+                  </div>
+                  {club.tagline ? (
+                    <p className="mt-5 text-base font-medium text-secondary">{club.tagline}</p>
+                  ) : null}
+                  <p className="mt-4 text-sm leading-7 text-on-surface-variant sm:text-base">
+                    {club.description}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  <Link
+                    className="inline-flex items-center justify-center rounded-full border border-outline-variant px-5 py-3 text-sm font-semibold text-primary transition hover:bg-surface-container-low"
+                    to={`/clubs/${club.id}`}
+                  >
+                    View Public Profile
+                  </Link>
+                </div>
+              </div>
+            </section>
+          ) : null}
 
           <section className="grid gap-5 md:grid-cols-3">
             <div className="rounded-[1.5rem] bg-white p-6 shadow-soft">

@@ -39,6 +39,7 @@ export type ClubCreateInput = {
   description: string;
   category: string;
   contactEmail: string | null;
+  tagline: string | null;
 };
 
 export type ClubUpdateInput = Partial<ClubCreateInput> & {

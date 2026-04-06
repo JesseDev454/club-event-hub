@@ -146,6 +146,18 @@ function ensureClubOwnership(club: Club, currentUser: AuthenticatedUser): void {
   }
 }
 
+async function getAdminClub(currentUser: AuthenticatedUser): Promise<ClubSummary> {
+  if (currentUser.role !== UserRole.CLUB_ADMIN || !currentUser.clubId) {
+    throw new ApiError(403, "You do not have permission to access an admin club.");
+  }
+
+  const club = await findClubOrThrow(currentUser.clubId);
+
+  ensureClubOwnership(club, currentUser);
+
+  return serializeClub(club);
+}
+
 async function listClubs(): Promise<ClubSummary[]> {
   const clubs = await getClubRepository().find({
     order: { name: "ASC" },
@@ -181,6 +193,7 @@ async function createClub(
   const normalizedName = payload.name.trim();
   const normalizedDescription = payload.description.trim();
   const normalizedCategory = payload.category.trim();
+  const normalizedTagline = payload.tagline ?? null;
 
   try {
     const { club, user } = await AppDataSource.transaction(async (transactionalEntityManager) => {
@@ -225,7 +238,7 @@ async function createClub(
         description: normalizedDescription,
         category: normalizedCategory,
         contactEmail: payload.contactEmail,
-        tagline: null,
+        tagline: normalizedTagline,
         ownerUserId: currentUser.id,
       });
 
@@ -293,6 +306,7 @@ async function updateClub(
 
 export const clubsService = {
   listClubs,
+  getAdminClub,
   getClubDetail,
   createClub,
   updateClub,

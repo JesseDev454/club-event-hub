@@ -8,6 +8,7 @@ import { clubIdSchema, createClubSchema, updateClubSchema } from "./clubs.valida
 import { clubsController } from "./clubs.controller";
 
 const clubsRouter = Router();
+const adminClubsRouter = Router();
 
 clubsRouter.get("/", clubsController.listClubs);
 clubsRouter.post(
@@ -26,4 +27,11 @@ clubsRouter.patch(
 );
 clubsRouter.get("/:id", validate(clubIdSchema), clubsController.getClubDetail);
 
-export { clubsRouter };
+adminClubsRouter.get(
+  "/",
+  requireAuth,
+  requireRole([UserRole.CLUB_ADMIN]),
+  clubsController.getAdminClub,
+);
+
+export { clubsRouter, adminClubsRouter };

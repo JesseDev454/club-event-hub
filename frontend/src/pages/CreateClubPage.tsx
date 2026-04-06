@@ -49,34 +49,13 @@ export function CreateClubPage() {
         description: formData.description,
         category: formData.category,
         contactEmail: normalizeNullableString(formData.contactEmail),
+        tagline: normalizeNullableString(formData.tagline),
       });
 
       setAuthState({
         token: creationResult.token,
         user: creationResult.user,
       });
-
-      const tagline = normalizeNullableString(formData.tagline);
-
-      if (tagline) {
-        try {
-          await clubsApi.updateClub(creationResult.club.id, {
-            tagline,
-          });
-        } catch (taglineError) {
-          navigate(`/clubs/${creationResult.club.id}/edit`, {
-            replace: true,
-            state: {
-              notice:
-                getApiErrorMessage(
-                  taglineError,
-                  "Your club was created, but we couldn't save the optional tagline yet.",
-                ) || "Your club was created, but we couldn't save the optional tagline yet.",
-            },
-          });
-          return;
-        }
-      }
 
       navigate(`/clubs/${creationResult.club.id}/edit`, { replace: true });
     } catch (submissionError) {

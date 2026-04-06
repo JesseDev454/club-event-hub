@@ -23,6 +23,15 @@ const listClubs = asyncHandler(async (_req: Request, res: Response) => {
   });
 });
 
+const getAdminClub = asyncHandler(async (req: Request, res: Response) => {
+  const club = await clubsService.getAdminClub(getAuthenticatedUser(req));
+
+  sendSuccess(res, {
+    message: "Admin club fetched successfully.",
+    data: club,
+  });
+});
+
 const createClub = asyncHandler(async (req: Request, res: Response) => {
   const result = await clubsService.createClub(
     req.body as CreateClubInput,
@@ -60,6 +69,7 @@ const updateClub = asyncHandler(async (req: Request, res: Response) => {
 
 export const clubsController = {
   listClubs,
+  getAdminClub,
   createClub,
   getClubDetail,
   updateClub,

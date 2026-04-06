@@ -52,7 +52,7 @@ export function EditClubProfilePage() {
       }
 
       try {
-        const club = await clubsApi.getManagedClub(user.clubId);
+        const club = await clubsApi.getAdminClub();
 
         if (isMounted) {
           setLoadFailed(false);

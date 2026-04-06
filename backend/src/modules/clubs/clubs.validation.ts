@@ -44,6 +44,7 @@ const createClubBodySchema = z.object({
     .min(2, "Category must be at least 2 characters long.")
     .max(100, "Category cannot exceed 100 characters."),
   contactEmail: optionalContactEmailSchema,
+  tagline: optionalTaglineSchema,
 }).strict();
 
 const updateClubBodySchema = z
