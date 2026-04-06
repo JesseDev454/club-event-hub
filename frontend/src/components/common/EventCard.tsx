@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 
 import { formatDate, formatTimeRange } from "../../lib/utils";
-import type { ClubEventSummary, EventSummary } from "../../types/domain";
+import type { ClubEventSummary, EventListItem } from "../../types/domain";
 
 type EventCardProps = {
-  event: EventSummary | ClubEventSummary;
+  event: EventListItem | ClubEventSummary;
   clubName?: string;
 };
 

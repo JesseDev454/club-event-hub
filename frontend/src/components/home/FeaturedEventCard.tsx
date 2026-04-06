@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 
 import { formatDate, formatTimeRange } from "../../lib/utils";
-import type { EventSummary } from "../../types/domain";
+import type { EventListItem } from "../../types/domain";
 
 type FeaturedEventCardProps = {
-  event: EventSummary;
+  event: EventListItem;
   rsvpCount?: number;
 };
 

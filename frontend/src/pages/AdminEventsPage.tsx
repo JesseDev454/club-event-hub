@@ -8,10 +8,10 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { formatDate, formatTimeRange } from "../lib/utils";
-import type { EventSummary } from "../types/domain";
+import type { ManagedEvent } from "../types/domain";
 
 export function AdminEventsPage() {
-  const [events, setEvents] = useState<EventSummary[]>([]);
+  const [events, setEvents] = useState<ManagedEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);

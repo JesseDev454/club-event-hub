@@ -14,22 +14,20 @@ import { getCategoryVisual } from "../lib/presentation";
 import { useAuth } from "../state/AuthContext";
 import type { EventDetail } from "../types/domain";
 
-type HighlightCardProps = {
-  description: string;
+const highlightIcons = ["tips_and_updates", "rocket_launch", "groups", "school"];
+
+type RichListCardProps = {
   icon: string;
-  title: string;
+  text: string;
 };
 
-function HighlightCard({ description, icon, title }: HighlightCardProps) {
+function RichListCard({ icon, text }: RichListCardProps) {
   return (
     <div className="flex gap-4 rounded-[1.5rem] bg-surface-container-low p-6">
       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-secondary-container text-[#00210f]">
         <MaterialIcon name={icon} />
       </div>
-      <div>
-        <h3 className="text-lg font-bold text-on-surface">{title}</h3>
-        <p className="mt-1 text-sm leading-7 text-on-surface-variant">{description}</p>
-      </div>
+      <p className="text-sm leading-7 text-on-surface-variant">{text}</p>
     </div>
   );
 }
@@ -237,6 +235,42 @@ export function EventDetailPage() {
         <div className="space-y-10">
           <section>
             <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
+              Hosted by
+            </h2>
+            <div className="mt-5 rounded-[1.75rem] bg-white p-8 shadow-soft">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-surface-container-low text-lg font-bold text-primary">
+                    {getInitials(event.club.name)}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-outline">
+                      Club organizer
+                    </p>
+                    <h2 className="mt-1 font-headline text-2xl font-bold text-primary">
+                      {event.club.name}
+                    </h2>
+                    <p className="mt-1 text-sm text-on-surface-variant">{event.club.category}</p>
+                    {event.club.contactEmail ? (
+                      <p className="mt-2 text-sm text-on-surface-variant">
+                        Contact: {event.club.contactEmail}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+
+                <Link
+                  className="inline-flex items-center justify-center rounded-full border border-outline-variant/40 px-5 py-3 font-semibold text-primary transition hover:bg-surface-container-low"
+                  to={`/clubs/${event.club.id}`}
+                >
+                  View club profile
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
               About this event
             </h2>
             <div className="mt-5 rounded-[1.75rem] bg-white p-8 shadow-soft">
@@ -244,33 +278,53 @@ export function EventDetailPage() {
             </div>
           </section>
 
-          <section>
-            <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
-              What to expect
-            </h2>
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
-              <HighlightCard
-                description={`This ${event.category.toLowerCase()} event is scheduled for ${formatLongDate(event.eventDate)}.`}
-                icon="calendar_today"
-                title="Scheduled session"
-              />
-              <HighlightCard
-                description={`Students will gather at ${event.venue} for the main experience.`}
-                icon="location_on"
-                title="On-campus venue"
-              />
-              <HighlightCard
-                description={`The session runs ${formatTimeRange(event.startTime, event.endTime)}.`}
-                icon="schedule"
-                title="Clear timing"
-              />
-              <HighlightCard
-                description={`Attendance interest is currently at ${event.rsvpCount} RSVP${event.rsvpCount === 1 ? "" : "s"}.`}
-                icon="groups"
-                title="Student turnout"
-              />
-            </div>
-          </section>
+          {event.highlights.length > 0 ? (
+            <section>
+              <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
+                What to expect
+              </h2>
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                {event.highlights.map((highlight, index) => (
+                  <RichListCard
+                    icon={highlightIcons[index % highlightIcons.length]}
+                    key={`${highlight}-${index}`}
+                    text={highlight}
+                  />
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {event.targetAudience.length > 0 ? (
+            <section>
+              <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
+                Who should attend
+              </h2>
+              <div className="mt-5 rounded-[1.75rem] bg-white p-8 shadow-soft">
+                <div className="flex flex-wrap gap-3">
+                  {event.targetAudience.map((audience, index) => (
+                    <span
+                      className="rounded-full bg-surface-container-low px-4 py-2 text-sm font-medium text-on-surface-variant"
+                      key={`${audience}-${index}`}
+                    >
+                      {audience}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </section>
+          ) : null}
+
+          {event.additionalInfo ? (
+            <section>
+              <h2 className="font-headline text-3xl font-bold tracking-tight text-on-surface">
+                Additional info
+              </h2>
+              <div className="mt-5 rounded-[1.75rem] bg-white p-8 shadow-soft">
+                <p className="text-base leading-8 text-on-surface-variant">{event.additionalInfo}</p>
+              </div>
+            </section>
+          ) : null}
         </div>
 
         <aside className="lg:sticky lg:top-28">
@@ -315,7 +369,9 @@ export function EventDetailPage() {
                     Students attending
                   </p>
                 </div>
-                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${visual.accentClassName}`}>
+                <div
+                  className={`flex h-12 w-12 items-center justify-center rounded-2xl ${visual.accentClassName}`}
+                >
                   <MaterialIcon name={visual.icon} />
                 </div>
               </div>

@@ -10,7 +10,7 @@ import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { formatDate } from "../lib/utils";
 import { getCategoryVisual } from "../lib/presentation";
-import type { ClubSummary, EventDetail, EventSummary } from "../types/domain";
+import type { ClubSummary, EventDetail, EventListItem } from "../types/domain";
 
 type ClubUpcomingCounts = Record<string, number>;
 type EventRsvpCounts = Record<string, number>;
@@ -20,7 +20,7 @@ const heroImage =
 
 export function HomePage() {
   const [clubs, setClubs] = useState<ClubSummary[]>([]);
-  const [events, setEvents] = useState<EventSummary[]>([]);
+  const [events, setEvents] = useState<EventListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalRsvps, setTotalRsvps] = useState<number | null>(null);

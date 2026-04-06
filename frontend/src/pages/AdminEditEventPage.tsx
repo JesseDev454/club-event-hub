@@ -7,12 +7,12 @@ import { EventForm } from "../components/common/EventForm";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
-import type { EventFormInput } from "../types/domain";
+import type { EventFormValues } from "../types/domain";
 
 export function AdminEditEventPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<EventFormInput>({
+  const [formData, setFormData] = useState<EventFormValues>({
     title: "",
     description: "",
     eventDate: "",
@@ -20,6 +20,9 @@ export function AdminEditEventPage() {
     endTime: "",
     venue: "",
     category: "",
+    highlightsText: "",
+    targetAudienceText: "",
+    additionalInfo: "",
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -49,6 +52,9 @@ export function AdminEditEventPage() {
             endTime: event.endTime ?? "",
             venue: event.venue,
             category: event.category,
+            highlightsText: event.highlights.join("\n"),
+            targetAudienceText: event.targetAudience.join("\n"),
+            additionalInfo: event.additionalInfo ?? "",
           });
         }
       } catch (loadError) {
@@ -70,7 +76,7 @@ export function AdminEditEventPage() {
     };
   }, [id]);
 
-  const handleChange = (field: keyof EventFormInput, value: string) => {
+  const handleChange = (field: keyof EventFormValues, value: string) => {
     setFormData((current) => ({
       ...current,
       [field]: value,

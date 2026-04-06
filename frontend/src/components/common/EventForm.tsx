@@ -1,20 +1,27 @@
 import { type FormEvent } from "react";
 
 import { formatTimeRange } from "../../lib/utils";
-import type { EventFormInput } from "../../types/domain";
+import type { EventFormValues } from "../../types/domain";
 import { ErrorMessage } from "../ui/ErrorMessage";
 import { MaterialIcon } from "./MaterialIcon";
 
 type EventFormProps = {
-  formData: EventFormInput;
+  formData: EventFormValues;
   error: string | null;
   submitting: boolean;
   submitLabel: string;
-  onChange: (field: keyof EventFormInput, value: string) => void;
+  onChange: (field: keyof EventFormValues, value: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void | Promise<void>;
 };
 
 const categoryOptions = ["Technology", "Career", "Social", "Sports", "Arts", "Academic"];
+
+function splitTextareaLines(value: string): string[] {
+  return value
+    .split(/\r?\n/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 function FieldLabel({ children }: { children: string }) {
   return (
@@ -33,6 +40,8 @@ export function EventForm({
   onSubmit,
 }: EventFormProps) {
   const hasSchedulePreview = Boolean(formData.eventDate || formData.startTime || formData.venue);
+  const highlightItems = splitTextareaLines(formData.highlightsText);
+  const audienceItems = splitTextareaLines(formData.targetAudienceText);
 
   return (
     <form className="space-y-8" onSubmit={onSubmit}>
@@ -103,33 +112,117 @@ export function EventForm({
           <section className="rounded-[1.75rem] bg-white p-8 shadow-soft">
             <div className="mb-8 flex items-center gap-3">
               <MaterialIcon className="text-primary" name="star" />
-              <h2 className="font-headline text-xl font-bold text-on-surface">Event Snapshot</h2>
+              <h2 className="font-headline text-xl font-bold text-on-surface">
+                Experience & Audience
+              </h2>
             </div>
 
-            <div className="rounded-[1.5rem] bg-surface-container-low p-6">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-outline">Preview</p>
-              <h3 className="mt-4 font-headline text-2xl font-bold text-primary">
-                {formData.title || "Your event title"}
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-on-surface-variant">
-                {formData.description || "Your event description will appear here as you type."}
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3 text-sm text-on-surface-variant">
-                <span className="rounded-full bg-white px-4 py-2">
-                  {formData.category || "Category"}
-                </span>
-                <span className="rounded-full bg-white px-4 py-2">
-                  {hasSchedulePreview
-                    ? `${formData.eventDate || "Date"} • ${
-                        formData.startTime
-                          ? formatTimeRange(formData.startTime, formData.endTime || null)
-                          : "Time"
-                      }`
-                    : "Schedule preview"}
-                </span>
-                <span className="rounded-full bg-white px-4 py-2">
-                  {formData.venue || "Venue"}
-                </span>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <FieldLabel>Highlights / What to expect</FieldLabel>
+                <textarea
+                  className="min-h-40 w-full resize-none rounded-t-xl border-0 bg-surface-container-low px-4 py-3 text-on-surface outline-none transition focus:border-b-2 focus:border-primary"
+                  onChange={(event) => onChange("highlightsText", event.target.value)}
+                  placeholder={"One highlight per line\nHands-on coding lab\nIndustry guest speakers\nCertificate of participation"}
+                  required
+                  value={formData.highlightsText}
+                />
+                <p className="text-xs text-outline">
+                  Enter one highlight per line. These power the richer event detail experience.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <FieldLabel>Target Audience</FieldLabel>
+                <textarea
+                  className="min-h-32 w-full resize-none rounded-t-xl border-0 bg-surface-container-low px-4 py-3 text-on-surface outline-none transition focus:border-b-2 focus:border-primary"
+                  onChange={(event) => onChange("targetAudienceText", event.target.value)}
+                  placeholder={"One audience segment per line\nComputer science students\nFreshers exploring clubs\nStudent founders and builders"}
+                  required
+                  value={formData.targetAudienceText}
+                />
+                <p className="text-xs text-outline">
+                  Enter one audience segment per line so students can quickly tell who the event is
+                  for.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <FieldLabel>Additional Info (Optional)</FieldLabel>
+                <textarea
+                  className="min-h-32 w-full resize-none rounded-t-xl border-0 bg-surface-container-low px-4 py-3 text-on-surface outline-none transition focus:border-b-2 focus:border-primary"
+                  onChange={(event) => onChange("additionalInfo", event.target.value)}
+                  placeholder="Share anything extra students should know, like what to bring, dress code, or preparation notes."
+                  value={formData.additionalInfo}
+                />
+                <p className="text-xs text-outline">
+                  Leave this blank to keep the event detail page focused on the essentials.
+                </p>
+              </div>
+
+              <div className="rounded-[1.5rem] bg-surface-container-low p-6">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-outline">
+                  Content Preview
+                </p>
+                <h3 className="mt-4 font-headline text-2xl font-bold text-primary">
+                  {formData.title || "Your event title"}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-on-surface-variant">
+                  {formData.description || "Your event overview will appear here as you type."}
+                </p>
+                <div className="mt-5 flex flex-wrap gap-3 text-sm text-on-surface-variant">
+                  <span className="rounded-full bg-white px-4 py-2">
+                    {formData.category || "Category"}
+                  </span>
+                  <span className="rounded-full bg-white px-4 py-2">
+                    {hasSchedulePreview
+                      ? `${formData.eventDate || "Date"} • ${
+                          formData.startTime
+                            ? formatTimeRange(formData.startTime, formData.endTime || null)
+                            : "Time"
+                        }`
+                      : "Schedule preview"}
+                  </span>
+                  <span className="rounded-full bg-white px-4 py-2">
+                    {formData.venue || "Venue"}
+                  </span>
+                </div>
+
+                <div className="mt-5 grid gap-5 md:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-outline">
+                      Highlights
+                    </p>
+                    <ul className="mt-3 space-y-2 text-sm text-on-surface-variant">
+                      {(highlightItems.length > 0
+                        ? highlightItems
+                        : ["Add at least one highlight"]).map((item, index) => (
+                        <li className="flex gap-2" key={`${item}-${index}`}>
+                          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-secondary" />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-outline">
+                      Target Audience
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {(audienceItems.length > 0
+                        ? audienceItems
+                        : ["Add at least one audience segment"]).map((item, index) => (
+                        <span
+                          className="rounded-full bg-white px-3 py-2 text-xs font-medium text-on-surface-variant"
+                          key={`${item}-${index}`}
+                        >
+                          {item}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -203,8 +296,8 @@ export function EventForm({
               <div>
                 <p className="font-headline text-sm font-bold text-tertiary">Pro Tip</p>
                 <p className="mt-1 text-xs leading-6 text-on-surface-variant">
-                  Clear titles, a concise description, and an exact venue make it easier for
-                  students to trust the listing and RSVP quickly.
+                  The strongest campus event pages clearly explain what students will experience,
+                  who the event is for, and any extra preparation notes.
                 </p>
               </div>
             </div>

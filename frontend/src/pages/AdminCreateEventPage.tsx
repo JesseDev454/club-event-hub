@@ -4,11 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { getApiErrorMessage } from "../api/client";
 import { eventsApi } from "../api/eventsApi";
 import { EventForm } from "../components/common/EventForm";
-import type { EventFormInput } from "../types/domain";
+import type { EventFormValues } from "../types/domain";
 
 export function AdminCreateEventPage() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<EventFormInput>({
+  const [formData, setFormData] = useState<EventFormValues>({
     title: "",
     description: "",
     eventDate: "",
@@ -16,11 +16,14 @@ export function AdminCreateEventPage() {
     endTime: "",
     venue: "",
     category: "",
+    highlightsText: "",
+    targetAudienceText: "",
+    additionalInfo: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (field: keyof EventFormInput, value: string) => {
+  const handleChange = (field: keyof EventFormValues, value: string) => {
     setFormData((current) => ({
       ...current,
       [field]: value,

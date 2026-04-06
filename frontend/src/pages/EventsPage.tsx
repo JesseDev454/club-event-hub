@@ -9,12 +9,12 @@ import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { formatDate, formatTimeRange, getInitials } from "../lib/utils";
 import { getCategoryVisual } from "../lib/presentation";
-import type { EventSummary } from "../types/domain";
+import type { EventListItem } from "../types/domain";
 
 const ALL_CATEGORIES = "All Events";
 
 export function EventsPage() {
-  const [events, setEvents] = useState<EventSummary[]>([]);
+  const [events, setEvents] = useState<EventListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");

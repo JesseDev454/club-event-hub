@@ -32,7 +32,7 @@ export type EventClubSummary = {
   contactEmail: string | null;
 };
 
-export type EventSummary = {
+export type EventListItem = {
   id: string;
   clubId: string;
   createdBy: string;
@@ -48,7 +48,15 @@ export type EventSummary = {
   club: EventClubSummary;
 };
 
-export type EventDetail = EventSummary & {
+export type EventRichFields = {
+  highlights: string[];
+  targetAudience: string[];
+  additionalInfo: string | null;
+};
+
+export type ManagedEvent = EventListItem & EventRichFields;
+
+export type EventDetail = ManagedEvent & {
   rsvpCount: number;
   hasRsvped: boolean | null;
 };
@@ -59,7 +67,7 @@ export type RsvpActionResponse = {
   hasRsvped: boolean;
 };
 
-export type EventFormInput = {
+export type EventFormValues = {
   title: string;
   description: string;
   eventDate: string;
@@ -67,6 +75,25 @@ export type EventFormInput = {
   endTime: string;
   venue: string;
   category: string;
+  highlightsText: string;
+  targetAudienceText: string;
+  additionalInfo: string;
 };
 
-export type EventUpdateInput = Partial<EventFormInput>;
+export type EventCreateInput = {
+  title: string;
+  description: string;
+  eventDate: string;
+  startTime: string;
+  endTime?: string;
+  venue: string;
+  category: string;
+  highlights: string[];
+  targetAudience: string[];
+  additionalInfo?: string | null;
+};
+
+export type EventUpdateInput = Partial<Omit<EventCreateInput, "endTime" | "additionalInfo">> & {
+  endTime?: string | null;
+  additionalInfo?: string | null;
+};
