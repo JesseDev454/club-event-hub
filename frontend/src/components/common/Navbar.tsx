@@ -1,4 +1,5 @@
-import { Link, NavLink } from "react-router-dom";
+import { useState, type FormEvent } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { getInitials } from "../../lib/utils";
 import { useAuth } from "../../state/AuthContext";
@@ -12,8 +13,23 @@ const publicLinks = [
 ];
 
 export function Navbar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, loading, logout, user } = useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
   const userInitials = getInitials(user?.name ?? "NC");
+
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedQuery = searchQuery.trim();
+    if (!normalizedQuery) {
+      return;
+    }
+
+    const targetBasePath = location.pathname.startsWith("/clubs") ? "/clubs" : "/events";
+    navigate(`${targetBasePath}?q=${encodeURIComponent(normalizedQuery)}`);
+  };
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
@@ -55,10 +71,18 @@ export function Navbar() {
 
         <div className="flex items-center gap-3">
           {!loading ? (
-            <div className="hidden items-center gap-2 rounded-full bg-surface-container-low px-4 py-2 lg:flex">
+            <form
+              className="hidden items-center gap-2 rounded-full bg-surface-container-low px-4 py-2 lg:flex"
+              onSubmit={handleSearchSubmit}
+            >
               <MaterialIcon className="text-sm text-outline" name="search" />
-              <span className="text-sm text-outline">Search clubs or events...</span>
-            </div>
+              <input
+                className="w-48 bg-transparent text-sm text-on-surface outline-none placeholder:text-outline"
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search clubs or events..."
+                value={searchQuery}
+              />
+            </form>
           ) : null}
 
           {loading ? (
@@ -78,7 +102,10 @@ export function Navbar() {
                 <>
                   {user.clubId ? (
                     <Link to={`/clubs/${user.clubId}/edit`}>
-                      <Button className="hidden rounded-full border border-outline-variant bg-white px-5 text-primary hover:bg-surface-container-low md:inline-flex">
+                      <Button
+                        className="hidden rounded-full border border-outline-variant bg-white px-5 !text-primary hover:bg-surface-container-low md:inline-flex"
+                        variant="secondary"
+                      >
                         Edit Club
                       </Button>
                     </Link>
@@ -116,7 +143,10 @@ export function Navbar() {
           ) : (
             <>
               <Link className="hidden md:inline-flex" to="/login">
-                <Button className="rounded-full border border-outline-variant bg-white px-5 text-primary hover:bg-surface-container-low">
+                <Button
+                  className="rounded-full border border-outline-variant bg-white px-5 !text-primary hover:bg-surface-container-low"
+                  variant="secondary"
+                >
                   Sign in
                 </Button>
               </Link>

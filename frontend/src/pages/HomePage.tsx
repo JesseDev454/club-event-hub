@@ -62,18 +62,20 @@ function ValueCard({
   title,
   description,
   tone,
+  iconClassName,
   offset,
 }: {
   icon: string;
   title: string;
   description: string;
   tone: string;
+  iconClassName?: string;
   offset?: string;
 }) {
   return (
     <div className={`flex flex-col gap-4 rounded-2xl bg-surface p-6 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] ${offset ?? ""}`}>
       <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${tone}`}>
-        <MaterialIcon name={icon} />
+        <MaterialIcon className={iconClassName} name={icon} />
       </div>
       <h4 className="font-bold text-primary">{title}</h4>
       <p className="text-sm text-on-surface-variant">{description}</p>
@@ -409,7 +411,13 @@ export function HomePage() {
               <div className="order-2 relative lg:order-1">
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-6">
-                    <ValueCard icon="hub" title="Find Your Crew" description="Connect with people who share your passion for tech, art, or social causes." tone="bg-primary-fixed text-primary" />
+                    <ValueCard
+                      icon="hub"
+                      iconClassName="text-primary"
+                      title="Find Your Crew"
+                      description="Connect with people who share your passion for tech, art, or social causes."
+                      tone="border border-primary/10 bg-primary-fixed text-primary"
+                    />
                     <ValueCard icon="rocket_launch" title="Lead and Grow" description="Step up into leadership roles and organize events that make an impact." offset="translate-x-4" tone="bg-secondary-container text-on-secondary-container" />
                   </div>
                   <div className="space-y-6 pt-12">

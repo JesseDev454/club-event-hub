@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { getApiErrorMessage } from "../api/client";
 import { eventsApi } from "../api/eventsApi";
@@ -14,12 +14,34 @@ import type { EventListItem } from "../types/domain";
 const ALL_CATEGORIES = "All Events";
 
 export function EventsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState<EventListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
   const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
   const [rsvpCounts, setRsvpCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const urlQuery = searchParams.get("q") ?? "";
+    setSearchQuery((current) => (current === urlQuery ? current : urlQuery));
+  }, [searchParams]);
+
+  useEffect(() => {
+    const normalizedQuery = searchQuery.trim();
+    const currentQuery = searchParams.get("q") ?? "";
+
+    if (normalizedQuery === currentQuery) {
+      return;
+    }
+
+    if (normalizedQuery) {
+      setSearchParams({ q: normalizedQuery }, { replace: true });
+      return;
+    }
+
+    setSearchParams({}, { replace: true });
+  }, [searchParams, searchQuery, setSearchParams]);
 
   useEffect(() => {
     let isMounted = true;

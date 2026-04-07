@@ -17,17 +17,22 @@ const brandImage =
 
 function BrandBullet({
   icon,
+  title,
   text,
 }: {
   icon: string;
+  title: string;
   text: string;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-secondary-fixed">
+    <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/12 p-4 backdrop-blur-md">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 text-emerald-100 shadow-sm">
         <MaterialIcon name={icon} />
       </div>
-      <p className="text-sm leading-6 text-on-primary-container">{text}</p>
+      <div>
+        <p className="text-sm font-bold text-white">{title}</p>
+        <p className="mt-1 text-sm leading-6 text-blue-50/90">{text}</p>
+      </div>
     </div>
   );
 }
@@ -44,13 +49,18 @@ export function AuthSplitLayout({
     <div className="grid min-h-screen grid-cols-1 overflow-hidden bg-surface lg:grid-cols-12">
       <section className="relative hidden overflow-hidden bg-primary lg:col-span-7 lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="absolute inset-0">
-          <img alt="Nile University campus architecture" className="h-full w-full object-cover opacity-60 mix-blend-luminosity" src={brandImage} />
-          <div className="absolute inset-0 bg-gradient-to-tr from-primary via-primary to-primary-container opacity-90" />
+          <img
+            alt="Nile University campus architecture"
+            className="h-full w-full object-cover opacity-80 saturate-110"
+            src={brandImage}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(0,30,64,0.82)_0%,rgba(0,30,64,0.72)_42%,rgba(0,51,102,0.58)_100%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(151,243,181,0.16),transparent_32%),radial-gradient(circle_at_bottom_right,rgba(167,200,255,0.18),transparent_36%)]" />
         </div>
 
         <div className="relative z-10">
           <div className="mb-12 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary text-white shadow-lg shadow-emerald-900/20">
               <MaterialIcon name="school" />
             </div>
             <span className="font-headline text-2xl font-extrabold tracking-tighter text-white">
@@ -59,14 +69,14 @@ export function AuthSplitLayout({
           </div>
 
           <div className="max-w-xl">
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-secondary-fixed">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-100">
               {eyebrow}
             </p>
-            <h1 className="font-headline text-5xl font-extrabold leading-tight text-white">
+            <h1 className="font-headline text-5xl font-extrabold leading-tight text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.2)]">
               The central hub for <br />
-              <span className="text-secondary-fixed">Nile University</span> life.
+              <span className="text-emerald-100">Nile University</span> life.
             </h1>
-            <p className="mt-8 max-w-md text-lg leading-8 text-on-primary-container">
+            <p className="mt-8 max-w-md text-lg leading-8 text-blue-50/90">
               {helperText}
             </p>
           </div>
@@ -75,15 +85,18 @@ export function AuthSplitLayout({
         <div className="relative z-10 grid gap-4 md:grid-cols-3">
           <BrandBullet
             icon="event_available"
-            text="Discover live campus events with real details before you commit."
+            text="See live campus events before you decide to join."
+            title="Discover events"
           />
           <BrandBullet
             icon="groups"
-            text="Explore student communities and find the clubs already building momentum."
+            text="Explore student communities and discover active clubs on campus."
+            title="Find clubs"
           />
           <BrandBullet
             icon="shield_person"
-            text="Create your account as a student and grow into club leadership inside the product."
+            text="Join as a student and grow into leadership."
+            title="Grow as a leader"
           />
         </div>
       </section>

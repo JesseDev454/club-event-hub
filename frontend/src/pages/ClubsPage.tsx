@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { getApiErrorMessage } from "../api/client";
 import { clubsApi } from "../api/clubsApi";
@@ -17,13 +17,35 @@ const clubsHeroImage =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuDCWtFmDe960KyWDporlilNySOvXN8L6O1SKmmQioKj34VSrR5spYyimzae7Fgtq51E18l_o-5x3GKi79VRjMmBDOCnCAbfqoAbBQiu0g54Al0mbjojffuIWtbjsoAAX-2b--MT486NSKIk5pCGocLl0U7v_V3wmSJO50LzSDejpwnVotMvNaFINERffOgsL84XGvRQaq8ofdDORSEIpkl4_-BIbDaTP7PmAxXS_S2M4b5EfOQOHlRsNrQRge-oVopYXCNQkLsruQk";
 
 export function ClubsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
   const [clubs, setClubs] = useState<ClubSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
   const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
   const [upcomingCounts, setUpcomingCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const urlQuery = searchParams.get("q") ?? "";
+    setSearchQuery((current) => (current === urlQuery ? current : urlQuery));
+  }, [searchParams]);
+
+  useEffect(() => {
+    const normalizedQuery = searchQuery.trim();
+    const currentQuery = searchParams.get("q") ?? "";
+
+    if (normalizedQuery === currentQuery) {
+      return;
+    }
+
+    if (normalizedQuery) {
+      setSearchParams({ q: normalizedQuery }, { replace: true });
+      return;
+    }
+
+    setSearchParams({}, { replace: true });
+  }, [searchParams, searchQuery, setSearchParams]);
 
   useEffect(() => {
     let isMounted = true;
