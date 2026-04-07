@@ -9,36 +9,48 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { getCategoryVisual } from "../lib/presentation";
-import { formatDate, formatTimeRange, getInitials } from "../lib/utils";
+import { formatDate, formatTimeRange } from "../lib/utils";
 import type { ClubSummary, EventDetail, EventListItem } from "../types/domain";
 
 type ClubUpcomingCounts = Record<string, number>;
 type EventRsvpCounts = Record<string, number>;
 
-const heroImage =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBOEWRyf5X9zzEdWC5vYAFEaoefOybyo5-pfGVrsJx-QWElvc_jRByG7XQfF8u_IqMUpLoW2vKKUpAMM7AolqL-ULWcKVrnOIbIXrNO6QL1VISlgHVeYdh-hyTMVPP1AOyFO5gZVNkoWTMRU1XeFORQaPEypwtYYahlTAcH-T773D_wqPgbrPTAj3s87UVZN76Y6HG1xABRbyKwZBHRJZxl7LEMzNgJjgI-CzVzwllivhAp5q33GGIASAAiGa9okLeFlv5gjsjsKE01";
+const heroPeople = [
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuAioWFi0r9nkEFpaBENpR70-5NdzvyVPv5tezO1ZmGKFlwKt98eG-eU_A5KZkHhEH_u6aC9wDi_ZzY7fkEkt-zh6oitRo6KMztcHM4yZXc6Tj4MD45v6ifnv3lOxFXWGRiYcS7G9uysrNQPrkVTR4AJdQfIaazCOfp5fN0t4BgoFwuOYm8gqnm5NGi4hEB4MrMkzZytYfVqC5N1RsJbTRUYZN49NjHjSkTUwU0wvusd2hkZP7xxJHlAqXlJ3YhB_bW1DUhLM2OxkJw",
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuC85MVaXyhiutwm4bVIGnRYS2wRxLOD13voPHWe7ZgL5J3AZ2M4SV7Ka1-2OlySExWMUpx5PZhfNt8xOQgRhj12ut1tlsEYfE7itjc8OC9y8lwiuus-iRvVmlrlu_DhKbxQF68lij7Ei0rKzfOMO2leUfo3ySLeT4nCi1n_6HnVnVpSfDM5_obJzihVUg9Emmn7S3bjbsgLKHnnN_t1s7MQZfvcO4nyVYFJBgX_NKIjCRpjDngeI3Acii6Be7SLMEFKenwRCVhmEkI",
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuAImQDUSdu3daSQBA14aS6srShKMpU1Gg3rWl9_f9AsjHks6CUdgvXfNht3q87MkJjNbkiEQvRNzsnfj_9X-kQSnXrWfYXbTEbXE5yYgjFjgZjcKz-PUePRY4eFqPeGF9WWkiR6ZpEN_Ipij4RrNfguZwlrPDMRbJu0p4oP6jtQcxTZMnBm7ZdQgx0jP3lILrvqlQGI8sND5unVAGjQt1j_3sRenNKftbBu_V5YBVa5zacJc4mPqjggLampxx8-u9Kdf06MpuL-wRE",
+];
+
+const heroImages = [
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuCjbh-96t4iV_RCiSzLvF_7vvLrasDdC3_yjn2QmsbyEBKwHf-hNnatKKqr9vXgWW9RUeLnrGDUv-itYHytOnCUb8VcN1hEmE2irmyyxRIXSuVICd8CDziQogSxNvHNFtstsk-wiGcfvoeld7gBjBnOMGkclFxBlLOjjoCxZ5kRi7kb6cLHQWVciiZKUBu27Pp5fmjvxUtwMmWCZLx7C0JAvSqJqFHMORDmyf0JpXZyqMvZ_eOVwXjX1hDsM9F-1pDCAxW7wQOI8lg",
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuBT2OP5b4E-OHC-RYaZOES3ZXXtMVBGp8zPjSPo1dslyEiw616DXwYjCstmhy0PE-5zUNOv9X5T5KHJLzX3UsDd5SKNzaWEfnGFenuUQEdrgynHeLpBPd3bl1ft2V2rgTDnWRVgL37hi0dvDOP9dqXSfPVKrr9kCyT3KqA97IVWaxPBjlmJV5qIioG3gwQSGBoSPtt9qpK1L2yTlU8fimJS6KO-HzKm30JYyoNzGtrPCybQ8i1j-efUjAEsL29yk2XZ1A7Vi1_4zGY",
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuDcc4-6WOELrSIb9893tU7qFDNzh7ADJdXb9Pl_Pjzzxx5nYDIQOwke_9vAPD6WGzGOP_qiGQzLnN-XUBr-eb3W2L_6YjZs3ojVFeg8iks7ULE6scwiZSMmjoPk41V3og8eoW-uEWdsuvsTt3Ej2F9iB9PyYSA5dDz6RO0zfVjimaQ7p9jeu0MrEgHe7YcQSrA9c8LiMmLG5BVifPTZfKVtf0-4ejpvRANDqw61AoqkgmhgxaH4dUU4QZyEQ8q8sAO6E97K1AO--QQ",
+];
+
+const explorePills = ["Tech", "Arts", "Sports", "Academic", "Social"];
 
 function formatMonth(dateString: string) {
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-  }).format(new Date(`${dateString}T00:00:00`));
+  return new Intl.DateTimeFormat(undefined, { month: "short" }).format(
+    new Date(`${dateString}T00:00:00`),
+  );
 }
 
 function formatDay(dateString: string) {
-  return new Date(`${dateString}T00:00:00`).getDate().toString().padStart(2, "0");
+  return new Date(`${dateString}T00:00:00`).getDate().toString();
 }
 
-function HomepageStat({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
+function formatCompact(value: number) {
+  return new Intl.NumberFormat(undefined, {
+    notation: value >= 1000 ? "compact" : "standard",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
-      <p className="font-headline text-4xl font-extrabold text-white">{value}</p>
-      <p className="mt-1 text-xs font-medium uppercase tracking-[0.24em] text-on-primary-container">
+      <p className="text-4xl font-extrabold text-white">{value}</p>
+      <p className="mt-1 text-sm font-medium uppercase tracking-widest text-on-primary-container">
         {label}
       </p>
     </div>
@@ -46,21 +58,25 @@ function HomepageStat({
 }
 
 function ValueCard({
-  description,
   icon,
   title,
+  description,
+  tone,
+  offset,
 }: {
-  description: string;
   icon: string;
   title: string;
+  description: string;
+  tone: string;
+  offset?: string;
 }) {
   return (
-    <div className="rounded-[1.75rem] bg-surface p-6 shadow-soft">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-surface-container-low text-primary">
+    <div className={`flex flex-col gap-4 rounded-2xl bg-surface p-6 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] ${offset ?? ""}`}>
+      <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${tone}`}>
         <MaterialIcon name={icon} />
       </div>
-      <h3 className="mt-4 font-headline text-xl font-bold text-primary">{title}</h3>
-      <p className="mt-3 text-sm leading-7 text-on-surface-variant">{description}</p>
+      <h4 className="font-bold text-primary">{title}</h4>
+      <p className="text-sm text-on-surface-variant">{description}</p>
     </div>
   );
 }
@@ -70,12 +86,10 @@ export function HomePage() {
   const [events, setEvents] = useState<EventListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [totalRsvps, setTotalRsvps] = useState<number | null>(null);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [totalRsvps, setTotalRsvps] = useState<number | null>(null);
   const [featuredEventRsvpCounts, setFeaturedEventRsvpCounts] = useState<EventRsvpCounts>({});
-  const [featuredClubUpcomingCounts, setFeaturedClubUpcomingCounts] = useState<ClubUpcomingCounts>(
-    {},
-  );
+  const [featuredClubUpcomingCounts, setFeaturedClubUpcomingCounts] = useState<ClubUpcomingCounts>({});
 
   useEffect(() => {
     let isMounted = true;
@@ -86,7 +100,6 @@ export function HomePage() {
 
       try {
         const [clubsData, eventsData] = await Promise.all([clubsApi.getClubs(), eventsApi.getEvents()]);
-
         if (isMounted) {
           setClubs(clubsData);
           setEvents(eventsData);
@@ -114,16 +127,27 @@ export function HomePage() {
     };
   }, []);
 
+  const featuredEvents = useMemo(
+    () =>
+      [...events]
+        .sort((a, b) => {
+          const first = new Date(`${a.eventDate}T${a.startTime || "00:00:00"}`).getTime();
+          const second = new Date(`${b.eventDate}T${b.startTime || "00:00:00"}`).getTime();
+          return first - second;
+        })
+        .slice(0, 3),
+    [events],
+  );
+
+  const featuredClubs = useMemo(() => clubs.slice(0, 4), [clubs]);
+
   useEffect(() => {
     let isMounted = true;
 
-    const enrichHomepageContent = async () => {
+    const enrichHomepage = async () => {
       if (loading || error) {
         return;
       }
-
-      const featuredEvents = events.slice(0, 3);
-      const featuredClubs = clubs.slice(0, 4);
 
       if (events.length > 0) {
         if (isMounted) {
@@ -139,38 +163,30 @@ export function HomePage() {
         }
 
         const successfulEventDetails = eventDetailResults
-          .filter(
-            (
-              result,
-            ): result is PromiseFulfilledResult<EventDetail> => result.status === "fulfilled",
-          )
+          .filter((result): result is PromiseFulfilledResult<EventDetail> => result.status === "fulfilled")
           .map((result) => result.value);
 
-        const featuredEventCounts: EventRsvpCounts = {};
-
+        const nextFeaturedCounts: EventRsvpCounts = {};
         successfulEventDetails.forEach((eventDetail) => {
           if (featuredEvents.some((featuredEvent) => featuredEvent.id === eventDetail.id)) {
-            featuredEventCounts[eventDetail.id] = eventDetail.rsvpCount;
+            nextFeaturedCounts[eventDetail.id] = eventDetail.rsvpCount;
           }
         });
 
-        setFeaturedEventRsvpCounts(featuredEventCounts);
-        setTotalRsvps(successfulEventDetails.reduce((sum, eventDetail) => sum + eventDetail.rsvpCount, 0));
+        setFeaturedEventRsvpCounts(nextFeaturedCounts);
+        setTotalRsvps(successfulEventDetails.reduce((sum, item) => sum + item.rsvpCount, 0));
         setStatsLoading(false);
       } else if (isMounted) {
-        setTotalRsvps(0);
         setStatsLoading(false);
+        setTotalRsvps(0);
       }
 
       if (featuredClubs.length === 0) {
-        if (isMounted) {
-          setFeaturedClubUpcomingCounts({});
-        }
-
+        setFeaturedClubUpcomingCounts({});
         return;
       }
 
-      const clubDetailResults = await Promise.allSettled(
+      const clubDetails = await Promise.allSettled(
         featuredClubs.map(async (club) => clubsApi.getClubById(club.id)),
       );
 
@@ -178,149 +194,113 @@ export function HomePage() {
         return;
       }
 
-      const featuredClubCounts: ClubUpcomingCounts = {};
-
-      clubDetailResults.forEach((result) => {
+      const nextClubCounts: ClubUpcomingCounts = {};
+      clubDetails.forEach((result) => {
         if (result.status === "fulfilled") {
-          featuredClubCounts[result.value.id] = result.value.upcomingEvents.length;
+          nextClubCounts[result.value.id] = result.value.upcomingEvents.length;
         }
       });
-
-      setFeaturedClubUpcomingCounts(featuredClubCounts);
+      setFeaturedClubUpcomingCounts(nextClubCounts);
     };
 
-    void enrichHomepageContent();
+    void enrichHomepage();
 
     return () => {
       isMounted = false;
     };
-  }, [clubs, error, events, loading]);
-
-  const featuredEvents = events.slice(0, 3);
-  const featuredClubs = clubs.slice(0, 4);
-
-  const categoryPills = useMemo(() => {
-    const categories = new Set<string>();
-
-    [...events, ...clubs].forEach((item) => {
-      categories.add(item.category);
-    });
-
-    return Array.from(categories).slice(0, 6);
-  }, [clubs, events]);
+  }, [error, events, featuredClubs, featuredEvents, loading]);
 
   const activeCategoryCount = useMemo(() => {
     const categories = new Set<string>();
-
-    [...events, ...clubs].forEach((item) => {
-      categories.add(item.category);
-    });
-
+    [...events, ...clubs].forEach((item) => categories.add(item.category));
     return categories.size;
   }, [clubs, events]);
 
   return (
-    <div className="space-y-16 lg:space-y-24">
-      <section className="relative overflow-hidden rounded-[2.5rem] bg-surface px-4 py-8 sm:px-6 lg:min-h-[48rem] lg:px-8 lg:py-16">
-        <div className="absolute inset-0 rounded-[2.5rem]">
-          <img alt="Nile University campus life" className="h-full w-full object-cover" src={heroImage} />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(247,249,255,0.97)_5%,rgba(247,249,255,0.9)_48%,rgba(247,249,255,0.2)_100%)]" />
-        </div>
-        <div className="absolute left-10 top-10 h-64 w-64 rounded-full bg-secondary-container/30 blur-3xl" />
-        <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-primary-fixed/30 blur-3xl" />
+    <div className="space-y-12 lg:space-y-20">
+      <section className="relative overflow-hidden bg-surface px-4 py-10 sm:px-6 lg:min-h-[54rem] lg:px-8 lg:py-20">
+        <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-secondary-container/30 blur-3xl" />
+        <div className="absolute -bottom-10 -left-10 h-72 w-72 rounded-full bg-primary-fixed/30 blur-3xl" />
 
-        <div className="relative z-10 grid gap-12 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
+        <div className="relative z-10 grid gap-12 lg:grid-cols-2 lg:items-center">
           <div className="max-w-2xl space-y-8">
-            <div className="inline-flex items-center rounded-full bg-secondary-container px-3 py-1 text-xs font-bold uppercase tracking-[0.22em] text-on-secondary-container">
-              Campus life, in motion
+            <div className="inline-flex items-center rounded-full bg-secondary-container px-3 py-1 text-xs font-bold uppercase tracking-widest text-on-secondary-container">
+              Campus Life Redefined
             </div>
+            <h1 className="font-headline text-5xl font-extrabold leading-[1.1] tracking-tight text-primary sm:text-6xl lg:text-7xl">
+              Discover Nile University <span className="text-secondary">clubs and events</span>{" "}
+              in one place
+            </h1>
+            <p className="max-w-lg text-xl leading-relaxed text-on-surface-variant">
+              Find active student communities, explore upcoming campus events, and RSVP in
+              seconds. Your bridge to a vibrant university experience starts here.
+            </p>
 
-            <div className="space-y-6">
-              <h1 className="font-headline text-5xl font-extrabold leading-[1.05] tracking-tight text-primary md:text-6xl lg:text-7xl">
-                Discover Nile University <span className="text-secondary">clubs and events</span> in one place
-              </h1>
-              <p className="max-w-xl text-lg leading-8 text-on-surface-variant lg:text-xl">
-                See what is happening across campus right now, find the communities already shaping
-                student life, and move from curiosity to RSVP without missing the moment.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 pt-4">
               <Link
-                className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-4 text-lg font-bold text-white shadow-soft transition hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-4 text-lg font-bold text-white shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-transform hover:scale-105 active:scale-95"
                 to="/events"
               >
                 Explore Events
                 <MaterialIcon name="arrow_forward" />
               </Link>
               <Link
-                className="inline-flex items-center justify-center rounded-xl border border-outline-variant/30 bg-surface-container-lowest px-8 py-4 text-lg font-bold text-primary transition hover:bg-surface-container-high"
+                className="inline-flex items-center justify-center rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-8 py-4 text-lg font-bold text-primary transition-all hover:bg-surface-container-high"
                 to="/clubs"
               >
                 Join a Club
               </Link>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex items-center gap-6 pt-8">
               <div className="flex -space-x-3">
-                {featuredClubs.slice(0, 3).map((club) => (
-                  <div
-                    className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-surface bg-primary-fixed text-sm font-bold text-on-primary-fixed"
-                    key={club.id}
-                    title={club.name}
-                  >
-                    {getInitials(club.name)}
-                  </div>
+                {heroPeople.map((image, index) => (
+                  <img
+                    alt={`Campus community ${index + 1}`}
+                    className="h-12 w-12 rounded-full border-4 border-surface object-cover"
+                    key={image}
+                    src={image}
+                  />
                 ))}
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-surface bg-primary text-xs font-bold text-white">
-                  {clubs.length > 0 ? `+${clubs.length}` : "+0"}
+                <div className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-surface bg-primary-fixed text-xs font-bold text-on-primary-fixed">
+                  +2k
                 </div>
               </div>
               <p className="text-sm font-medium text-on-surface-variant">
-                Active across <span className="font-bold text-primary">{activeCategoryCount}</span> campus activity lanes.
+                Joined by{" "}
+                <span className="font-bold text-primary">
+                  {statsLoading || totalRsvps === null ? "students" : `${formatCompact(totalRsvps)}+ students`}
+                </span>{" "}
+                this semester
               </p>
             </div>
           </div>
 
-          <div className="hidden lg:block">
+          <div className="relative hidden lg:block">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4 pt-12">
-                <div className="overflow-hidden rounded-[1.75rem] bg-surface-container-lowest p-2 shadow-soft">
-                  <img
-                    alt="Featured event moment"
-                    className="aspect-[4/5] w-full rounded-[1.25rem] object-cover"
-                    src={featuredEvents[0] ? getCategoryVisual(featuredEvents[0].category).image : heroImage}
-                  />
+                <div className="rotate-[-2deg] rounded-2xl bg-surface-container-lowest p-2 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-transform duration-500 hover:rotate-0">
+                  <img alt="Editorial campus moment" className="aspect-[4/5] w-full rounded-xl object-cover" src={heroImages[0]} />
                 </div>
-                <div className="flex items-center gap-4 rounded-[1.5rem] bg-surface-container-lowest p-4 shadow-soft">
+                <div className="flex rotate-[1deg] items-center gap-4 rounded-2xl bg-surface-container-lowest p-4 shadow-[0px_12px_32px_rgba(24,28,32,0.06)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary-container text-on-secondary-container">
                     <MaterialIcon filled name="verified" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-on-surface-variant">
-                      Campus momentum
+                    <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">
+                      Top Event
                     </p>
-                    <p className="font-bold text-primary">
-                      {featuredEvents[0]?.title ?? "Events loading"}
-                    </p>
+                    <p className="font-bold text-primary">{featuredEvents[0]?.title ?? "Tech Summit 2024"}</p>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className="overflow-hidden rounded-[1.75rem] bg-surface-container-lowest p-2 shadow-soft">
-                  <img
-                    alt="Featured club moment"
-                    className="aspect-[4/3] w-full rounded-[1.25rem] object-cover"
-                    src={featuredClubs[0] ? getCategoryVisual(featuredClubs[0].category).image : heroImage}
-                  />
+                <div className="rotate-[3deg] rounded-2xl bg-surface-container-lowest p-2 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-transform duration-500 hover:rotate-0">
+                  <img alt="Editorial workshop moment" className="aspect-[4/3] w-full rounded-xl object-cover" src={heroImages[1]} />
                 </div>
-                <div className="overflow-hidden rounded-[1.75rem] bg-surface-container-lowest p-2 shadow-soft">
-                  <img
-                    alt="Featured campus moment"
-                    className="aspect-square w-full rounded-[1.25rem] object-cover"
-                    src={featuredEvents[1] ? getCategoryVisual(featuredEvents[1].category).image : heroImage}
-                  />
+                <div className="rotate-[-1deg] rounded-2xl bg-surface-container-lowest p-2 shadow-[0px_12px_32px_rgba(24,28,32,0.06)]">
+                  <img alt="Editorial performance moment" className="aspect-square w-full rounded-xl object-cover" src={heroImages[2]} />
                 </div>
               </div>
             </div>
@@ -328,32 +308,26 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="rounded-[2rem] bg-primary px-6 py-10 text-white shadow-soft sm:px-8">
-        <div className="grid gap-10 md:grid-cols-4">
-          <HomepageStat label="active events" value={loading ? "..." : `${events.length}+`} />
-          <HomepageStat label="registered clubs" value={loading ? "..." : `${clubs.length}+`} />
-          <HomepageStat label="campus categories" value={loading ? "..." : `${activeCategoryCount}+`} />
-          <HomepageStat
-            label="student RSVPs"
-            value={statsLoading || totalRsvps === null ? "..." : `${totalRsvps}+`}
-          />
+      <section className="bg-primary px-8 py-10 text-white">
+        <div className="flex flex-wrap justify-center gap-12 md:gap-24">
+          <Stat label="Active Events" value={loading ? "..." : `${events.length}+`} />
+          <Stat label="Registered Clubs" value={loading ? "..." : `${clubs.length}+`} />
+          <Stat label="Campus Categories" value={loading ? "..." : `${activeCategoryCount}+`} />
+          <Stat label="RSVPs Made" value={statsLoading || totalRsvps === null ? "..." : `${formatCompact(totalRsvps)}+`} />
         </div>
       </section>
 
-      <section className="rounded-[2rem] bg-surface-container-low px-6 py-10 shadow-soft sm:px-8">
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <span className="mr-2 text-sm font-bold uppercase tracking-[0.18em] text-on-surface-variant">
-            Explore by
+      <section className="bg-surface-container-low px-8 py-12">
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <span className="mr-4 text-sm font-bold uppercase tracking-widest text-on-surface-variant">
+            Explore by:
           </span>
           <Link className="rounded-full bg-primary px-6 py-2 text-sm font-bold text-white" to="/events">
             All Categories
           </Link>
-          {categoryPills.map((category) => (
-            <span
-              className="rounded-full bg-surface-container-lowest px-6 py-2 text-sm font-medium text-on-surface hover:bg-secondary-container"
-              key={category}
-            >
-              {category}
+          {explorePills.map((pill) => (
+            <span className="rounded-full bg-surface-container-lowest px-6 py-2 text-sm font-medium text-on-surface transition-all hover:bg-secondary-container" key={pill}>
+              {pill}
             </span>
           ))}
         </div>
@@ -364,81 +338,63 @@ export function HomePage() {
 
       {!loading && !error ? (
         <>
-          <section className="space-y-10">
+          <section className="space-y-12 px-2">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <div className="max-w-2xl">
-                <span className="block text-sm font-bold uppercase tracking-[0.22em] text-secondary">
+              <div>
+                <span className="mb-2 block text-sm font-bold uppercase tracking-widest text-secondary">
                   Happening Soon
                 </span>
-                <h2 className="mt-3 font-headline text-4xl font-extrabold text-primary">
+                <h2 className="font-headline text-4xl font-extrabold text-primary">
                   Featured upcoming events
                 </h2>
-                <p className="mt-3 text-lg leading-8 text-on-surface-variant">
-                  See what students can actually join next, from workshops and talks to social moments that give campus life its energy.
-                </p>
               </div>
-              <Link className="inline-flex items-center gap-2 font-bold text-primary transition hover:text-secondary" to="/events">
+              <Link className="group inline-flex items-center gap-2 font-bold text-primary" to="/events">
                 See all events
-                <MaterialIcon name="arrow_right_alt" />
+                <MaterialIcon className="transition-transform group-hover:translate-x-1" name="arrow_right_alt" />
               </Link>
             </div>
 
             {featuredEvents.length === 0 ? (
-              <EmptyState
-                description="Upcoming events will appear here as clubs publish new activities."
-                title="No featured events yet"
-              />
+              <EmptyState description="Upcoming events will appear here as clubs publish new activities." title="No featured events yet" />
             ) : (
-              <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {featuredEvents.map((event) => {
                   const visual = getCategoryVisual(event.category);
                   const rsvpCount = featuredEventRsvpCounts[event.id] ?? 0;
 
                   return (
-                    <article
-                      className="group overflow-hidden rounded-[1.5rem] bg-surface-container-lowest shadow-soft transition duration-300 hover:-translate-y-1"
-                      key={event.id}
-                    >
-                      <div className="relative h-56 overflow-hidden">
-                        <img alt={event.title} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" src={visual.image} />
-                        <div className="absolute left-4 top-4 rounded-xl bg-white/90 px-3 py-2 text-center shadow-sm backdrop-blur-sm">
+                    <article className="group overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-all duration-300 hover:-translate-y-2" key={event.id}>
+                      <div className="relative h-56">
+                        <img alt={event.title} className="h-full w-full object-cover" src={visual.image} />
+                        <div className="absolute left-4 top-4 min-w-[50px] rounded-xl bg-white/90 p-2 text-center backdrop-blur-sm">
                           <p className="text-xs font-bold uppercase text-on-surface-variant">{formatMonth(event.eventDate)}</p>
                           <p className="text-xl font-extrabold text-primary">{formatDay(event.eventDate)}</p>
                         </div>
-                        <div className="absolute bottom-4 right-4 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-white">
+                        <div className="absolute bottom-4 right-4 flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-white">
+                          <MaterialIcon className="text-[14px]" name="group" />
                           {rsvpCount} Joined
                         </div>
                       </div>
-
                       <div className="p-6">
-                        <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-secondary">
-                          <MaterialIcon className="text-sm" name={visual.icon} />
+                        <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-secondary">
+                          <MaterialIcon className="text-[16px]" name="celebration" />
                           {event.category}
                         </div>
-                        <h3 className="font-headline text-2xl font-bold text-primary transition group-hover:text-secondary">
+                        <h3 className="mb-2 font-headline text-xl font-bold text-primary transition-colors group-hover:text-secondary">
                           {event.title}
                         </h3>
-
-                        <div className="mt-4 space-y-2 text-sm text-on-surface-variant">
-                          <p className="flex items-center gap-2">
-                            <MaterialIcon className="text-base" name="schedule" />
+                        <div className="space-y-2 text-sm text-on-surface-variant">
+                          <div className="flex items-center gap-2">
+                            <MaterialIcon className="text-[18px]" name="schedule" />
                             {formatTimeRange(event.startTime, event.endTime)}
-                          </p>
-                          <p className="flex items-center gap-2">
-                            <MaterialIcon className="text-base" name="location_on" />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MaterialIcon className="text-[18px]" name="location_on" />
                             {event.venue}
-                          </p>
-                          <p className="flex items-center gap-2">
-                            <MaterialIcon className="text-base" name="diversity_3" />
-                            {event.club.name}
-                          </p>
+                          </div>
                         </div>
-
-                        <Link
-                          className="mt-6 inline-flex w-full items-center justify-center rounded-xl border border-outline-variant/30 py-3 font-bold text-primary transition hover:bg-primary hover:text-white"
-                          to={`/events/${event.id}`}
-                        >
-                          View Details
+                        <Link className="mt-6 inline-flex w-full items-center justify-center rounded-xl border border-outline-variant/30 py-3 font-bold text-primary transition-all hover:bg-primary hover:text-white" to={`/events/${event.id}`}>
+                          RSVP Now
                         </Link>
                       </div>
                     </article>
@@ -448,132 +404,89 @@ export function HomePage() {
             )}
           </section>
 
-          <section className="bg-surface-container-lowest px-6 py-12 sm:px-8">
+          <section className="bg-surface-container-lowest px-8 py-24">
             <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-6">
-                  <ValueCard
-                    description="Find people already building around tech, arts, sports, volunteering, and student life."
-                    icon="hub"
-                    title="Find your crew"
-                  />
-                  <div className="translate-x-4">
-                    <ValueCard
-                      description="Start a club, publish events, and give your community a real public presence on campus."
-                      icon="rocket_launch"
-                      title="Lead and grow"
-                    />
+              <div className="order-2 relative lg:order-1">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-6">
+                    <ValueCard icon="hub" title="Find Your Crew" description="Connect with people who share your passion for tech, art, or social causes." tone="bg-primary-fixed text-primary" />
+                    <ValueCard icon="rocket_launch" title="Lead and Grow" description="Step up into leadership roles and organize events that make an impact." offset="translate-x-4" tone="bg-secondary-container text-on-secondary-container" />
                   </div>
-                </div>
-                <div className="space-y-6 pt-12">
-                  <ValueCard
-                    description="Use real upcoming events and clear details to decide what is worth showing up for this week."
-                    icon="event_available"
-                    title="Never miss out"
-                  />
-                  <div className="translate-x-4">
-                    <ValueCard
-                      description="Build a more meaningful campus record through communities and events you actually participate in."
-                      icon="emoji_events"
-                      title="Build your story"
-                    />
+                  <div className="space-y-6 pt-12">
+                    <ValueCard icon="event_available" title="Never Miss Out" description="Stay close to the activities and communities shaping campus life each week." tone="bg-tertiary-fixed text-on-tertiary-fixed" />
+                    <ValueCard icon="emoji_events" title="Build Your Portfolio" description="Extracurricular activities help you leave university with real stories and leadership experience." offset="translate-x-4" tone="bg-surface-container-highest text-primary" />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-8">
-                <span className="text-sm font-bold uppercase tracking-[0.22em] text-secondary">Why NileConnect?</span>
-                <div className="space-y-6">
-                  <h2 className="font-headline text-5xl font-extrabold leading-tight text-primary">
-                    Your gateway to a richer campus experience
-                  </h2>
-                  <p className="text-lg leading-8 text-on-surface-variant">
-                    University life is more than lectures and exams. It is about finding your people,
-                    exploring new interests, and staying close to the communities already making campus feel alive.
-                  </p>
-                </div>
-
+              <div className="order-1 space-y-8 lg:order-2">
+                <span className="text-sm font-bold uppercase tracking-widest text-secondary">
+                  Why NileConnect?
+                </span>
+                <h2 className="font-headline text-5xl font-extrabold leading-tight text-primary">
+                  Your gateway to a richer campus experience
+                </h2>
+                <p className="text-lg text-on-surface-variant">
+                  We believe that university life is more than just lectures and exams. It&apos;s
+                  about finding your community, exploring new interests, and building lifelong
+                  connections.
+                </p>
                 <ul className="space-y-4">
                   <li className="flex items-start gap-3">
                     <MaterialIcon className="text-secondary" filled name="check_circle" />
-                    <span className="font-medium text-on-surface">See real student-run communities with public profiles and upcoming events.</span>
+                    <span className="font-medium text-on-surface">Verified student-led organizations only.</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <MaterialIcon className="text-secondary" filled name="check_circle" />
-                    <span className="font-medium text-on-surface">RSVP in seconds and keep track of what you are joining across campus.</span>
+                    <span className="font-medium text-on-surface">One-click RSVP and clear public event pages for students.</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <MaterialIcon className="text-secondary" filled name="check_circle" />
-                    <span className="font-medium text-on-surface">Create a club when you are ready to build a community of your own.</span>
+                    <span className="font-medium text-on-surface">Create a club and start leading your own campus community.</span>
                   </li>
                 </ul>
-
-                <Link
-                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 font-bold text-white shadow-soft transition hover:scale-[1.02]"
-                  to="/clubs"
-                >
-                  Learn more by exploring clubs
+                <Link className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 font-bold text-white shadow-lg" to="/clubs">
+                  Learn more about NileConnect
                 </Link>
               </div>
             </div>
           </section>
 
-          <section className="space-y-10 rounded-[2rem] bg-surface-container-low px-6 py-12 shadow-soft sm:px-8">
-            <div className="mx-auto max-w-3xl text-center">
-              <span className="block text-sm font-bold uppercase tracking-[0.22em] text-secondary">
+          <section className="bg-surface-container-low px-8 py-24">
+            <div className="mx-auto mb-16 max-w-3xl text-center">
+              <span className="mb-2 block text-sm font-bold uppercase tracking-widest text-secondary">
                 Our Communities
               </span>
-              <h2 className="mt-3 font-headline text-4xl font-extrabold text-primary">
+              <h2 className="mb-6 font-headline text-4xl font-extrabold text-primary">
                 Discover clubs that match your passion
               </h2>
-              <p className="mt-4 text-lg leading-8 text-on-surface-variant">
-                Browse active NileConnect communities and see which ones already have upcoming activity you can join.
+              <p className="text-on-surface-variant">
+                Join student-run organizations and explore the communities already bringing campus life to life.
               </p>
             </div>
 
             {featuredClubs.length === 0 ? (
-              <EmptyState
-                description="Featured clubs will appear here as active communities are added to the platform."
-                title="No featured clubs yet"
-              />
+              <EmptyState description="Featured clubs will appear here as active communities are added to the platform." title="No featured clubs yet" />
             ) : (
-              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 {featuredClubs.map((club) => {
                   const visual = getCategoryVisual(club.category);
                   const upcomingCount = featuredClubUpcomingCounts[club.id] ?? 0;
 
                   return (
-                    <article
-                      className="group flex flex-col rounded-[1.5rem] bg-surface-container-lowest p-6 shadow-soft transition hover:-translate-y-1"
-                      key={club.id}
-                    >
+                    <article className="group rounded-2xl border border-transparent bg-surface-container-lowest p-6 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-all hover:border-secondary" key={club.id}>
                       <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl ${visual.accentClassName}`}>
                         <MaterialIcon className="text-3xl" name={visual.icon} />
                       </div>
-                      <h3 className="font-headline text-xl font-bold text-primary">{club.name}</h3>
-                      <p className="mt-2 text-xs font-bold uppercase tracking-[0.2em] text-secondary">
-                        {club.category}
+                      <h3 className="mb-2 font-headline text-lg font-bold text-primary">{club.name}</h3>
+                      <p className="mb-4 line-clamp-2 text-xs text-on-surface-variant">
+                        {club.tagline || club.description}
                       </p>
-                      {club.tagline ? (
-                        <p className="mt-3 text-sm font-medium text-secondary">{club.tagline}</p>
-                      ) : null}
-                      <p className="mt-4 line-clamp-4 text-sm leading-7 text-on-surface-variant">
-                        {club.description}
-                      </p>
-
-                      <div className="mt-auto pt-6">
-                        <div className="flex items-center justify-between border-t border-outline-variant/10 pt-4">
-                          <span className="text-xs font-bold text-secondary">
-                            {upcomingCount} Upcoming
-                          </span>
-                          <Link
-                            className="inline-flex items-center gap-1 text-primary transition group-hover:text-secondary"
-                            to={`/clubs/${club.id}`}
-                          >
-                            <span className="text-sm font-bold">View Club</span>
-                            <MaterialIcon name="add_circle" />
-                          </Link>
-                        </div>
+                      <div className="mt-auto flex items-center justify-between border-t border-outline-variant/10 pt-4">
+                        <span className="text-xs font-bold text-secondary">{upcomingCount} Upcoming</span>
+                        <Link className="text-on-surface-variant transition-colors group-hover:text-primary" to={`/clubs/${club.id}`}>
+                          <MaterialIcon name="add_circle" />
+                        </Link>
                       </div>
                     </article>
                   );
@@ -582,27 +495,23 @@ export function HomePage() {
             )}
           </section>
 
-          <section className="overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-6 py-12 text-center shadow-soft sm:px-8 sm:py-16">
-            <div className="mx-auto max-w-2xl space-y-8">
-              <h2 className="font-headline text-4xl font-extrabold text-white sm:text-5xl">
-                Ready to join the community?
-              </h2>
-              <p className="text-lg leading-8 text-primary-fixed">
-                Sign up today to start discovering Nile University clubs, upcoming events, and the communities already shaping campus life.
-              </p>
-              <div className="flex flex-col justify-center gap-4 sm:flex-row">
-                <Link
-                  className="inline-flex items-center justify-center rounded-xl bg-secondary px-10 py-4 text-lg font-extrabold text-white transition hover:scale-[1.02]"
-                  to="/register"
-                >
-                  Get Started
-                </Link>
-                <Link
-                  className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-10 py-4 text-lg font-extrabold text-white transition hover:bg-white/20"
-                  to="/events"
-                >
-                  Browse Anonymously
-                </Link>
+          <section className="px-8 py-24">
+            <div className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] p-12 text-center shadow-[0px_12px_32px_rgba(24,28,32,0.06)] lg:p-20">
+              <div className="relative z-10 mx-auto max-w-2xl space-y-8">
+                <h2 className="font-headline text-4xl font-extrabold text-white lg:text-5xl">
+                  Ready to join the community?
+                </h2>
+                <p className="text-lg text-primary-fixed">
+                  Don&apos;t miss out on the most exciting events of the semester. Sign up today and start discovering Nile.
+                </p>
+                <div className="flex flex-col justify-center gap-4 pt-4 sm:flex-row">
+                  <Link className="rounded-xl bg-secondary px-10 py-4 text-lg font-extrabold text-white shadow-xl transition-all hover:scale-105" to="/register">
+                    Get Started
+                  </Link>
+                  <Link className="rounded-xl border border-white/20 bg-white/10 px-10 py-4 text-lg font-extrabold text-white transition-all hover:bg-white/20" to="/events">
+                    Browse Anonymously
+                  </Link>
+                </div>
               </div>
             </div>
           </section>

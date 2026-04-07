@@ -160,7 +160,8 @@ export function EditClubProfilePage() {
             Shape Your Club Presence
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-on-surface-variant">
-            Update the public identity of your club while keeping ownership and admin permissions scoped to your account.
+            Refine your club identity, sharpen your public message, and keep your NileConnect
+            presence aligned with the community you are building.
           </p>
         </div>
 
@@ -183,7 +184,7 @@ export function EditClubProfilePage() {
         cancelHref={`/clubs/${managedClubId}`}
         error={error}
         formData={formData}
-        helperText="Saving updates the public club profile while preserving the current ownership rules enforced by the backend."
+        helperText="Saving updates the public club profile through the existing backend update flow while preserving the current ownership rules."
         onChange={handleChange}
         onSubmit={handleSubmit}
         submitLabel="Save Club Profile"

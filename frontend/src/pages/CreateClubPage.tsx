@@ -89,8 +89,8 @@ export function CreateClubPage() {
             Launch Your Community
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-on-surface-variant">
-            Transform your idea into a real NileConnect presence. Once your club is created, your
-            account is promoted to club admin and you&apos;ll move straight into the My Club workspace.
+            Transform your vision into a vibrant campus presence. Define your identity, attract
+            members, and start building your legacy at Nile University.
           </p>
         </div>
 
@@ -113,7 +113,7 @@ export function CreateClubPage() {
         cancelHref="/clubs"
         error={error}
         formData={formData}
-        helperText="Launching creates the club, promotes your account to club admin, and redirects you into the My Club dashboard."
+        helperText="Launching creates the club using the current backend contract, promotes your account to club admin, and redirects you into the My Club dashboard."
         onChange={handleChange}
         onSubmit={handleSubmit}
         submitLabel="Launch Club"

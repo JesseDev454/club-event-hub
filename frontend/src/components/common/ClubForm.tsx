@@ -50,27 +50,39 @@ export function ClubForm({
   onSubmit,
 }: ClubFormProps) {
   const visual = getCategoryVisual(formData.category || "Technology");
+  const hasIdentity = Boolean(formData.name.trim() || formData.tagline.trim());
 
   return (
     <form className="space-y-8" onSubmit={onSubmit}>
       <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:items-start">
         <div className="flex flex-col gap-6 md:col-span-4">
-          <div className="group relative aspect-square cursor-default overflow-hidden rounded-xl border-2 border-dashed border-outline-variant/30 bg-surface-container-lowest p-6 shadow-soft">
+          <div className="group relative aspect-square cursor-default overflow-hidden rounded-xl border-2 border-dashed border-outline-variant/30 bg-surface-container-lowest p-6 shadow-soft transition-colors hover:border-secondary">
             <img
               alt="Club preview"
               className="absolute inset-0 h-full w-full object-cover opacity-20 grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
               src={visual.image}
             />
             <div className="relative z-10 flex h-full flex-col items-center justify-center text-center">
-              <div className={`mb-4 flex h-20 w-20 items-center justify-center rounded-3xl ${visual.accentClassName}`}>
+              <MaterialIcon className="mb-3 text-4xl text-secondary" name="add_a_photo" />
+              <span className="text-sm font-bold text-primary">
+                {hasIdentity ? "Club Identity Preview" : "Build Your Club Identity"}
+              </span>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.18em] text-slate-500">
+                Logo upload is not part of the current backend
+              </p>
+              <div
+                className={`mt-5 flex h-20 w-20 items-center justify-center rounded-3xl ${visual.accentClassName}`}
+              >
                 <span className="text-2xl font-extrabold">{getInitials(formData.name || "NC")}</span>
               </div>
-              <span className="text-sm font-bold text-primary">
-                {formData.name || "Your club identity"}
-              </span>
-              <p className="mt-2 text-[11px] uppercase tracking-[0.18em] text-slate-500">
-                Live preview from current details
+              <p className="mt-3 text-sm font-bold text-primary">
+                {formData.name || "Your club name will appear here"}
               </p>
+              {formData.tagline.trim() ? (
+                <p className="mt-2 max-w-[14rem] text-xs italic leading-5 text-on-surface-variant">
+                  "{formData.tagline.trim()}"
+                </p>
+              ) : null}
             </div>
           </div>
 
@@ -80,7 +92,7 @@ export function ClubForm({
               Leader Tip
             </h3>
             <p className="text-sm italic text-on-surface-variant">
-              "A strong tagline helps students understand your club in a single glance. Keep it short, specific, and memorable."
+              "A strong tagline captures the essence of your club in 10 words or less. Make it memorable!"
             </p>
           </div>
         </div>
@@ -175,17 +187,23 @@ export function ClubForm({
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="rounded-xl border-l-4 border-secondary bg-surface-container-low p-6">
-          <label className="mb-2 block text-xs font-bold uppercase text-slate-500">Category</label>
+          <label className="mb-2 block text-xs font-bold uppercase text-slate-500">
+            Saved Category
+          </label>
           <p className="font-medium text-on-surface">{formData.category || "Choose a category"}</p>
         </div>
         <div className="rounded-xl border-l-4 border-primary bg-surface-container-low p-6">
-          <label className="mb-2 block text-xs font-bold uppercase text-slate-500">Public Contact</label>
+          <label className="mb-2 block text-xs font-bold uppercase text-slate-500">
+            Public Contact
+          </label>
           <p className="font-medium text-on-surface">
             {formData.contactEmail.trim() || "No public email yet"}
           </p>
         </div>
         <div className="rounded-xl border-l-4 border-on-tertiary-container bg-surface-container-low p-6">
-          <label className="mb-2 block text-xs font-bold uppercase text-slate-500">Tagline</label>
+          <label className="mb-2 block text-xs font-bold uppercase text-slate-500">
+            Public Tagline
+          </label>
           <p className="font-medium text-on-surface">
             {formData.tagline.trim() || "Optional short identity line"}
           </p>
