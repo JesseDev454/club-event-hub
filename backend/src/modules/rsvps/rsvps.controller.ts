@@ -6,20 +6,20 @@ import { sendSuccess } from "../../utils/apiResponse";
 import { asyncHandler } from "../../utils/asyncHandler";
 import { rsvpsService } from "./rsvps.service";
 
-function getAuthenticatedStudent(req: Request) {
+function getAuthenticatedRsvpUser(req: Request) {
   if (!req.user) {
     throw new ApiError(401, "Authentication is required.");
   }
 
-  if (req.user.role !== UserRole.STUDENT) {
-    throw new ApiError(403, "Only students can RSVP to events.");
+  if (![UserRole.STUDENT, UserRole.CLUB_ADMIN].includes(req.user.role)) {
+    throw new ApiError(403, "Only students and club admins can RSVP to events.");
   }
 
   return req.user;
 }
 
 const createRsvp = asyncHandler(async (req: Request, res: Response) => {
-  const result = await rsvpsService.createRsvp(String(req.params.id), getAuthenticatedStudent(req));
+  const result = await rsvpsService.createRsvp(String(req.params.id), getAuthenticatedRsvpUser(req));
 
   sendSuccess(res, {
     statusCode: 201,
@@ -29,7 +29,7 @@ const createRsvp = asyncHandler(async (req: Request, res: Response) => {
 });
 
 const cancelRsvp = asyncHandler(async (req: Request, res: Response) => {
-  const result = await rsvpsService.cancelRsvp(String(req.params.id), getAuthenticatedStudent(req));
+  const result = await rsvpsService.cancelRsvp(String(req.params.id), getAuthenticatedRsvpUser(req));
 
   sendSuccess(res, {
     message: "RSVP cancelled successfully.",

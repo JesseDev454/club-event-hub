@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { getApiErrorMessage } from "../api/client";
@@ -483,7 +483,7 @@ export function AdminEventsPage() {
                           {event.title}
                         </h4>
                         <p className="text-xs font-medium text-outline">
-                          {formatDate(event.eventDate)} • {formatTimeRange(event.startTime, event.endTime)}
+                          {formatDate(event.eventDate)} | {formatTimeRange(event.startTime, event.endTime)}
                         </p>
                       </div>
 
@@ -534,3 +534,4 @@ export function AdminEventsPage() {
     </section>
   );
 }
+
