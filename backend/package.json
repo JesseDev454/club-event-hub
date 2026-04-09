@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "description": "Backend API for Club & Event Hub",
-  "main": "dist/server.js",
+  "main": "dist/src/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "typeorm": "typeorm-ts-node-commonjs -d src/config/data-source.ts",
     "migration:create": "npm run typeorm -- migration:create ./migrations/ManualMigration",
     "migration:generate": "npm run typeorm -- migration:generate ./migrations/GeneratedMigration",
