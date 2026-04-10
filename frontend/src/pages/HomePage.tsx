@@ -328,9 +328,13 @@ export function HomePage() {
             All Categories
           </Link>
           {explorePills.map((pill) => (
-            <span className="rounded-full bg-surface-container-lowest px-6 py-2 text-sm font-medium text-on-surface transition-all hover:bg-secondary-container" key={pill}>
+            <Link
+              className="rounded-full bg-surface-container-lowest px-6 py-2 text-sm font-medium text-on-surface transition-all hover:bg-secondary-container"
+              key={pill}
+              to={`/events?q=${encodeURIComponent(pill)}`}
+            >
               {pill}
-            </span>
+            </Link>
           ))}
         </div>
       </section>
