@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { getInitials } from "../../lib/utils";
 import { useAuth } from "../../state/AuthContext";
 import { Button } from "../ui/Button";
+import { BrandLogo } from "./BrandLogo";
 import { MaterialIcon } from "./MaterialIcon";
 import { PageContainer } from "./PageContainer";
 
@@ -35,9 +36,10 @@ export function Navbar() {
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
       <PageContainer className="flex flex-wrap items-center justify-between gap-4 py-4">
         <div className="flex items-center gap-8">
-          <Link className="font-headline text-2xl font-bold tracking-tight text-primary" to="/">
-            NileConnect
-          </Link>
+          <BrandLogo
+            imageClassName="h-11 w-11"
+            textClassName="font-headline text-2xl font-bold tracking-tight text-primary"
+          />
 
           <nav className="hidden items-center gap-6 md:flex">
             {publicLinks.map((link) => (

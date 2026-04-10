@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
+import { BrandLogo } from "../common/BrandLogo";
 import { MaterialIcon } from "../common/MaterialIcon";
 
 type AuthSplitLayoutProps = {
@@ -59,14 +60,11 @@ export function AuthSplitLayout({
         </div>
 
         <div className="relative z-10">
-          <div className="mb-12 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-secondary text-white shadow-lg shadow-emerald-900/20">
-              <MaterialIcon name="school" />
-            </div>
-            <span className="font-headline text-2xl font-extrabold tracking-tighter text-white">
-              NileConnect
-            </span>
-          </div>
+          <BrandLogo
+            className="mb-12"
+            imageClassName="h-11 w-11"
+            textClassName="font-headline text-2xl font-extrabold tracking-tighter text-white"
+          />
 
           <div className="max-w-xl">
             <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-emerald-100">
@@ -103,9 +101,10 @@ export function AuthSplitLayout({
 
       <section className="relative flex flex-col justify-center bg-surface p-6 md:p-12 lg:col-span-5 lg:p-20">
         <div className="absolute left-8 top-8 flex items-center gap-2 lg:hidden">
-          <span className="font-headline text-xl font-extrabold tracking-tighter text-primary">
-            NileConnect
-          </span>
+          <BrandLogo
+            imageClassName="h-9 w-9"
+            textClassName="font-headline text-xl font-extrabold tracking-tighter text-primary"
+          />
         </div>
 
         <div className="mx-auto w-full max-w-[420px] space-y-10">
