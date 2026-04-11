@@ -111,6 +111,20 @@ export function ClubsPage() {
 
   const leadClub = filteredClubs[0] ?? null;
   const supportingClubs = filteredClubs.slice(1, 5);
+  const legacyCollageImages = useMemo(() => {
+    const uniqueImages = new Set<string>();
+    const fallbackCategories = ["Technology", "Arts", "Sports", "Academic", "Social", "Career", "Volunteering"];
+
+    [...filteredClubs, ...clubs].forEach((club) => {
+      uniqueImages.add(getCategoryVisual(club.category).image);
+    });
+
+    fallbackCategories.forEach((category) => {
+      uniqueImages.add(getCategoryVisual(category).image);
+    });
+
+    return Array.from(uniqueImages).slice(0, 4);
+  }, [clubs, filteredClubs]);
 
   return (
     <section className="space-y-8 lg:space-y-16">
@@ -355,24 +369,24 @@ export function ClubsPage() {
               <img
                 alt="Students building together"
                 className="w-full rounded-2xl shadow-soft"
-                src={leadClub ? getCategoryVisual(leadClub.category).image : clubsHeroImage}
+                src={legacyCollageImages[0] ?? clubsHeroImage}
               />
               <img
                 alt="Student community moment"
                 className="w-full rounded-2xl shadow-soft"
-                src={supportingClubs[0] ? getCategoryVisual(supportingClubs[0].category).image : clubsHeroImage}
+                src={legacyCollageImages[1] ?? clubsHeroImage}
               />
             </div>
             <div className="space-y-4">
               <img
                 alt="Student collaboration"
                 className="w-full rounded-2xl shadow-soft"
-                src={supportingClubs[1] ? getCategoryVisual(supportingClubs[1].category).image : clubsHeroImage}
+                src={legacyCollageImages[2] ?? clubsHeroImage}
               />
               <img
                 alt="Student leadership"
                 className="w-full rounded-2xl shadow-soft"
-                src={supportingClubs[2] ? getCategoryVisual(supportingClubs[2].category).image : clubsHeroImage}
+                src={legacyCollageImages[3] ?? clubsHeroImage}
               />
             </div>
           </div>
