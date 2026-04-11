@@ -20,7 +20,6 @@ export function EventsPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") ?? "");
   const [selectedCategory, setSelectedCategory] = useState(ALL_CATEGORIES);
-  const [rsvpCounts, setRsvpCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
     const urlQuery = searchParams.get("q") ?? "";
@@ -51,23 +50,6 @@ export function EventsPage() {
         const data = await eventsApi.getEvents();
         if (isMounted) {
           setEvents(data);
-        }
-
-        const detailResults = await Promise.allSettled(
-          data.map(async (event) => {
-            const detail = await eventsApi.getEventById(event.id);
-            return { id: event.id, rsvpCount: detail.rsvpCount };
-          }),
-        );
-
-        if (isMounted) {
-          const nextCounts: Record<string, number> = {};
-          detailResults.forEach((result) => {
-            if (result.status === "fulfilled") {
-              nextCounts[result.value.id] = result.value.rsvpCount;
-            }
-          });
-          setRsvpCounts(nextCounts);
         }
       } catch (loadError) {
         if (isMounted) {
@@ -110,7 +92,7 @@ export function EventsPage() {
     return matchesSearch && matchesCategory;
   });
 
-  const totalRsvps = Object.values(rsvpCounts).reduce((sum, value) => sum + value, 0);
+  const totalRsvps = events.reduce((sum, event) => sum + (event.rsvpCount ?? 0), 0);
 
   return (
     <section className="space-y-10 lg:space-y-14">
@@ -204,7 +186,7 @@ export function EventsPage() {
                 key={event.id}
               >
                 <div className="relative h-56 overflow-hidden">
-                  <img alt={event.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" src={visual.image} />
+                  <img alt={event.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" decoding="async" loading="lazy" src={visual.image} />
                   <div className="absolute left-4 top-4">
                     <span className={`rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] ${visual.pillClassName}`}>
                       {event.category}
@@ -234,7 +216,7 @@ export function EventsPage() {
                         <div className={`flex h-8 w-8 items-center justify-center rounded-full ${visual.accentClassName}`}>
                           {getInitials(event.club.name)}
                         </div>
-                        <span>{rsvpCounts[event.id] ?? 0} Attending</span>
+                        <span>{event.rsvpCount ?? 0} Attending</span>
                       </div>
                     </div>
 

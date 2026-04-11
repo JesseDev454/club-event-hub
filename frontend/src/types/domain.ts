@@ -66,6 +66,7 @@ export type EventListItem = {
   category: string;
   createdAt: string;
   updatedAt: string;
+  rsvpCount: number;
   club: EventClubSummary;
 };
 
@@ -78,7 +79,6 @@ export type EventRichFields = {
 export type ManagedEvent = EventListItem & EventRichFields;
 
 export type EventDetail = ManagedEvent & {
-  rsvpCount: number;
   hasRsvped: boolean | null;
 };
 

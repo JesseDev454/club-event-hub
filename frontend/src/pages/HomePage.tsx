@@ -9,11 +9,10 @@ import { EmptyState } from "../components/ui/EmptyState";
 import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { getCategoryVisual } from "../lib/presentation";
-import { formatDate, formatTimeRange } from "../lib/utils";
-import type { ClubSummary, EventDetail, EventListItem } from "../types/domain";
+import { formatTimeRange } from "../lib/utils";
+import type { ClubSummary, EventListItem } from "../types/domain";
 
 type ClubUpcomingCounts = Record<string, number>;
-type EventRsvpCounts = Record<string, number>;
 
 const heroPeople = [
   "https://lh3.googleusercontent.com/aida-public/AB6AXuAioWFi0r9nkEFpaBENpR70-5NdzvyVPv5tezO1ZmGKFlwKt98eG-eU_A5KZkHhEH_u6aC9wDi_ZzY7fkEkt-zh6oitRo6KMztcHM4yZXc6Tj4MD45v6ifnv3lOxFXWGRiYcS7G9uysrNQPrkVTR4AJdQfIaazCOfp5fN0t4BgoFwuOYm8gqnm5NGi4hEB4MrMkzZytYfVqC5N1RsJbTRUYZN49NjHjSkTUwU0wvusd2hkZP7xxJHlAqXlJ3YhB_bW1DUhLM2OxkJw",
@@ -88,9 +87,6 @@ export function HomePage() {
   const [events, setEvents] = useState<EventListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [statsLoading, setStatsLoading] = useState(true);
-  const [totalRsvps, setTotalRsvps] = useState<number | null>(null);
-  const [featuredEventRsvpCounts, setFeaturedEventRsvpCounts] = useState<EventRsvpCounts>({});
   const [featuredClubUpcomingCounts, setFeaturedClubUpcomingCounts] = useState<ClubUpcomingCounts>({});
 
   useEffect(() => {
@@ -143,48 +139,19 @@ export function HomePage() {
 
   const featuredClubs = useMemo(() => clubs.slice(0, 4), [clubs]);
 
+  const totalRsvps = useMemo(
+    () => events.reduce((sum, event) => sum + (event.rsvpCount ?? 0), 0),
+    [events],
+  );
+
   useEffect(() => {
     let isMounted = true;
 
-    const enrichHomepage = async () => {
-      if (loading || error) {
-        return;
-      }
-
-      if (events.length > 0) {
+    const loadFeaturedClubCounts = async () => {
+      if (loading || error || featuredClubs.length === 0) {
         if (isMounted) {
-          setStatsLoading(true);
+          setFeaturedClubUpcomingCounts({});
         }
-
-        const eventDetailResults = await Promise.allSettled(
-          events.map(async (event) => eventsApi.getEventById(event.id)),
-        );
-
-        if (!isMounted) {
-          return;
-        }
-
-        const successfulEventDetails = eventDetailResults
-          .filter((result): result is PromiseFulfilledResult<EventDetail> => result.status === "fulfilled")
-          .map((result) => result.value);
-
-        const nextFeaturedCounts: EventRsvpCounts = {};
-        successfulEventDetails.forEach((eventDetail) => {
-          if (featuredEvents.some((featuredEvent) => featuredEvent.id === eventDetail.id)) {
-            nextFeaturedCounts[eventDetail.id] = eventDetail.rsvpCount;
-          }
-        });
-
-        setFeaturedEventRsvpCounts(nextFeaturedCounts);
-        setTotalRsvps(successfulEventDetails.reduce((sum, item) => sum + item.rsvpCount, 0));
-        setStatsLoading(false);
-      } else if (isMounted) {
-        setStatsLoading(false);
-        setTotalRsvps(0);
-      }
-
-      if (featuredClubs.length === 0) {
-        setFeaturedClubUpcomingCounts({});
         return;
       }
 
@@ -205,12 +172,12 @@ export function HomePage() {
       setFeaturedClubUpcomingCounts(nextClubCounts);
     };
 
-    void enrichHomepage();
+    void loadFeaturedClubCounts();
 
     return () => {
       isMounted = false;
     };
-  }, [error, events, featuredClubs, featuredEvents, loading]);
+  }, [error, featuredClubs, loading]);
 
   const activeCategoryCount = useMemo(() => {
     const categories = new Set<string>();
@@ -225,7 +192,7 @@ export function HomePage() {
         <div className="absolute -bottom-10 -left-10 h-72 w-72 rounded-full bg-primary-fixed/30 blur-3xl" />
 
         <div className="relative z-10 grid gap-12 lg:grid-cols-2 lg:items-center">
-          <div className="max-w-2xl space-y-8">
+          <div className="nc-animate-fade-up max-w-2xl space-y-8">
             <div className="inline-flex items-center rounded-full bg-secondary-container px-3 py-1 text-xs font-bold uppercase tracking-widest text-on-secondary-container">
               Campus Life Redefined
             </div>
@@ -260,6 +227,7 @@ export function HomePage() {
                   <img
                     alt={`Campus community ${index + 1}`}
                     className="h-12 w-12 rounded-full border-4 border-surface object-cover"
+                    decoding="async"
                     key={image}
                     src={image}
                   />
@@ -271,18 +239,18 @@ export function HomePage() {
               <p className="text-sm font-medium text-on-surface-variant">
                 Joined by{" "}
                 <span className="font-bold text-primary">
-                  {statsLoading || totalRsvps === null ? "students" : `${formatCompact(totalRsvps)}+ students`}
+                  {loading ? "students" : `${formatCompact(totalRsvps)}+ students`}
                 </span>{" "}
                 this semester
               </p>
             </div>
           </div>
 
-          <div className="relative hidden lg:block">
+          <div className="nc-animate-soft-scale relative hidden lg:block" style={{ animationDelay: "120ms" }}>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4 pt-12">
                 <div className="rotate-[-2deg] rounded-2xl bg-surface-container-lowest p-2 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-transform duration-500 hover:rotate-0">
-                  <img alt="Editorial campus moment" className="aspect-[4/5] w-full rounded-xl object-cover" src={heroImages[0]} />
+                  <img alt="Editorial campus moment" className="aspect-[4/5] w-full rounded-xl object-cover" decoding="async" loading="lazy" src={heroImages[0]} />
                 </div>
                 <div className="flex rotate-[1deg] items-center gap-4 rounded-2xl bg-surface-container-lowest p-4 shadow-[0px_12px_32px_rgba(24,28,32,0.06)]">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary-container text-on-secondary-container">
@@ -299,10 +267,10 @@ export function HomePage() {
 
               <div className="space-y-4">
                 <div className="rotate-[3deg] rounded-2xl bg-surface-container-lowest p-2 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-transform duration-500 hover:rotate-0">
-                  <img alt="Editorial workshop moment" className="aspect-[4/3] w-full rounded-xl object-cover" src={heroImages[1]} />
+                  <img alt="Editorial workshop moment" className="aspect-[4/3] w-full rounded-xl object-cover" decoding="async" loading="lazy" src={heroImages[1]} />
                 </div>
                 <div className="rotate-[-1deg] rounded-2xl bg-surface-container-lowest p-2 shadow-[0px_12px_32px_rgba(24,28,32,0.06)]">
-                  <img alt="Editorial performance moment" className="aspect-square w-full rounded-xl object-cover" src={heroImages[2]} />
+                  <img alt="Editorial performance moment" className="aspect-square w-full rounded-xl object-cover" decoding="async" loading="lazy" src={heroImages[2]} />
                 </div>
               </div>
             </div>
@@ -310,16 +278,16 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-primary px-8 py-10 text-white">
+      <section className="nc-animate-fade-up bg-primary px-8 py-10 text-white" style={{ animationDelay: "180ms" }}>
         <div className="flex flex-wrap justify-center gap-12 md:gap-24">
           <Stat label="Active Events" value={loading ? "..." : `${events.length}+`} />
           <Stat label="Registered Clubs" value={loading ? "..." : `${clubs.length}+`} />
           <Stat label="Campus Categories" value={loading ? "..." : `${activeCategoryCount}+`} />
-          <Stat label="RSVPs Made" value={statsLoading || totalRsvps === null ? "..." : `${formatCompact(totalRsvps)}+`} />
+          <Stat label="RSVPs Made" value={loading ? "..." : `${formatCompact(totalRsvps)}+`} />
         </div>
       </section>
 
-      <section className="bg-surface-container-low px-8 py-12">
+      <section className="nc-animate-fade-up bg-surface-container-low px-8 py-12" style={{ animationDelay: "240ms" }}>
         <div className="flex flex-wrap items-center justify-center gap-4">
           <span className="mr-4 text-sm font-bold uppercase tracking-widest text-on-surface-variant">
             Explore by:
@@ -364,14 +332,14 @@ export function HomePage() {
               <EmptyState description="Upcoming events will appear here as clubs publish new activities." title="No featured events yet" />
             ) : (
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {featuredEvents.map((event) => {
+                {featuredEvents.map((event, index) => {
                   const visual = getCategoryVisual(event.category);
-                  const rsvpCount = featuredEventRsvpCounts[event.id] ?? 0;
+                  const rsvpCount = event.rsvpCount ?? 0;
 
                   return (
-                    <article className="group overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-all duration-300 hover:-translate-y-2" key={event.id}>
+                    <article className="nc-animate-fade-up group overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-all duration-300 hover:-translate-y-2" key={event.id} style={{ animationDelay: `${80 * index}ms` }}>
                       <div className="relative h-56">
-                        <img alt={event.title} className="h-full w-full object-cover" src={visual.image} />
+                        <img alt={event.title} className="h-full w-full object-cover" decoding="async" loading="lazy" src={visual.image} />
                         <div className="absolute left-4 top-4 min-w-[50px] rounded-xl bg-white/90 p-2 text-center backdrop-blur-sm">
                           <p className="text-xs font-bold uppercase text-on-surface-variant">{formatMonth(event.eventDate)}</p>
                           <p className="text-xl font-extrabold text-primary">{formatDay(event.eventDate)}</p>
@@ -410,7 +378,7 @@ export function HomePage() {
             )}
           </section>
 
-          <section className="bg-surface-container-lowest px-8 py-24">
+          <section className="nc-animate-fade-up bg-surface-container-lowest px-8 py-24">
             <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
               <div className="order-2 relative lg:order-1">
                 <div className="grid grid-cols-2 gap-6">
@@ -481,12 +449,12 @@ export function HomePage() {
               <EmptyState description="Featured clubs will appear here as active communities are added to the platform." title="No featured clubs yet" />
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-                {featuredClubs.map((club) => {
+                {featuredClubs.map((club, index) => {
                   const visual = getCategoryVisual(club.category);
                   const upcomingCount = featuredClubUpcomingCounts[club.id] ?? 0;
 
                   return (
-                    <article className="group rounded-2xl border border-transparent bg-surface-container-lowest p-6 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-all hover:border-secondary" key={club.id}>
+                    <article className="nc-animate-fade-up group rounded-2xl border border-transparent bg-surface-container-lowest p-6 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-all hover:border-secondary" key={club.id} style={{ animationDelay: `${70 * index}ms` }}>
                       <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl ${visual.accentClassName}`}>
                         <MaterialIcon className="text-3xl" name={visual.icon} />
                       </div>
@@ -507,7 +475,7 @@ export function HomePage() {
             )}
           </section>
 
-          <section className="px-8 py-24">
+          <section className="nc-animate-soft-scale px-8 py-24">
             <div className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] p-12 text-center shadow-[0px_12px_32px_rgba(24,28,32,0.06)] lg:p-20">
               <div className="relative z-10 mx-auto max-w-2xl space-y-8">
                 <h2 className="font-headline text-4xl font-extrabold text-white lg:text-5xl">

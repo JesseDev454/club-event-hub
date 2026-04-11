@@ -34,6 +34,7 @@ type EventListResponse = {
   category: string;
   createdAt: Date;
   updatedAt: Date;
+  rsvpCount: number;
   club: EventClubSummary;
 };
 
@@ -44,7 +45,6 @@ type EventResponse = EventListResponse & {
 };
 
 type EventDetailResponse = EventResponse & {
-  rsvpCount: number;
   hasRsvped: boolean | null;
 };
 
@@ -71,6 +71,7 @@ function getRsvpRepository() {
 
 function serializeEventListItem(
   event: Event,
+  rsvpCount = 0,
 ): EventListResponse {
   return {
     id: event.id,
@@ -85,6 +86,7 @@ function serializeEventListItem(
     category: event.category,
     createdAt: event.createdAt,
     updatedAt: event.updatedAt,
+    rsvpCount,
     club: {
       id: event.club.id,
       name: event.club.name,
@@ -96,9 +98,10 @@ function serializeEventListItem(
 
 function serializeEvent(
   event: Event,
+  rsvpCount = 0,
 ): EventResponse {
   return {
-    ...serializeEventListItem(event),
+    ...serializeEventListItem(event, rsvpCount),
     highlights: event.highlights ?? [],
     targetAudience: event.targetAudience ?? [],
     additionalInfo: event.additionalInfo ?? null,
@@ -162,7 +165,24 @@ async function listUpcomingEvents(): Promise<EventListResponse[]> {
     },
   });
 
-  return events.map(serializeEventListItem);
+  const eventIds = events.map((event) => event.id);
+  const rawCounts = eventIds.length
+    ? await getRsvpRepository()
+        .createQueryBuilder("rsvp")
+        .select("rsvp.eventId", "eventId")
+        .addSelect("COUNT(rsvp.id)", "rsvpCount")
+        .where("rsvp.eventId IN (:...eventIds)", { eventIds })
+        .groupBy("rsvp.eventId")
+        .getRawMany<{ eventId: string; rsvpCount: string }>()
+    : [];
+
+  const rsvpCounts = new Map(
+    rawCounts.map((row) => [row.eventId, Number(row.rsvpCount)]),
+  );
+
+  return events.map((event) =>
+    serializeEventListItem(event, rsvpCounts.get(event.id) ?? 0),
+  );
 }
 
 async function getEventDetail(
@@ -193,8 +213,7 @@ async function getEventDetail(
   }
 
   return {
-    ...serializeEvent(event),
-    rsvpCount,
+    ...serializeEvent(event, rsvpCount),
     hasRsvped,
   };
 }
