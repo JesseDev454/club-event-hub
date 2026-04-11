@@ -118,7 +118,7 @@ export function EventsPage() {
         </div>
       </section>
 
-      <section className="rounded-[1.5rem] bg-surface-container-lowest/90 p-4 shadow-soft backdrop-blur-xl md:sticky md:top-24 md:z-20 md:rounded-[1.75rem] md:p-6">
+      <section className="rounded-[1.5rem] bg-surface-container-lowest/90 p-4 shadow-soft backdrop-blur-xl md:rounded-[1.75rem] md:p-6">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
             <label className="relative w-full xl:max-w-md">
