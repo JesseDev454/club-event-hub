@@ -48,8 +48,8 @@ function formatCompact(value: number) {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="text-center">
-      <p className="text-4xl font-extrabold text-white">{value}</p>
-      <p className="mt-1 text-sm font-medium uppercase tracking-widest text-on-primary-container">
+      <p className="text-3xl font-extrabold text-white sm:text-4xl">{value}</p>
+      <p className="mt-1 text-xs font-medium uppercase tracking-widest text-on-primary-container sm:text-sm">
         {label}
       </p>
     </div>
@@ -72,7 +72,7 @@ function ValueCard({
   offset?: string;
 }) {
   return (
-    <div className={`flex flex-col gap-4 rounded-2xl bg-surface p-6 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] ${offset ?? ""}`}>
+    <div className={`min-w-0 flex flex-col gap-4 rounded-2xl bg-surface p-6 shadow-[0px_12px_32px_rgba(24,28,32,0.06)] ${offset ?? ""}`}>
       <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${tone}`}>
         <MaterialIcon className={iconClassName} name={icon} />
       </div>
@@ -186,8 +186,8 @@ export function HomePage() {
   }, [clubs, events]);
 
   return (
-    <div className="space-y-12 lg:space-y-20">
-      <section className="relative overflow-hidden bg-surface px-4 py-10 sm:px-6 lg:min-h-[54rem] lg:px-8 lg:py-20">
+    <div className="space-y-8 sm:space-y-12 lg:space-y-20">
+      <section className="relative overflow-hidden bg-surface px-0 py-4 sm:px-6 sm:py-10 lg:min-h-[54rem] lg:px-8 lg:py-20">
         <div className="absolute -right-10 -top-10 h-64 w-64 rounded-full bg-secondary-container/30 blur-3xl" />
         <div className="absolute -bottom-10 -left-10 h-72 w-72 rounded-full bg-primary-fixed/30 blur-3xl" />
 
@@ -196,32 +196,32 @@ export function HomePage() {
             <div className="inline-flex items-center rounded-full bg-secondary-container px-3 py-1 text-xs font-bold uppercase tracking-widest text-on-secondary-container">
               Campus Life Redefined
             </div>
-            <h1 className="font-headline text-5xl font-extrabold leading-[1.1] tracking-tight text-primary sm:text-6xl lg:text-7xl">
+            <h1 className="nc-text-safe font-headline text-4xl font-extrabold leading-[1.08] tracking-tight text-primary sm:text-6xl lg:text-7xl">
               Discover Nile University <span className="text-secondary">clubs and events</span>{" "}
               in one place
             </h1>
-            <p className="max-w-lg text-xl leading-relaxed text-on-surface-variant">
+            <p className="max-w-lg text-base leading-7 text-on-surface-variant sm:text-xl sm:leading-relaxed">
               Find active student communities, explore upcoming campus events, and RSVP in
               seconds. Your bridge to a vibrant university experience starts here.
             </p>
 
             <div className="flex flex-wrap gap-4 pt-4">
               <Link
-                className="inline-flex items-center gap-2 rounded-xl bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-4 text-lg font-bold text-white shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-transform hover:scale-105 active:scale-95"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-4 text-base font-bold text-white shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-transform hover:scale-105 active:scale-95 sm:w-auto sm:text-lg"
                 to="/events"
               >
                 Explore Events
                 <MaterialIcon name="arrow_forward" />
               </Link>
               <Link
-                className="inline-flex items-center justify-center rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-8 py-4 text-lg font-bold text-primary transition-all hover:bg-surface-container-high"
+                className="inline-flex w-full items-center justify-center rounded-xl border border-outline-variant/20 bg-surface-container-lowest px-8 py-4 text-base font-bold text-primary transition-all hover:bg-surface-container-high sm:w-auto sm:text-lg"
                 to="/clubs"
               >
                 Join a Club
               </Link>
             </div>
 
-            <div className="flex items-center gap-6 pt-8">
+            <div className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:gap-6 sm:pt-8">
               <div className="flex -space-x-3">
                 {heroPeople.map((image, index) => (
                   <img
@@ -278,8 +278,8 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="nc-animate-fade-up bg-primary px-8 py-10 text-white" style={{ animationDelay: "180ms" }}>
-        <div className="flex flex-wrap justify-center gap-12 md:gap-24">
+      <section className="nc-animate-fade-up bg-primary px-4 py-8 text-white sm:px-8 sm:py-10" style={{ animationDelay: "180ms" }}>
+        <div className="grid grid-cols-2 gap-6 sm:flex sm:flex-wrap sm:justify-center sm:gap-12 md:gap-24">
           <Stat label="Active Events" value={loading ? "..." : `${events.length}+`} />
           <Stat label="Registered Clubs" value={loading ? "..." : `${clubs.length}+`} />
           <Stat label="Campus Categories" value={loading ? "..." : `${activeCategoryCount}+`} />
@@ -287,17 +287,17 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="nc-animate-fade-up bg-surface-container-low px-8 py-12" style={{ animationDelay: "240ms" }}>
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          <span className="mr-4 text-sm font-bold uppercase tracking-widest text-on-surface-variant">
+      <section className="nc-animate-fade-up -mx-4 bg-surface-container-low px-4 py-8 sm:mx-0 sm:px-8 sm:py-12" style={{ animationDelay: "240ms" }}>
+        <div className="no-scrollbar flex items-center gap-3 overflow-x-auto sm:flex-wrap sm:justify-center sm:gap-4">
+          <span className="shrink-0 text-sm font-bold uppercase tracking-widest text-on-surface-variant sm:mr-4">
             Explore by:
           </span>
-          <Link className="rounded-full bg-primary px-6 py-2 text-sm font-bold text-white" to="/events">
+          <Link className="shrink-0 rounded-full bg-primary px-6 py-2 text-sm font-bold text-white" to="/events">
             All Categories
           </Link>
           {explorePills.map((pill) => (
             <Link
-              className="rounded-full bg-surface-container-lowest px-6 py-2 text-sm font-medium text-on-surface transition-all hover:bg-secondary-container"
+              className="shrink-0 rounded-full bg-surface-container-lowest px-6 py-2 text-sm font-medium text-on-surface transition-all hover:bg-secondary-container"
               key={pill}
               to={`/events?q=${encodeURIComponent(pill)}`}
             >
@@ -312,13 +312,13 @@ export function HomePage() {
 
       {!loading && !error ? (
         <>
-          <section className="space-y-12 px-2">
+          <section className="space-y-8 px-0 sm:space-y-12 sm:px-2">
             <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div>
                 <span className="mb-2 block text-sm font-bold uppercase tracking-widest text-secondary">
                   Happening Soon
                 </span>
-                <h2 className="font-headline text-4xl font-extrabold text-primary">
+                <h2 className="font-headline text-3xl font-extrabold text-primary sm:text-4xl">
                   Featured upcoming events
                 </h2>
               </div>
@@ -338,7 +338,7 @@ export function HomePage() {
 
                   return (
                     <article className="nc-animate-fade-up group overflow-hidden rounded-2xl bg-surface-container-lowest shadow-[0px_12px_32px_rgba(24,28,32,0.06)] transition-all duration-300 hover:-translate-y-2" key={event.id} style={{ animationDelay: `${80 * index}ms` }}>
-                      <div className="relative h-56">
+                      <div className="relative h-48 sm:h-56">
                         <img alt={event.title} className="h-full w-full object-cover" decoding="async" loading="lazy" src={visual.image} />
                         <div className="absolute left-4 top-4 min-w-[50px] rounded-xl bg-white/90 p-2 text-center backdrop-blur-sm">
                           <p className="text-xs font-bold uppercase text-on-surface-variant">{formatMonth(event.eventDate)}</p>
@@ -354,7 +354,7 @@ export function HomePage() {
                           <MaterialIcon className="text-[16px]" name="celebration" />
                           {event.category}
                         </div>
-                        <h3 className="mb-2 font-headline text-xl font-bold text-primary transition-colors group-hover:text-secondary">
+                        <h3 className="nc-line-clamp-2 nc-text-safe mb-2 font-headline text-xl font-bold text-primary transition-colors group-hover:text-secondary">
                           {event.title}
                         </h3>
                         <div className="space-y-2 text-sm text-on-surface-variant">
@@ -381,7 +381,7 @@ export function HomePage() {
           <section className="nc-animate-fade-up bg-surface-container-lowest px-8 py-24">
             <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
               <div className="order-2 relative lg:order-1">
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                   <div className="space-y-6">
                     <ValueCard
                       icon="hub"
@@ -390,11 +390,11 @@ export function HomePage() {
                       description="Connect with people who share your passion for tech, art, or social causes."
                       tone="border border-primary/10 bg-primary-fixed text-primary"
                     />
-                    <ValueCard icon="rocket_launch" title="Lead and Grow" description="Step up into leadership roles and organize events that make an impact." offset="translate-x-4" tone="bg-secondary-container text-on-secondary-container" />
+                    <ValueCard icon="rocket_launch" title="Lead and Grow" description="Step up into leadership roles and organize events that make an impact." offset="sm:translate-x-4" tone="bg-secondary-container text-on-secondary-container" />
                   </div>
                   <div className="space-y-6 pt-12">
                     <ValueCard icon="event_available" title="Never Miss Out" description="Stay close to the activities and communities shaping campus life each week." tone="bg-tertiary-fixed text-on-tertiary-fixed" />
-                    <ValueCard icon="emoji_events" title="Build Your Portfolio" description="Extracurricular activities help you leave university with real stories and leadership experience." offset="translate-x-4" tone="bg-surface-container-highest text-primary" />
+                    <ValueCard icon="emoji_events" title="Build Your Portfolio" description="Extracurricular activities help you leave university with real stories and leadership experience." offset="sm:translate-x-4" tone="bg-surface-container-highest text-primary" />
                   </div>
                 </div>
               </div>
@@ -403,7 +403,7 @@ export function HomePage() {
                 <span className="text-sm font-bold uppercase tracking-widest text-secondary">
                   Why NileConnect?
                 </span>
-                <h2 className="font-headline text-5xl font-extrabold leading-tight text-primary">
+                <h2 className="font-headline text-4xl font-extrabold leading-tight text-primary sm:text-5xl">
                   Your gateway to a richer campus experience
                 </h2>
                 <p className="text-lg text-on-surface-variant">
@@ -432,7 +432,7 @@ export function HomePage() {
             </div>
           </section>
 
-          <section className="bg-surface-container-low px-8 py-24">
+          <section className="-mx-4 bg-surface-container-low px-4 py-16 sm:mx-0 sm:px-8 sm:py-24">
             <div className="mx-auto mb-16 max-w-3xl text-center">
               <span className="mb-2 block text-sm font-bold uppercase tracking-widest text-secondary">
                 Our Communities
@@ -458,8 +458,8 @@ export function HomePage() {
                       <div className={`mb-6 flex h-16 w-16 items-center justify-center rounded-2xl ${visual.accentClassName}`}>
                         <MaterialIcon className="text-3xl" name={visual.icon} />
                       </div>
-                      <h3 className="mb-2 font-headline text-lg font-bold text-primary">{club.name}</h3>
-                      <p className="mb-4 line-clamp-2 text-xs text-on-surface-variant">
+                      <h3 className="nc-line-clamp-2 nc-text-safe mb-2 font-headline text-lg font-bold text-primary">{club.name}</h3>
+                      <p className="nc-line-clamp-2 mb-4 text-xs text-on-surface-variant">
                         {club.tagline || club.description}
                       </p>
                       <div className="mt-auto flex items-center justify-between border-t border-outline-variant/10 pt-4">
@@ -475,7 +475,7 @@ export function HomePage() {
             )}
           </section>
 
-          <section className="nc-animate-soft-scale px-8 py-24">
+          <section className="nc-animate-soft-scale px-0 py-16 sm:px-8 sm:py-24">
             <div className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] p-12 text-center shadow-[0px_12px_32px_rgba(24,28,32,0.06)] lg:p-20">
               <div className="relative z-10 mx-auto max-w-2xl space-y-8">
                 <h2 className="font-headline text-4xl font-extrabold text-white lg:text-5xl">

@@ -95,16 +95,16 @@ export function EventsPage() {
   const totalRsvps = events.reduce((sum, event) => sum + (event.rsvpCount ?? 0), 0);
 
   return (
-    <section className="space-y-10 lg:space-y-14">
+    <section className="space-y-8 lg:space-y-14">
       <section className="rounded-[2rem] bg-surface px-2 py-6 sm:px-0">
         <div className="max-w-4xl">
           <span className="mb-4 block text-sm font-bold uppercase tracking-[0.22em] text-secondary">
             Campus Life
           </span>
-          <h1 className="font-headline text-5xl font-extrabold tracking-tight text-primary md:text-7xl">
+          <h1 className="nc-text-safe font-headline text-4xl font-extrabold tracking-tight text-primary sm:text-5xl md:text-7xl">
             Discover What's Next
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-on-surface-variant">
+          <p className="mt-4 max-w-2xl text-base leading-7 text-on-surface-variant sm:mt-6 sm:text-lg sm:leading-8">
             Your portal to everything happening across Nile University. From career-defining workshops to social nights and sports energy, find the events worth showing up for.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
@@ -118,7 +118,7 @@ export function EventsPage() {
         </div>
       </section>
 
-      <section className="sticky top-24 z-20 rounded-[1.75rem] bg-surface-container-lowest/90 p-6 shadow-soft backdrop-blur-xl">
+      <section className="rounded-[1.5rem] bg-surface-container-lowest/90 p-4 shadow-soft backdrop-blur-xl md:sticky md:top-24 md:z-20 md:rounded-[1.75rem] md:p-6">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
             <label className="relative w-full xl:max-w-md">
@@ -131,10 +131,10 @@ export function EventsPage() {
               />
             </label>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 sm:flex-wrap sm:overflow-visible">
               {categoryOptions.map((category) => (
                 <button
-                  className={`rounded-full px-5 py-2 text-sm font-semibold transition ${
+                  className={`shrink-0 rounded-full px-5 py-2 text-sm font-semibold transition ${
                     category === selectedCategory
                       ? "bg-primary-container text-white"
                       : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
@@ -182,7 +182,7 @@ export function EventsPage() {
 
             return (
               <article
-                className="group flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-surface-container-lowest shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                className="group flex h-full min-w-0 flex-col overflow-hidden rounded-[1.5rem] bg-surface-container-lowest shadow-soft transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 key={event.id}
               >
                 <div className="relative h-56 overflow-hidden">
@@ -197,22 +197,22 @@ export function EventsPage() {
                 <div className="flex flex-1 flex-col p-6">
                   <div className="mb-3 flex items-center gap-2 text-xs font-bold text-secondary">
                     <MaterialIcon className="text-base text-primary" filled name="calendar_today" />
-                    <span>{formatDate(event.eventDate)} | {formatTimeRange(event.startTime, event.endTime)}</span>
+                    <span className="nc-text-safe">{formatDate(event.eventDate)} | {formatTimeRange(event.startTime, event.endTime)}</span>
                   </div>
 
-                  <h3 className="font-headline text-2xl font-extrabold text-primary">{event.title}</h3>
-                  <p className="mt-3 flex-grow text-sm leading-7 text-on-surface-variant">{event.description}</p>
+                  <h3 className="nc-line-clamp-2 nc-text-safe font-headline text-2xl font-extrabold text-primary">{event.title}</h3>
+                  <p className="nc-line-clamp-3 mt-3 flex-grow text-sm leading-7 text-on-surface-variant">{event.description}</p>
 
                   <div className="mt-6 border-t border-surface-container pt-4">
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0">
                         <span className="block text-[10px] font-bold uppercase tracking-[0.18em] text-outline">
                           Hosted By
                         </span>
-                        <span className="truncate text-xs font-bold text-primary">{event.club.name}</span>
+                        <span className="nc-line-clamp-2 nc-text-safe text-xs font-bold text-primary">{event.club.name}</span>
                       </div>
 
-                      <div className="flex items-center gap-2 text-xs font-bold text-on-surface">
+                      <div className="flex shrink-0 items-center gap-2 text-xs font-bold text-on-surface">
                         <div className={`flex h-8 w-8 items-center justify-center rounded-full ${visual.accentClassName}`}>
                           {getInitials(event.club.name)}
                         </div>
@@ -223,7 +223,7 @@ export function EventsPage() {
 
                     <div className="mt-4 flex items-center gap-2 text-sm text-on-surface-variant">
                       <MaterialIcon className="text-lg text-primary" filled name="location_on" />
-                      <span>{event.venue}</span>
+                      <span className="nc-line-clamp-2 nc-text-safe">{event.venue}</span>
                     </div>
                   </div>
 

@@ -53,10 +53,10 @@ export function ClubForm({
   const hasIdentity = Boolean(formData.name.trim() || formData.tagline.trim());
 
   return (
-    <form className="space-y-8" onSubmit={onSubmit}>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:items-start">
+    <form className="space-y-6 sm:space-y-8" onSubmit={onSubmit}>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-12 md:items-start">
         <div className="flex flex-col gap-6 md:col-span-4">
-          <div className="group relative aspect-square cursor-default overflow-hidden rounded-xl border-2 border-dashed border-outline-variant/30 bg-surface-container-lowest p-6 shadow-soft transition-colors hover:border-secondary">
+          <div className="group relative aspect-square cursor-default overflow-hidden rounded-xl border-2 border-dashed border-outline-variant/30 bg-surface-container-lowest p-5 shadow-soft transition-colors hover:border-secondary sm:p-6">
             <img
               alt="Club preview"
               className="absolute inset-0 h-full w-full object-cover opacity-20 grayscale transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0"
@@ -75,11 +75,11 @@ export function ClubForm({
               >
                 <span className="text-2xl font-extrabold">{getInitials(formData.name || "NC")}</span>
               </div>
-              <p className="mt-3 text-sm font-bold text-primary">
+              <p className="nc-line-clamp-2 nc-text-safe mt-3 text-sm font-bold text-primary">
                 {formData.name || "Your club name will appear here"}
               </p>
               {formData.tagline.trim() ? (
-                <p className="mt-2 max-w-[14rem] text-xs italic leading-5 text-on-surface-variant">
+                <p className="nc-line-clamp-2 nc-text-safe mt-2 max-w-[14rem] text-xs italic leading-5 text-on-surface-variant">
                   "{formData.tagline.trim()}"
                 </p>
               ) : null}
@@ -97,7 +97,7 @@ export function ClubForm({
           </div>
         </div>
 
-        <div className="space-y-6 rounded-xl bg-surface-container-lowest p-8 shadow-soft md:col-span-8">
+        <div className="space-y-6 rounded-xl bg-surface-container-lowest p-5 shadow-soft sm:p-8 md:col-span-8">
           <div className="space-y-1">
             <FieldLabel>Club Name</FieldLabel>
             <input
@@ -159,10 +159,10 @@ export function ClubForm({
         </div>
       </div>
 
-      <div className="rounded-xl bg-surface-container-lowest p-8 shadow-soft">
+      <div className="rounded-xl bg-surface-container-lowest p-5 shadow-soft sm:p-8">
         <div className="mb-6 flex items-center gap-4">
           <div className="h-px flex-1 bg-outline-variant/30" />
-          <span className="text-sm font-bold uppercase tracking-[0.3em] text-secondary">
+          <span className="shrink-0 text-xs font-bold uppercase tracking-[0.2em] text-secondary sm:text-sm sm:tracking-[0.3em]">
             The Narrative
           </span>
           <div className="h-px flex-1 bg-outline-variant/30" />
@@ -178,7 +178,7 @@ export function ClubForm({
             rows={6}
             value={formData.description}
           />
-          <p className="flex items-center gap-2 py-2 text-sm text-on-surface-variant">
+          <p className="flex items-start gap-2 py-2 text-sm text-on-surface-variant">
             <MaterialIcon className="text-secondary" name="info" />
             Your description appears on the public club profile. Use clear, energetic language to help students decide whether to join.
           </p>
@@ -219,7 +219,7 @@ export function ClubForm({
             {helperText ?? "Review your club details before continuing."}
           </span>
         </div>
-        <div className="flex w-full gap-4 md:w-auto">
+        <div className="flex w-full flex-col gap-3 sm:flex-row md:w-auto">
           {cancelHref ? (
             <Link
               className="flex-1 rounded-lg border border-outline-variant/20 px-8 py-4 text-center font-bold text-primary transition hover:bg-surface-container-high md:flex-none"

@@ -99,7 +99,7 @@ export function AuthSplitLayout({
         </div>
       </section>
 
-      <section className="relative flex flex-col justify-center bg-surface p-6 md:p-12 lg:col-span-5 lg:p-20">
+      <section className="relative flex flex-col justify-center bg-surface p-5 pt-24 sm:p-6 md:p-12 lg:col-span-5 lg:p-20">
         <div className="absolute left-8 top-8 flex items-center gap-2 lg:hidden">
           <BrandLogo
             imageClassName="h-9 w-9"
@@ -107,9 +107,35 @@ export function AuthSplitLayout({
           />
         </div>
 
-        <div className="mx-auto w-full max-w-[420px] space-y-10">
+        <div className="mx-auto w-full max-w-[420px] space-y-8 sm:space-y-10">
+          <div className="space-y-4 rounded-3xl bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] p-5 text-white shadow-soft lg:hidden">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-secondary-fixed">
+              {eyebrow}
+            </p>
+            <h1 className="font-headline text-2xl font-extrabold leading-tight">
+              Your campus hub for clubs, events, and leadership.
+            </h1>
+            <div className="grid gap-3">
+              <BrandBullet
+                icon="event_available"
+                text="See live campus events before you decide to join."
+                title="Discover events"
+              />
+              <BrandBullet
+                icon="groups"
+                text="Explore active student communities."
+                title="Find clubs"
+              />
+              <BrandBullet
+                icon="shield_person"
+                text="Join as a student and grow into leadership."
+                title="Grow as a leader"
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <h2 className="font-headline text-3xl font-extrabold tracking-tight text-primary">
+            <h2 className="nc-text-safe font-headline text-3xl font-extrabold tracking-tight text-primary">
               {title}
             </h2>
             <p className="text-base text-on-surface-variant">{subtitle}</p>

@@ -233,15 +233,15 @@ export function AdminEventsPage() {
         </div>
       </aside>
 
-      <div className="space-y-10">
+      <div className="min-w-0 space-y-8 sm:space-y-10">
         {showCreationSuccess && club ? (
-          <section className="rounded-[2rem] border border-secondary/20 bg-secondary-container p-8 shadow-soft">
+          <section className="rounded-[2rem] border border-secondary/20 bg-secondary-container p-5 shadow-soft sm:p-8">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
               <div className="max-w-3xl">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#00522d]">
                   Club Created
                 </p>
-                <h1 className="mt-3 font-headline text-3xl font-extrabold tracking-tight text-[#00210f] sm:text-4xl">
+                <h1 className="nc-text-safe mt-3 font-headline text-2xl font-extrabold tracking-tight text-[#00210f] sm:text-4xl">
                   {locationState?.clubName ?? club.name} is now live on NileConnect.
                 </h1>
                 <p className="mt-4 text-sm leading-7 text-[#00522d] sm:text-base">
@@ -250,7 +250,7 @@ export function AdminEventsPage() {
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Link
                   className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 font-semibold text-primary transition hover:bg-surface-container-highest"
                   to={`/clubs/${club.id}/edit`}
@@ -279,7 +279,7 @@ export function AdminEventsPage() {
             <span className="mb-1 block text-xs font-bold uppercase tracking-[0.2em] text-secondary">
               Club Administrator
             </span>
-            <h1 className="font-headline text-3xl font-extrabold tracking-tight text-primary">
+            <h1 className="nc-text-safe font-headline text-3xl font-extrabold tracking-tight text-primary">
               {club?.name ?? "My Club Workspace"}
             </h1>
           </div>
@@ -290,7 +290,7 @@ export function AdminEventsPage() {
         </header>
 
         <section className="grid grid-cols-1 gap-6 md:grid-cols-12">
-          <div className="flex flex-col gap-8 rounded-xl bg-surface-container-lowest p-8 shadow-soft md:col-span-8 md:flex-row md:items-start">
+          <div className="min-w-0 flex flex-col gap-6 rounded-xl bg-surface-container-lowest p-5 shadow-soft sm:p-8 md:col-span-8 md:flex-row md:items-start">
             <div className="w-full md:w-1/3">
               <div className="aspect-square overflow-hidden rounded-lg bg-surface-container">
                 <img alt={club?.name ?? "Club"} className="h-full w-full object-cover" src={clubVisual.image} />
@@ -307,12 +307,12 @@ export function AdminEventsPage() {
               </div>
 
               {club?.tagline ? (
-                <p className="text-xl font-medium italic leading-relaxed text-on-surface-variant">
+                <p className="nc-text-safe text-lg font-medium italic leading-relaxed text-on-surface-variant sm:text-xl">
                   "{club.tagline}"
                 </p>
               ) : null}
 
-              <p className="text-sm leading-relaxed text-on-surface-variant">
+              <p className="nc-line-clamp-3 text-sm leading-relaxed text-on-surface-variant">
                 {club?.description ??
                   "Manage your club profile, publish events, and keep your public presence current for students."}
               </p>
@@ -479,7 +479,7 @@ export function AdminEventsPage() {
 
                     <div className="space-y-4 p-6">
                       <div className="space-y-1">
-                        <h4 className="font-headline text-lg font-bold leading-tight text-primary">
+                <h4 className="nc-line-clamp-2 nc-text-safe font-headline text-lg font-bold leading-tight text-primary">
                           {event.title}
                         </h4>
                         <p className="text-xs font-medium text-outline">
@@ -498,7 +498,7 @@ export function AdminEventsPage() {
                       </div>
 
                       <div className="text-sm text-on-surface-variant">
-                        <p className="line-clamp-2">{event.venue}</p>
+                        <p className="nc-line-clamp-2 nc-text-safe">{event.venue}</p>
                       </div>
 
                       <div className="flex gap-2 pt-2">

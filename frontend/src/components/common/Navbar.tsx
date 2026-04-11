@@ -13,6 +13,30 @@ const publicLinks = [
   { to: "/clubs", label: "Clubs" },
 ];
 
+function MobileBottomNavLink({
+  icon,
+  label,
+  to,
+}: {
+  icon: string;
+  label: string;
+  to: string;
+}) {
+  return (
+    <NavLink
+      className={({ isActive }) =>
+        `flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[11px] font-bold transition ${
+          isActive ? "bg-primary text-white" : "text-on-surface-variant hover:bg-surface-container-low"
+        }`
+      }
+      to={to}
+    >
+      <MaterialIcon className="text-xl" filled name={icon} />
+      <span className="truncate">{label}</span>
+    </NavLink>
+  );
+}
+
 export function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -33,12 +57,13 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
-      <PageContainer className="flex flex-wrap items-center justify-between gap-4 py-4">
-        <div className="flex items-center gap-8">
+    <>
+      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl">
+      <PageContainer className="flex items-center justify-between gap-3 py-3 sm:gap-4 sm:py-4">
+        <div className="flex min-w-0 items-center gap-8">
           <BrandLogo
-            imageClassName="h-11 w-11"
-            textClassName="font-headline text-2xl font-bold tracking-tight text-primary"
+            imageClassName="h-9 w-9 sm:h-11 sm:w-11"
+            textClassName="font-headline text-lg font-bold tracking-tight text-primary sm:text-2xl"
           />
 
           <nav className="hidden items-center gap-6 md:flex">
@@ -71,7 +96,7 @@ export function Navbar() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           {!loading ? (
             <form
               className="hidden items-center gap-2 rounded-full bg-surface-container-low px-4 py-2 lg:flex"
@@ -132,7 +157,7 @@ export function Navbar() {
 
               <div className="flex items-center gap-3 border-l border-outline-variant/40 pl-3">
                 <button
-                  className="rounded-full p-2 text-on-surface-variant transition hover:bg-surface-container-low"
+                  className="hidden rounded-full p-2 text-on-surface-variant transition hover:bg-surface-container-low sm:inline-flex"
                   type="button"
                 >
                   <MaterialIcon name="notifications" />
@@ -153,8 +178,9 @@ export function Navbar() {
                 </Button>
               </Link>
               <Link to="/register">
-                <Button className="rounded-full bg-primary px-5 text-white hover:bg-primary-container">
-                  Create account
+                <Button className="rounded-full bg-primary px-3 text-sm text-white hover:bg-primary-container sm:px-5">
+                  <span className="sm:hidden">Join</span>
+                  <span className="hidden sm:inline">Create account</span>
                 </Button>
               </Link>
             </>
@@ -162,5 +188,21 @@ export function Navbar() {
         </div>
       </PageContainer>
     </header>
+
+      <nav className="fixed bottom-0 left-0 z-40 w-full border-t border-outline-variant/30 bg-white/90 px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0px_-10px_32px_rgba(0,30,64,0.08)] backdrop-blur-xl md:hidden">
+        <div className="mx-auto flex max-w-md gap-2">
+          <MobileBottomNavLink icon="home" label="Home" to="/" />
+          <MobileBottomNavLink icon="event" label="Events" to="/events" />
+          <MobileBottomNavLink icon="groups" label="Clubs" to="/clubs" />
+          {user?.role === "club_admin" ? (
+            <MobileBottomNavLink icon="dashboard" label="My Club" to="/admin/events" />
+          ) : isAuthenticated ? (
+            <MobileBottomNavLink icon="add_circle" label="Create" to="/clubs/new" />
+          ) : (
+            <MobileBottomNavLink icon="login" label="Login" to="/login" />
+          )}
+        </div>
+      </nav>
+    </>
   );
 }

@@ -205,7 +205,7 @@ export function EventDetailPage() {
   const highlightIcons = ["local_pizza", "psychology", "card_membership", "event_available"];
 
   return (
-    <section className="space-y-12">
+    <section className="space-y-8 sm:space-y-12">
       <section className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="group overflow-hidden rounded-xl bg-surface-container-low lg:col-span-8">
           <div className="relative aspect-[16/9]">
@@ -215,11 +215,11 @@ export function EventDetailPage() {
               src={visual.image || detailImage}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            <div className="absolute bottom-8 left-8 right-8">
+            <div className="absolute bottom-5 left-5 right-5 sm:bottom-8 sm:left-8 sm:right-8">
               <span className="mb-3 inline-block rounded-full bg-tertiary-fixed px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-on-tertiary-fixed">
                 {event.category}
               </span>
-              <h1 className="font-headline text-4xl font-extrabold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
+              <h1 className="nc-line-clamp-3 nc-text-safe font-headline text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
                 {event.title}
               </h1>
             </div>
@@ -227,7 +227,7 @@ export function EventDetailPage() {
         </div>
 
         <div className="flex flex-col gap-6 lg:col-span-4">
-          <div className="flex h-full flex-col justify-between rounded-xl bg-surface-container-low p-8">
+          <div className="flex h-full flex-col justify-between rounded-xl bg-surface-container-low p-5 sm:p-8">
             <div>
               <div className="mb-6 flex items-center gap-2 text-sm font-bold uppercase tracking-[0.18em] text-secondary">
                 <MaterialIcon filled name="verified" />
@@ -239,7 +239,7 @@ export function EventDetailPage() {
                   <EventMetaIcon name="calendar_today" />
                   <div>
                     <p className="text-xs font-semibold uppercase text-outline">Date & Time</p>
-                    <p className="font-headline text-lg font-bold text-primary">{formatLongDate(event.eventDate)}</p>
+                    <p className="nc-text-safe font-headline text-base font-bold text-primary sm:text-lg">{formatLongDate(event.eventDate)}</p>
                     <p className="text-sm text-on-surface-variant">{formatTimeRange(event.startTime, event.endTime)}</p>
                   </div>
                 </div>
@@ -248,7 +248,7 @@ export function EventDetailPage() {
                   <EventMetaIcon name="location_on" />
                   <div>
                     <p className="text-xs font-semibold uppercase text-outline">Venue</p>
-                    <p className="font-headline text-lg font-bold text-primary">{event.venue}</p>
+                    <p className="nc-text-safe font-headline text-base font-bold text-primary sm:text-lg">{event.venue}</p>
                     <p className="text-sm text-on-surface-variant">NileConnect event listing</p>
                   </div>
                 </div>
@@ -257,7 +257,7 @@ export function EventDetailPage() {
                   <EventMetaIcon name="groups" />
                   <div>
                     <p className="text-xs font-semibold uppercase text-outline">Current RSVPs</p>
-                    <p className="font-headline text-lg font-bold text-primary">{event.rsvpCount} Students</p>
+                    <p className="font-headline text-base font-bold text-primary sm:text-lg">{event.rsvpCount} Students</p>
                     <p className="text-sm text-on-surface-variant">Live attendance on this event page</p>
                   </div>
                 </div>
@@ -307,10 +307,10 @@ export function EventDetailPage() {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
         <div className="flex flex-col gap-12 lg:col-span-8">
-          <article className="rounded-xl bg-surface-container-lowest p-8 shadow-soft md:p-12">
+          <article className="rounded-xl bg-surface-container-lowest p-6 shadow-soft md:p-12">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-secondary">The Deep Dive</p>
-            <h2 className="mb-6 font-headline text-3xl font-extrabold text-primary">About This Event</h2>
-            <div className="space-y-6 text-lg leading-relaxed text-on-surface-variant">
+            <h2 className="mb-6 font-headline text-2xl font-extrabold text-primary sm:text-3xl">About This Event</h2>
+            <div className="space-y-6 text-base leading-7 text-on-surface-variant sm:text-lg sm:leading-relaxed">
               <p>{event.description}</p>
               {event.additionalInfo ? <p>{event.additionalInfo}</p> : null}
             </div>

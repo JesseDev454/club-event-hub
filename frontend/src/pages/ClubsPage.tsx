@@ -113,32 +113,32 @@ export function ClubsPage() {
   const supportingClubs = filteredClubs.slice(1, 5);
 
   return (
-    <section className="space-y-12 lg:space-y-16">
-      <section className="relative overflow-hidden rounded-[2.5rem] bg-primary text-white shadow-soft">
+    <section className="space-y-8 lg:space-y-16">
+      <section className="relative overflow-hidden rounded-[2rem] bg-primary text-white shadow-soft sm:rounded-[2.5rem]">
         <div className="absolute inset-0 opacity-40">
           <img alt="Nile University student communities" className="h-full w-full object-cover" src={clubsHeroImage} />
           <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-transparent" />
         </div>
-        <div className="relative z-10 max-w-3xl px-8 py-14 md:px-12 md:py-20">
+        <div className="relative z-10 max-w-3xl px-6 py-10 sm:px-8 sm:py-14 md:px-12 md:py-20">
           <span className="mb-6 inline-block rounded-full bg-secondary-container px-3 py-1 text-xs font-bold uppercase tracking-[0.22em] text-on-secondary-container">
             Campus Life
           </span>
-          <h1 className="font-headline text-5xl font-extrabold leading-tight tracking-tight md:text-7xl">
+          <h1 className="nc-text-safe font-headline text-4xl font-extrabold leading-tight tracking-tight sm:text-5xl md:text-7xl">
             Find Your Community
           </h1>
-          <p className="mt-6 text-xl leading-9 text-on-primary-container/90">
+          <p className="mt-4 text-base leading-7 text-on-primary-container/90 sm:mt-6 sm:text-xl sm:leading-9">
             Discover student organizations that spark your interests, build your skills, and create the friendships that make campus feel like home.
           </p>
           <div className="mt-8 flex flex-wrap gap-4">
             <a
-              className="rounded-xl bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-4 font-bold text-white shadow-soft"
+              className="inline-flex w-full items-center justify-center rounded-xl bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] px-8 py-4 font-bold text-white shadow-soft sm:w-auto"
               href="#explore-clubs"
             >
               Start Exploring
             </a>
             {user?.role === "student" ? (
               <Link
-                className="rounded-xl border border-white/20 bg-white/10 px-8 py-4 font-bold text-white transition hover:bg-white/20"
+                className="inline-flex w-full items-center justify-center rounded-xl border border-white/20 bg-white/10 px-8 py-4 font-bold text-white transition hover:bg-white/20 sm:w-auto"
                 to="/clubs/new"
               >
                 Start a Club
@@ -151,16 +151,16 @@ export function ClubsPage() {
       <section className="space-y-8" id="explore-clubs">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 className="font-headline text-4xl font-extrabold text-primary">Explore Categories</h2>
-            <p className="mt-2 text-lg text-on-surface-variant">
+            <h2 className="font-headline text-3xl font-extrabold text-primary sm:text-4xl">Explore Categories</h2>
+            <p className="mt-2 text-base leading-7 text-on-surface-variant sm:text-lg">
               Filter through active Nile University student clubs and find the communities already building momentum.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="no-scrollbar -mx-1 flex gap-3 overflow-x-auto px-1 sm:flex-wrap sm:overflow-visible">
             {categoryOptions.map((category) => (
               <button
-                className={`rounded-full px-6 py-2 font-semibold transition ${
+                className={`shrink-0 rounded-full px-6 py-2 font-semibold transition ${
                   category === selectedCategory
                     ? "bg-secondary-container text-on-secondary-container"
                     : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high"
@@ -207,8 +207,8 @@ export function ClubsPage() {
         <section className="space-y-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-12">
             {leadClub ? (
-              <article className="group relative overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-soft transition-all duration-300 hover:-translate-y-1 md:col-span-8">
-                <div className="relative h-80 overflow-hidden">
+              <article className="group relative min-w-0 overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-soft transition-all duration-300 hover:-translate-y-1 md:col-span-8">
+                <div className="relative h-56 overflow-hidden sm:h-80">
                   <img
                     alt={leadClub.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
@@ -221,7 +221,7 @@ export function ClubsPage() {
                 <div className="p-8">
                   <div className="mb-4 flex items-start justify-between gap-4">
                     <div>
-                      <h3 className="font-headline text-3xl font-extrabold text-primary">{leadClub.name}</h3>
+                      <h3 className="nc-text-safe font-headline text-2xl font-extrabold text-primary sm:text-3xl">{leadClub.name}</h3>
                       <span className="mt-2 block text-sm font-semibold uppercase tracking-[0.18em] text-secondary">
                         {leadClub.category}
                       </span>
@@ -237,11 +237,11 @@ export function ClubsPage() {
                   </div>
 
                   {leadClub.tagline ? (
-                    <p className="mb-4 text-base font-medium text-secondary">{leadClub.tagline}</p>
+                    <p className="nc-text-safe mb-4 text-base font-medium text-secondary">{leadClub.tagline}</p>
                   ) : null}
-                  <p className="text-lg leading-8 text-on-surface-variant">{leadClub.description}</p>
+                  <p className="nc-line-clamp-3 text-base leading-7 text-on-surface-variant sm:text-lg sm:leading-8">{leadClub.description}</p>
 
-                  <div className="mt-6 flex items-center justify-between border-t border-outline-variant/20 pt-6">
+                  <div className="mt-6 flex flex-col gap-4 border-t border-outline-variant/20 pt-6 sm:flex-row sm:items-center sm:justify-between">
                     <span className="flex items-center text-sm text-on-surface-variant">
                       <MaterialIcon className="mr-2 text-primary" name="groups" />
                       {upcomingCounts[leadClub.id] ?? 0} upcoming event{(upcomingCounts[leadClub.id] ?? 0) === 1 ? "" : "s"}
@@ -260,7 +260,7 @@ export function ClubsPage() {
 
             {supportingClubs.slice(0, 1).map((club) => (
               <article
-                className="group flex flex-col overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-soft transition-all hover:-translate-y-1 md:col-span-4"
+                className="group flex min-w-0 flex-col overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-soft transition-all hover:-translate-y-1 md:col-span-4"
                 key={club.id}
               >
                 <div className="h-48 overflow-hidden">
@@ -268,8 +268,8 @@ export function ClubsPage() {
                 </div>
                 <div className="flex flex-1 flex-col p-6">
                   <span className="mb-2 text-xs font-bold uppercase text-secondary">{club.category}</span>
-                  <h3 className="font-headline text-2xl font-bold text-primary">{club.name}</h3>
-                  <p className="mt-3 flex-grow text-sm leading-7 text-on-surface-variant">{club.description}</p>
+                  <h3 className="nc-line-clamp-2 nc-text-safe font-headline text-2xl font-bold text-primary">{club.name}</h3>
+                  <p className="nc-line-clamp-3 mt-3 flex-grow text-sm leading-7 text-on-surface-variant">{club.description}</p>
                   <Link
                     className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-surface-container-low py-3 font-bold text-primary transition hover:bg-primary hover:text-white"
                     to={`/clubs/${club.id}`}
@@ -282,7 +282,7 @@ export function ClubsPage() {
 
             {supportingClubs.slice(1).map((club) => (
               <article
-                className="group flex flex-col overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-soft transition-all hover:-translate-y-1 md:col-span-4"
+                className="group flex min-w-0 flex-col overflow-hidden rounded-[2rem] bg-surface-container-lowest shadow-soft transition-all hover:-translate-y-1 md:col-span-4"
                 key={club.id}
               >
                 <div className="h-48 overflow-hidden">
@@ -290,11 +290,11 @@ export function ClubsPage() {
                 </div>
                 <div className="p-6">
                   <span className="mb-2 block text-xs font-bold uppercase text-secondary">{club.category}</span>
-                  <h3 className="font-headline text-2xl font-bold text-primary">{club.name}</h3>
+                  <h3 className="nc-line-clamp-2 nc-text-safe font-headline text-2xl font-bold text-primary">{club.name}</h3>
                   {club.tagline ? (
-                    <p className="mt-2 text-sm font-medium text-secondary">{club.tagline}</p>
+                    <p className="nc-line-clamp-2 nc-text-safe mt-2 text-sm font-medium text-secondary">{club.tagline}</p>
                   ) : null}
-                  <p className="mt-3 text-sm leading-7 text-on-surface-variant">{club.description}</p>
+                  <p className="nc-line-clamp-3 mt-3 text-sm leading-7 text-on-surface-variant">{club.description}</p>
                   <div className="mt-6 flex items-center justify-between border-t border-outline-variant/10 pt-4">
                     <span className="text-xs font-bold text-secondary">
                       {upcomingCounts[club.id] ?? 0} Upcoming

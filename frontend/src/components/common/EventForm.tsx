@@ -66,9 +66,9 @@ export function EventForm({
       : "Your event schedule will appear here.";
 
   return (
-    <form className="grid grid-cols-12 gap-8 items-start" onSubmit={onSubmit}>
-      <div className="col-span-12 flex flex-col gap-8 lg:col-span-8">
-        <section className="rounded-xl bg-surface-container-lowest p-8 transition-shadow hover:shadow-sm">
+    <form className="grid grid-cols-12 items-start gap-6 sm:gap-8" onSubmit={onSubmit}>
+      <div className="col-span-12 flex flex-col gap-6 sm:gap-8 lg:col-span-8">
+        <section className="rounded-xl bg-surface-container-lowest p-5 transition-shadow hover:shadow-sm sm:p-8">
           <div className="mb-6 flex items-center gap-3">
             <MaterialIcon className="text-primary-container" name="info" />
             <h2 className="text-xl font-bold text-primary">Basic Info</h2>
@@ -118,7 +118,7 @@ export function EventForm({
           </div>
         </section>
 
-        <section className="rounded-xl bg-surface-container-lowest p-8">
+        <section className="rounded-xl bg-surface-container-lowest p-5 sm:p-8">
           <div className="mb-6 flex items-center gap-3">
             <MaterialIcon className="text-primary-container" name="schedule" />
             <h2 className="text-xl font-bold text-primary">Date & Time</h2>
@@ -165,7 +165,7 @@ export function EventForm({
           </div>
         </section>
 
-        <section className="rounded-xl bg-surface-container-lowest p-8">
+        <section className="rounded-xl bg-surface-container-lowest p-5 sm:p-8">
           <div className="mb-6 flex items-center gap-3">
             <MaterialIcon className="text-primary-container" name="edit_note" />
             <h2 className="text-xl font-bold text-primary">Rich Content</h2>
@@ -220,8 +220,8 @@ export function EventForm({
         </section>
       </div>
 
-      <div className="col-span-12 flex flex-col gap-8 lg:sticky lg:top-12 lg:col-span-4">
-        <section className="overflow-hidden rounded-xl bg-surface-container-lowest p-8">
+      <div className="col-span-12 flex flex-col gap-6 sm:gap-8 lg:sticky lg:top-12 lg:col-span-4">
+        <section className="overflow-hidden rounded-xl bg-surface-container-lowest p-5 sm:p-8">
           <div className="mb-6 flex items-center gap-3">
             <MaterialIcon className="text-primary-container" name="visibility" />
             <h2 className="text-xl font-bold text-primary">Live Preview</h2>
@@ -242,10 +242,10 @@ export function EventForm({
 
             <div className="space-y-4 p-5">
               <div>
-                <h3 className="font-headline text-xl font-bold text-primary">
+                <h3 className="nc-line-clamp-2 nc-text-safe font-headline text-xl font-bold text-primary">
                   {formData.title || "Your event title"}
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-on-surface-variant">
+                <p className="nc-line-clamp-3 mt-2 text-sm leading-6 text-on-surface-variant">
                   {formData.description || "Your event overview will appear here as you type."}
                 </p>
               </div>
@@ -253,11 +253,11 @@ export function EventForm({
               <div className="space-y-3 text-sm text-on-surface-variant">
                 <div className="flex items-start gap-2">
                   <MaterialIcon className="mt-0.5 text-lg text-primary" filled name="calendar_today" />
-                  <span>{schedulePreview}</span>
+                  <span className="nc-text-safe">{schedulePreview}</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <MaterialIcon className="mt-0.5 text-lg text-primary" filled name="location_on" />
-                  <span>{formData.venue || "Venue will appear here."}</span>
+                  <span className="nc-text-safe">{formData.venue || "Venue will appear here."}</span>
                 </div>
               </div>
 
@@ -272,7 +272,7 @@ export function EventForm({
                       : ["Add at least one highlight"]).map((item, index) => (
                       <li className="flex gap-2" key={`${item}-${index}`}>
                         <span className="mt-2 h-1.5 w-1.5 rounded-full bg-secondary" />
-                        <span>{item}</span>
+                        <span className="nc-text-safe">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -287,7 +287,7 @@ export function EventForm({
                       ? audienceItems
                       : ["Add at least one audience segment"]).map((item, index) => (
                       <span
-                        className="rounded-full bg-white px-3 py-2 text-xs font-medium text-on-surface-variant"
+                        className="nc-text-safe rounded-full bg-white px-3 py-2 text-xs font-medium text-on-surface-variant"
                         key={`${item}-${index}`}
                       >
                         {item}
@@ -300,7 +300,7 @@ export function EventForm({
           </div>
         </section>
 
-        <section className="rounded-xl bg-primary p-8 text-on-primary shadow-xl">
+        <section className="rounded-xl bg-primary p-5 text-on-primary shadow-xl sm:p-8">
           <h3 className="text-lg font-bold">Finalize Event</h3>
           <p className="mt-2 text-sm leading-relaxed text-on-primary-container">
             This form publishes or updates the real public event page immediately using the existing NileConnect backend flow.
@@ -327,7 +327,7 @@ export function EventForm({
           </div>
         </section>
 
-        <div className="rounded-xl border border-tertiary-fixed-dim/30 bg-tertiary-fixed p-6">
+        <div className="rounded-xl border border-tertiary-fixed-dim/30 bg-tertiary-fixed p-5 sm:p-6">
           <div className="flex items-start gap-4">
             <MaterialIcon className="text-tertiary" name="tips_and_updates" />
             <div>
@@ -339,7 +339,7 @@ export function EventForm({
           </div>
         </div>
 
-        <div className="rounded-2xl bg-surface-container-low p-8">
+        <div className="rounded-2xl bg-surface-container-low p-5 sm:p-8">
           <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between lg:flex-col lg:items-start">
             <div className="flex-1">
               <h3 className="font-bold text-primary">Setup Completion</h3>
@@ -380,7 +380,7 @@ export function EventForm({
           <p className="text-sm text-on-surface-variant">
             {helperText ?? "Review the event details carefully before saving changes."}
           </p>
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
             {cancelHref ? (
               <Link
                 className="inline-flex items-center justify-center rounded-full border border-outline-variant px-6 py-3 font-semibold text-primary transition hover:bg-surface-container-low"

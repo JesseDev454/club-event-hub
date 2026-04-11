@@ -63,6 +63,26 @@
     display: none;
   }
 
+  .nc-text-safe {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .nc-line-clamp-2,
+  .nc-line-clamp-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .nc-line-clamp-2 {
+    -webkit-line-clamp: 2;
+  }
+
+  .nc-line-clamp-3 {
+    -webkit-line-clamp: 3;
+  }
+
   @keyframes nc-fade-up {
     from {
       opacity: 0;
