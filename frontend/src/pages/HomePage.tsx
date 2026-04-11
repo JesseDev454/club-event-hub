@@ -476,19 +476,19 @@ export function HomePage() {
           </section>
 
           <section className="nc-animate-soft-scale px-0 py-16 sm:px-8 sm:py-24">
-            <div className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] p-12 text-center shadow-[0px_12px_32px_rgba(24,28,32,0.06)] lg:p-20">
+            <div className="relative overflow-hidden rounded-[2rem] bg-[linear-gradient(135deg,#001e40_0%,#003366_100%)] p-6 text-center shadow-[0px_12px_32px_rgba(24,28,32,0.06)] sm:p-12 lg:p-20">
               <div className="relative z-10 mx-auto max-w-2xl space-y-8">
-                <h2 className="font-headline text-4xl font-extrabold text-white lg:text-5xl">
+                <h2 className="font-headline text-3xl font-extrabold text-white sm:text-4xl lg:text-5xl">
                   Ready to join the community?
                 </h2>
-                <p className="text-lg text-primary-fixed">
+                <p className="mx-auto max-w-xl text-base font-medium leading-7 text-white/90 sm:text-lg sm:leading-8">
                   Don&apos;t miss out on the most exciting events of the semester. Sign up today and start discovering Nile.
                 </p>
-                <div className="flex flex-col justify-center gap-4 pt-4 sm:flex-row">
-                  <Link className="rounded-xl bg-secondary px-10 py-4 text-lg font-extrabold text-white shadow-xl transition-all hover:scale-105" to="/register">
+                <div className="relative z-20 flex flex-col justify-center gap-4 pt-4 sm:flex-row">
+                  <Link className="inline-flex w-full items-center justify-center rounded-xl bg-secondary px-10 py-4 text-lg font-extrabold text-white shadow-xl transition-all hover:scale-105 sm:w-auto" to="/register">
                     Get Started
                   </Link>
-                  <Link className="rounded-xl border border-white/20 bg-white/10 px-10 py-4 text-lg font-extrabold text-white transition-all hover:bg-white/20" to="/events">
+                  <Link className="inline-flex w-full items-center justify-center rounded-xl border border-white/30 bg-white/15 px-10 py-4 text-lg font-extrabold text-white transition-all hover:bg-white/25 sm:w-auto" to="/events">
                     Browse Anonymously
                   </Link>
                 </div>
