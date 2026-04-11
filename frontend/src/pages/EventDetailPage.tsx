@@ -31,6 +31,14 @@ function HighlightCard({ icon, text }: HighlightCardProps) {
   );
 }
 
+function EventMetaIcon({ name }: { name: string }) {
+  return (
+    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-[0px_10px_24px_rgba(0,30,64,0.18)]">
+      <MaterialIcon className="text-2xl" filled name={name} />
+    </div>
+  );
+}
+
 export function EventDetailPage() {
   const { id } = useParams();
   const { user, loading: authLoading } = useAuth();
@@ -228,9 +236,7 @@ export function EventDetailPage() {
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
-                  <div className="rounded-lg bg-primary-container p-3 text-on-primary-container">
-                    <MaterialIcon name="calendar_today" />
-                  </div>
+                  <EventMetaIcon name="calendar_today" />
                   <div>
                     <p className="text-xs font-semibold uppercase text-outline">Date & Time</p>
                     <p className="font-headline text-lg font-bold text-primary">{formatLongDate(event.eventDate)}</p>
@@ -239,9 +245,7 @@ export function EventDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="rounded-lg bg-primary-container p-3 text-on-primary-container">
-                    <MaterialIcon name="location_on" />
-                  </div>
+                  <EventMetaIcon name="location_on" />
                   <div>
                     <p className="text-xs font-semibold uppercase text-outline">Venue</p>
                     <p className="font-headline text-lg font-bold text-primary">{event.venue}</p>
@@ -250,9 +254,7 @@ export function EventDetailPage() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="rounded-lg bg-primary-container p-3 text-on-primary-container">
-                    <MaterialIcon name="group" />
-                  </div>
+                  <EventMetaIcon name="groups" />
                   <div>
                     <p className="text-xs font-semibold uppercase text-outline">Current RSVPs</p>
                     <p className="font-headline text-lg font-bold text-primary">{event.rsvpCount} Students</p>

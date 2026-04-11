@@ -267,11 +267,11 @@ export function ClubDetailPage() {
                     <h4 className="font-headline text-lg font-bold text-primary">{event.title}</h4>
                     <div className="mb-4 mt-3 space-y-2 text-sm text-on-surface-variant">
                       <div className="flex items-center gap-2">
-                        <MaterialIcon className="text-sm" name="schedule" />
-                        <span>{formatDate(event.eventDate)} · {formatTimeRange(event.startTime, event.endTime)}</span>
+                        <MaterialIcon className="text-lg text-primary" filled name="schedule" />
+                        <span>{formatDate(event.eventDate)} - {formatTimeRange(event.startTime, event.endTime)}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <MaterialIcon className="text-sm" name="location_on" />
+                        <MaterialIcon className="text-lg text-primary" filled name="location_on" />
                         <span>{event.venue}</span>
                       </div>
                     </div>

@@ -252,11 +252,11 @@ export function EventForm({
 
               <div className="space-y-3 text-sm text-on-surface-variant">
                 <div className="flex items-start gap-2">
-                  <MaterialIcon className="mt-0.5 text-primary" name="calendar_today" />
+                  <MaterialIcon className="mt-0.5 text-lg text-primary" filled name="calendar_today" />
                   <span>{schedulePreview}</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <MaterialIcon className="mt-0.5 text-primary" name="location_on" />
+                  <MaterialIcon className="mt-0.5 text-lg text-primary" filled name="location_on" />
                   <span>{formData.venue || "Venue will appear here."}</span>
                 </div>
               </div>

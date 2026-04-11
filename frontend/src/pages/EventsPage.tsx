@@ -196,7 +196,7 @@ export function EventsPage() {
 
                 <div className="flex flex-1 flex-col p-6">
                   <div className="mb-3 flex items-center gap-2 text-xs font-bold text-secondary">
-                    <MaterialIcon className="text-sm" name="calendar_today" />
+                    <MaterialIcon className="text-base text-primary" filled name="calendar_today" />
                     <span>{formatDate(event.eventDate)} | {formatTimeRange(event.startTime, event.endTime)}</span>
                   </div>
 
@@ -216,12 +216,13 @@ export function EventsPage() {
                         <div className={`flex h-8 w-8 items-center justify-center rounded-full ${visual.accentClassName}`}>
                           {getInitials(event.club.name)}
                         </div>
+                        <MaterialIcon className="text-base text-secondary" filled name="groups" />
                         <span>{event.rsvpCount ?? 0} Attending</span>
                       </div>
                     </div>
 
                     <div className="mt-4 flex items-center gap-2 text-sm text-on-surface-variant">
-                      <MaterialIcon className="text-base" name="location_on" />
+                      <MaterialIcon className="text-lg text-primary" filled name="location_on" />
                       <span>{event.venue}</span>
                     </div>
                   </div>

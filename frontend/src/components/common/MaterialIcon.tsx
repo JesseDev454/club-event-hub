@@ -6,7 +6,10 @@ type MaterialIconProps = {
 
 export function MaterialIcon({ className, filled = false, name }: MaterialIconProps) {
   return (
-    <span className={`material-symbols-outlined ${filled ? "icon-filled" : ""} ${className ?? ""}`}>
+    <span
+      aria-hidden="true"
+      className={`material-symbols-outlined shrink-0 leading-none ${filled ? "icon-filled" : ""} ${className ?? ""}`}
+    >
       {name}
     </span>
   );

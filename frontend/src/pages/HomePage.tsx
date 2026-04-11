@@ -345,7 +345,7 @@ export function HomePage() {
                           <p className="text-xl font-extrabold text-primary">{formatDay(event.eventDate)}</p>
                         </div>
                         <div className="absolute bottom-4 right-4 flex items-center gap-1 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-white">
-                          <MaterialIcon className="text-[14px]" name="group" />
+                          <MaterialIcon className="text-base" filled name="groups" />
                           {rsvpCount} Joined
                         </div>
                       </div>
@@ -359,11 +359,11 @@ export function HomePage() {
                         </h3>
                         <div className="space-y-2 text-sm text-on-surface-variant">
                           <div className="flex items-center gap-2">
-                            <MaterialIcon className="text-[18px]" name="schedule" />
+                            <MaterialIcon className="text-lg text-primary" filled name="schedule" />
                             {formatTimeRange(event.startTime, event.endTime)}
                           </div>
                           <div className="flex items-center gap-2">
-                            <MaterialIcon className="text-[18px]" name="location_on" />
+                            <MaterialIcon className="text-lg text-primary" filled name="location_on" />
                             {event.venue}
                           </div>
                         </div>
