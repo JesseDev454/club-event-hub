@@ -10,6 +10,7 @@ import { ErrorMessage } from "../components/ui/ErrorMessage";
 import { LoadingState } from "../components/ui/LoadingState";
 import { getCategoryVisual } from "../lib/presentation";
 import { formatTimeRange } from "../lib/utils";
+import { useAuth } from "../state/AuthContext";
 import type { ClubSummary, EventListItem } from "../types/domain";
 
 type ClubUpcomingCounts = Record<string, number>;
@@ -83,6 +84,7 @@ function ValueCard({
 }
 
 export function HomePage() {
+  const { isAuthenticated } = useAuth();
   const [clubs, setClubs] = useState<ClubSummary[]>([]);
   const [events, setEvents] = useState<EventListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -485,8 +487,8 @@ export function HomePage() {
                   Don&apos;t miss out on the most exciting events of the semester. Sign up today and start discovering Nile.
                 </p>
                 <div className="relative z-20 flex flex-col justify-center gap-4 pt-4 sm:flex-row">
-                  <Link className="inline-flex w-full items-center justify-center rounded-xl bg-secondary px-10 py-4 text-lg font-extrabold text-white shadow-xl transition-all hover:scale-105 sm:w-auto" to="/register">
-                    Get Started
+                  <Link className="inline-flex w-full items-center justify-center rounded-xl bg-secondary px-10 py-4 text-lg font-extrabold text-white shadow-xl transition-all hover:scale-105 sm:w-auto" to={isAuthenticated ? "/events" : "/register"}>
+                    {isAuthenticated ? "Explore Events" : "Get Started"}
                   </Link>
                   <Link className="inline-flex w-full items-center justify-center rounded-xl border border-white/30 bg-white/15 px-10 py-4 text-lg font-extrabold text-white transition-all hover:bg-white/25 sm:w-auto" to="/events">
                     Browse Anonymously

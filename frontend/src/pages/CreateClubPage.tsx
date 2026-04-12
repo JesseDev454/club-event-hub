@@ -41,14 +41,33 @@ export function CreateClubPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const trimmedName = formData.name.trim();
+    const trimmedDescription = formData.description.trim();
+    const trimmedCategory = formData.category.trim();
+
+    if (trimmedName.length < 2) {
+      setError("Club name must be at least 2 characters long.");
+      return;
+    }
+
+    if (trimmedCategory.length < 2) {
+      setError("Please choose a club category.");
+      return;
+    }
+
+    if (trimmedDescription.length < 20) {
+      setError("Club description must be at least 20 characters long.");
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 
     try {
       const creationResult = await clubsApi.createClub({
-        name: formData.name,
-        description: formData.description,
-        category: formData.category,
+        name: trimmedName,
+        description: trimmedDescription,
+        category: trimmedCategory,
         contactEmail: normalizeNullableString(formData.contactEmail),
         tagline: normalizeNullableString(formData.tagline),
       });

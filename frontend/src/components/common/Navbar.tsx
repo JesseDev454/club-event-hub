@@ -165,6 +165,14 @@ export function Navbar() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
                   {userInitials}
                 </div>
+                <button
+                  aria-label="Log out"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-outline-variant/40 text-primary transition hover:bg-surface-container-low md:hidden"
+                  onClick={logout}
+                  type="button"
+                >
+                  <MaterialIcon name="logout" />
+                </button>
               </div>
             </>
           ) : (
