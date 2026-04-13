@@ -14,10 +14,12 @@ const publicLinks = [
 ];
 
 function MobileBottomNavLink({
+  end = false,
   icon,
   label,
   to,
 }: {
+  end?: boolean;
   icon: string;
   label: string;
   to: string;
@@ -29,6 +31,7 @@ function MobileBottomNavLink({
           isActive ? "bg-primary text-white" : "text-on-surface-variant hover:bg-surface-container-low"
         }`
       }
+      end={end}
       to={to}
     >
       <MaterialIcon className="text-xl" filled name={icon} />
@@ -199,9 +202,9 @@ export function Navbar() {
 
       <nav className="fixed bottom-0 left-0 z-40 w-full border-t border-outline-variant/30 bg-white/90 px-3 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0px_-10px_32px_rgba(0,30,64,0.08)] backdrop-blur-xl md:hidden">
         <div className="mx-auto flex max-w-md gap-2">
-          <MobileBottomNavLink icon="home" label="Home" to="/" />
+          <MobileBottomNavLink end icon="home" label="Home" to="/" />
           <MobileBottomNavLink icon="event" label="Events" to="/events" />
-          <MobileBottomNavLink icon="groups" label="Clubs" to="/clubs" />
+          <MobileBottomNavLink end icon="groups" label="Clubs" to="/clubs" />
           {user?.role === "club_admin" ? (
             <MobileBottomNavLink icon="dashboard" label="My Club" to="/admin/events" />
           ) : isAuthenticated ? (
